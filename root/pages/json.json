@@ -1,0 +1,117 @@
+{
+	"result":
+		[{
+			"colCenterId":"",
+			"patPhone":"9401066750",
+			"billDate":"",
+			"patName":"GOVINDA SHARMA",
+			"createBy":"2uPpL6tjdvUhhqff2Htg",
+			"collectedBy":"2uPpL6tjdvUhhqff2Htg",
+			"billNo":"",
+			"hospitalId":"g1Z01N9bcl6YniicVlP1",
+			"patSex":"Male",
+			"collectedOn":1647784323181,
+			"patAge":"29 Y85 days",
+			"testDate":1647784323181,
+			"totalValue":4530,
+			"createOn":1647784323181,
+			"patientId":"GEhmr6EWbl6WAWgmWTku",
+			"id":"1iY8stQNUFxXOay7HLLN",
+			"items":
+				[{
+					"masterId":"1iY8stQNUFxXOay7HLLN",
+					"testName":"(L) FOOT AP/LT VIEW",
+					"testId":3180,
+					"price":400
+				}],
+			"patietDetail":
+			{
+				"patName":"GOVINDA SHARMA",
+				"createdOn":0,
+				"motherName":"",
+				"city":"guwahati",
+				"age":"29 Y85 days",
+				"sex":"Male",
+				"createBy":"",
+				"gurdianName":"",
+				"patientId":0,
+				"phoneNo2":"",
+				"dob":"01-01-1993",
+				"phoneNo":"9401066750",
+				"isActive":"Y",
+				"updateOn":0,
+				"gurdianPhone":"",
+				"birthTime":725826600000,
+				"localId":"",
+				"fatherPhone":"",
+				"modifyBy":"",
+				"address":"",
+				"fatherName":"",
+				"motherPhone":""
+			}
+		},
+		{
+			"billNo":"",
+			"billDate":"",
+			"testDate":0,
+			"createBy":"2uPpL6tjdvUhhqff2Htg",
+			"colCenterId":"",
+			"patName":"NARENDRA MODI",
+			"patAge":"63 Y93 days",
+			"collectedOn":1647684693297,
+			"patPhone":"8855621554",
+			"collectedBy":"2uPpL6tjdvUhhqff2Htg",
+			"totalValue":4000,
+			"patSex":"Male",
+			"patientId":"WQs7ouzwnkL1iUFM1Azf",
+			"hospitalId":"g1Z01N9bcl6YniicVlP1",
+			"createOn":1647684693297,
+			"id":"B5MO7dfb0JP903eVBkmv",
+			"items":
+				[{
+					"testId":3182,
+					"masterId":"B5MO7dfb0JP903eVBkmv",
+					"testName":"(SRL) FSH,LH, PROLACTINs",
+					"price":1800
+				},
+				{
+					"price":400,
+					"testId":3180,
+					"testName":"(L) FOOT AP/LT VIEW",
+					"masterId":"B5MO7dfb0JP903eVBkmv"
+				},
+				{
+					"testId":181,
+					"testName":"(SRL) FSH,LH, PROLACTINs",
+					"price":1800,
+					"masterId":"B5MO7dfb0JP903eVBkmv"
+				}],
+			"patietDetail":
+			{
+				"updateOn":0,
+				"patientId":0,
+				"patName":"NARENDRA MODI",
+				"city":"",
+				"fatherName":"",
+				"dob":"01-01-1959",
+				"createBy":"",
+				"motherPhone":"",
+				"isActive":"Y",
+				"modifyBy":"",
+				"createdOn":0,
+				"gurdianPhone":"",
+				"address":"",
+				"phoneNo":"8855621554",
+				"birthTime":-347175000000,
+				"localId":"",
+				"gurdianName":"",
+				"age":"63 Y93 days",
+				"phoneNo2":"",
+				"sex":"Male",
+				"motherName":"",
+				"fatherPhone":""
+			}
+		}],
+	"error":0,
+	"success":1
+}

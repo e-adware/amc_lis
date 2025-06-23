@@ -1,0 +1,3 @@
+* * * * * wget -O /dev/null http://localhost/gmch_patho/lis/index.php
+* * * * * wget -O /dev/null http://localhost/gmch_patho_old/lis/index.php
+0,30 * * * * wget -O /dev/null http://localhost/gmch_patho_mirror/index_hour.php

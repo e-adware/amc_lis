@@ -1,0 +1,49 @@
+////For Dot matrix print in 17 or upper version
+
+phpmyadmin---user  ---add user
+
+usernane :root
+host     :192.168.%.% 
+password: penguin
+
+Grant all privileges on wildcard name (username\_%).
+
+Global privileges Check all
+
+
+   go
+
+
+root 	192.168.%.% 	Yes 	ALL PRIVILEGES 	Yes
+----------------------
+Terminal
+
+   gksudo gedit /etc/mysql/my.cnf
+
+
+  #bind-address =127.0.0.1
+
+--------------------for  linux 18. 3
+
+filesystem->ect->mysql->mariadb.conf.d->50-server.cnf
+
+ #bind-address =127.0.0.1
+
+
+------------------------------------------
+
+
+In terminal 
+
+1.sudo usermod -a -G lp computername
+2.sudo gpasswd -a www-data lp
+3.lpadmin -p localhost
+4.sudo rmmod usblp
+
+for install cups server
+
+ sudo apt install cups
+
+----------------------------------------
+
+

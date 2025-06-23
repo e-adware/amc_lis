@@ -1,0 +1,20 @@
+<!DOCTYPE HTML>
+<html lang="en-US">
+<head>
+	<meta charset="UTF-8">
+	<title></title>
+	<script src="../dist/JsBarcode.all.js"></script>
+	<!--<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>-->
+</head>
+<body>
+	<svg id="barcode"></svg>
+	<script>
+		JsBarcode("#barcode", "123456789012", {
+		  format: "CODE128",
+		  width:1,
+		  height:50,
+		  fontSize:14
+		});
+	</script>
+</body>
+</html>

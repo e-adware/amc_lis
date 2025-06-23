@@ -1,0 +1,44 @@
+
+		body { //font-family: 'DejaVu Sans Condensed'; font-size: 10pt;  }
+		p { 	text-align: justify; margin-bottom: 4pt; margin-top:0pt;  }
+
+		table {//font-family: 'DejaVu Sans Condensed'; //font-size: 9pt; line-height: 1.2; 
+			margin-top: 2pt; margin-bottom: 5pt;
+			border-collapse: collapse; }
+
+		thead {	font-weight: bold; vertical-align: bottom; }
+		tfoot {	font-weight: bold; vertical-align: top; }
+		thead td { font-weight: bold; }
+		tfoot td { font-weight: bold; }
+
+		.headerrow td, .headerrow th { background-gradient: linear #b7cebd #f5f8f5 0 1 0 0.2;  }
+		.footerrow td, .footerrow th { background-gradient: linear #b7cebd #f5f8f5 0 1 0 0.2;  }
+
+		th {	font-weight: bold; 
+			vertical-align: top; 
+			padding-left: 2mm; 
+			padding-right: 2mm; 
+			padding-top: 0.5mm; 
+			padding-bottom: 0.5mm; 
+		 }
+
+		td {	padding-left: 2mm; 
+			vertical-align: top; 
+			padding-right: 2mm; 
+			padding-top: 0.5mm; 
+			padding-bottom: 0.5mm;
+		 }
+
+		th p { margin:0pt;  }
+		td p { margin:0pt;  }
+
+		table.widecells td {
+			padding-left: 5mm;
+			padding-right: 5mm;
+		}
+		table.tallcells td {
+			padding-top: 3mm;
+			padding-bottom: 3mm; 
+		}
+
+		

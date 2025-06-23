@@ -1,0 +1,24 @@
+@import url('http://fonts.googleapis.com/css?family=Amarante');
+
+
+#keywords thead {
+  cursor: pointer;
+  background: #c9dff0;
+}
+
+#keywords thead tr th span { 
+  padding-right: 20px;
+  background-repeat: no-repeat;
+  background-position: 100% 100%;
+}
+
+#keywords thead tr th.headerSortUp, #keywords thead tr th.headerSortDown {
+  background: #acc8dd;
+}
+
+#keywords thead tr th.headerSortUp span {
+  background-image: url('up-arrow.png');
+}
+#keywords thead tr th.headerSortDown span {
+  background-image: url('down-arrow.png');
+}

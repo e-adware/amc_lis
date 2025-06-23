@@ -1,0 +1,42 @@
+
+
+Step 2. Open file '/etc/mysql/mariadb.conf.d/50-server.cnf'
+
+Step 3. Go line number 47, replace 127.0.0.1 with server IP address (eg. 192.168.0.10)
+
+Step 4. Restart mysql ( Command= ' sudo service mysql restart ' )
+
+
+For Cronjob
+
+Step 1. Open Terminal
+
+Step 2. Type ' crontab -e ' then enter
+
+Step 3. Type ' * * * * * wget -O /dev/null http://localhost/penguin_his_office/mirror/index.php'
+
+Step 4. Then 'Ctrl+X' and then 'Y' and then Enter
+
+To view the cronjob type command 'crontab -l'
+
+
+
+Command
+
+Once per minute = * * * * *
+
+Once per 5 minutes = */5 * * * *
+
+Twice per hour = 0,30 * * * *
+
+Once per hour = 0 * * * *
+
+Twice per hour = 0 2 * * *
+
+Once per day = 0 0 * * *
+
+Twice per day = 0 0,12 * * *
+
+Once per month = 0 0 1 * *
+
+Once per year = 0 0 1 1 *

@@ -1,0 +1,132 @@
+<html>
+<head>
+<title></title>
+<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+<link rel="stylesheet" href="../../css/bootstrap.min.css" />
+<style>
+input[type="text"]
+{
+	border:none;
+}
+body {
+	padding: 10px;
+	/*font-size:15px; font-family: "Courier New", Courier, monospace; line-height: 18px;*/
+}
+.line td{border-top:1px dotted}
+@media print{
+ .noprint{
+	 display:none;
+ }
+}
+.bline td{border-bottom:1px solid;}
+.line td{border-top:1px dotted;}
+</style>
+
+</head>
+<body>
+<?php
+include'../../includes/connection.php';
+
+
+
+$ord=base64_decode($_GET['oRdr']);
+
+//$date2 = $_GET['date2'];
+function convert_date($date)
+{
+$timestamp = strtotime($date); 
+$new_date = date('d-m-Y', $timestamp);
+return $new_date;
+}
+
+
+function val_con($val)
+{
+	$nval=explode(".",$val);
+	if(!$nval[1])
+	{
+		return $val.".00";	
+	}
+	else
+	{
+		if(!$nval[1][1])
+		{
+			return $val."0";	
+		}
+		else
+		{
+			return $val;	
+		}
+	}
+}
+$splr=mysqli_fetch_array(mysqli_query($link,"SELECT a.*,b.substore_name FROM inv_substore_indent_order_master a,inv_sub_store b WHERE  a.substore_id=b.substore_id and a.order_no='$ord' order by order_no"));
+
+$compny=mysqli_fetch_array(mysqli_query($link,"select * from company_name  "));
+
+?>
+<div class="container-fluid">
+			<div class="" style="">
+				<?php include('page_header_ph.php'); ?>
+				<center><h5><u>Item Order Report</u></h5></center>
+				
+			</div>
+
+
+<table>
+
+<tr><td colspan="5" style="font-weight:bold;font-size:13px">Order No : <?php echo $ord;?></td></tr>
+<tr><td colspan="5" style="font-weight:bold;font-size:13px">Order From  : <?php echo $splr[substore_name];?></td></tr>
+<tr><td colspan="5" style="font-weight:bold;font-size:13px">Order Date  : <?php echo convert_date($splr[order_date]);?></td></tr>
+<tr><td colspan="5" style="font-weight:bold;font-size:13px">Print Date : <?php echo date('d-m-Y');?></td></tr>
+</table>
+<?php
+
+?>
+
+
+ 
+      <table width="100%">
+      <tr>
+        <td colspan="6" style="text-align:right"><div class="noprint"><input type="button" class="btn btn-success" name="button" id="button" value="Print" onClick="javascript:window.print()" />&nbsp;<input type="button" class="btn btn-success" name="button" id="button" value="Exit" onClick="javascript:window.close()" /></div></td>
+      </tr>
+      </table>
+         <table width="100%">
+			<tr bgcolor="#EAEAEA" class="bline" >
+				<td style="font-weight:bold;font-size:13px">Sl No</td>
+				<td  style="font-weight:bold;font-size:13px">Item Name</td>
+				<td  style="font-weight:bold;font-size:13px;text-align:right">Order Qnty</td>
+				<td  style="font-weight:bold;font-size:13px;text-align:right">Store Qnty</td>
+			</tr>
+             <?php 
+               $i=1;
+              
+              $q=mysqli_query($link,"select a.*,b.item_id,b.order_qnt from item_master a,inv_substore_order_details b where a.item_id=b.item_id and b.order_no='$ord' order by a.item_name");
+              
+              while($q1=mysqli_fetch_array($q))
+              {
+				 $qavailble=mysqli_fetch_array(mysqli_query($link,"select ifnull(sum(closing_stock),0) as maxqnt from inv_maincurrent_stock where item_id='$q1[item_id]'"));
+               
+			 ?>
+             <tr class="line">
+				<td style="font-size:13px">&nbsp;&nbsp;<?php echo $i;?></td>
+				<td style="font-size:13px"><?php echo $q1['item_name'];?></td>
+				<td style="font-size:13px;text-align:right"><?php echo $q1['order_qnt'];?></td>
+				<td style="font-size:13px;text-align:right"><?php echo $qavailble['maxqnt'];?></td>
+                           
+             </tr>  
+                         
+             <?php
+			$i++ ;}?>
+			
+		              
+<tr class="bline">         
+<td colspan="8">&nbsp;</td>
+</tr>
+</table>  
+       
+
+  </div>
+ 
+</body>
+</html>
+

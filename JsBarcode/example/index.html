@@ -1,0 +1,88 @@
+<!DOCTYPE HTML>
+<html lang="en-US">
+<head>
+	<meta charset="UTF-8">
+	<title></title>
+	<script src="../dist/JsBarcode.all.min.js"></script>
+	<script src="../dist/JsBarcode.all.js"></script>
+	<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+	<script>
+		$(document).ready(function () {
+			$('#submit_button').click(function() {
+				var val=$("#inputProductId").val();
+				JsBarcode("#barcode1", val);
+				var DocumentContainer = document.getElementById('print_content');
+                var WindowObject = window.open('', 'PrintWindow', 'width=750,height=650,top=50,left=50,toolbars=no,scrollbars=yes,status=no,resizable=yes');
+                WindowObject.document.writeln(DocumentContainer.innerHTML);
+                WindowObject.document.close();
+                WindowObject.focus();
+                WindowObject.print();
+                WindowObject.close();
+			});
+		});
+	</script>
+</head>
+<body>
+	<input type="text" id="inputProductId"/>
+	<div id="print_content">
+		<svg id="barcode1"></svg>
+		<!--<img id="barcode1"/>-->
+<!--
+		<script>
+			var val="1234567890MRI";
+			JsBarcode("#barcode1", val);
+		</script>
+-->
+	</div>
+	<input type="button" id="submit_button" value="test"/>
+<!--
+	<div>
+		<img id="barcode2"/>
+		<script>
+			JsBarcode("#barcode2", "9780199532179", {
+			  format:"EAN13",
+			  displayValue:true,
+			  fontSize:24,
+			  lineColor: "#0cc"
+			});
+		</script>
+	</div>
+
+	<div>
+		<img id="barcode3"/>
+		<script>JsBarcode("#barcode3", "9780199532179", {
+			format:"EAN13",
+			displayValue:true,
+			fontSize:20
+		});</script>
+	</div>
+
+	<div>
+		<img id="barcode4"/>
+		<script>
+			var repeat4 = function(){
+				var date = new Date();
+				JsBarcode("#barcode4",
+						date.getHours().zeroPadding() + ":" +
+						date.getMinutes().zeroPadding() + ":" +
+						date.getSeconds().zeroPadding(),
+					{displayValue: true});
+			};
+			setInterval(repeat4,1000);
+			repeat4();
+		</script>
+	</div>
+
+	<div>
+		<img id="barcode5"/>
+		<script>
+			var repeat5 = function(){
+				JsBarcode("#barcode5", Math.floor(1000000+Math.random()*9000000)+"",{displayValue:true,fontSize:20});
+			};
+			setInterval(repeat5,500);
+			repeat5();
+		</script>
+	</div>
+-->
+</body>
+</html>

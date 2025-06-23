@@ -1,0 +1,330 @@
+html, body {   
+    height:100%;     
+    background: #FFF; 
+    font-size: 14px;
+}
+
+
+body {
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+h3 {
+	text-align: center;
+	margin: 70px 0 10px 0;
+	font-size: 18px;
+}
+
+.table {
+	margin-bottom: 5px;
+}
+
+h4 {
+	margin: 0 0 40px 0 !important;
+	font-size: 21px !important;
+}
+
+#t_bold td {
+	font-weight:bold;
+}
+
+
+
+.padd {
+	padding-top:30px;
+}
+
+#doc td {
+	text-align:center;
+}
+
+table.borderless tbody tr td, 
+table.borderless thead tr th {
+		border: none !important;	
+		padding: 1px !important;	
+}
+
+table.nopadding tbody tr td, 
+table.nopadding thead tr th {
+		padding: 1px !important;
+}
+
+table.bordert-top-bottom {
+		border-top: 1px solid #999;
+		border-bottom: 1px solid #999;
+}
+
+.min-height {
+	min-height: 600px;
+}
+
+@media print {
+		#n_page
+		{
+		 page-break-after: always;
+		}		
+}
+
+hr { 
+	border-bottom: 1px solid #999; 
+	border-top: none;
+	margin: 5px 0;
+}
+
+@media screen {
+	.doctors {
+		position: relative;
+		margin-top: 50px;
+	}	
+}
+
+.doctors-container {
+	height: auto;
+	display: block;
+	position: relative;
+	
+}
+
+@media print {
+	.doctors {
+        bottom: 10px;
+        left: 0px;
+	}	
+}
+
+.doctors {	
+	left:45px;
+    right:0;
+    margin-left:auto;
+    margin-right:auto;
+	bottom: 20px;
+}
+
+.doctors [class*="col-"] {
+	padding-right: 0px;	
+	padding-left: 0px;
+}
+
+.doctors p {
+	margin-bottom: 0px;
+	font-size: 12px;
+	text-align: center;
+	margin-left: -2%;
+}
+
+.doctors .text-right p {
+	text-align: right !important;	
+}
+
+.doctors .col-xs-3:nth-child(1),
+.doctors .col-xs-3:nth-child(2),
+.doctors .col-xs-3:nth-child(3),
+.doctors .col-xs-3:nth-child(4) {
+		
+}
+
+/*--------------Doctors1-----------*/
+
+@media screen {
+	.doctors1 {
+		position: relative;
+		margin-top: 50px;
+	}	
+}
+
+@media print {
+	.doctors1 {
+		
+		
+	}	
+}
+
+.doctors1 {	
+	left:20px;
+    right:0;
+    margin-left:auto;
+    margin-right:auto;
+	bottom: 20px;
+}
+
+.doctors1 [class*="col-"] {
+	padding-right: 0px;	
+	padding-left: 20px;
+}
+
+.doctors1 p {
+	margin-bottom: 0px;
+	font-size: 10px;
+	text-align: center;
+}
+
+.doctors1 .text-right p {
+	text-align: right !important;	
+}
+
+.doctors1 .col-xs-3:nth-child(1),
+.doctors1 .col-xs-3:nth-child(2),
+.doctors1 .col-xs-3:nth-child(3),
+.doctors1 .col-xs-3:nth-child(4) {
+		margin-bottom: 10px;
+}
+
+
+/*--------------Table-----------*/
+
+.table-modifier table {
+    max-width: 100%;
+	min-width: 100%;
+}
+.table-modifier th {
+    text-align: left;
+}
+.table-modifier table {
+    width: 100%;
+    margin-bottom: 0px;
+}
+.table-modifier table > thead > tr > th,
+.table-modifier table > tbody > tr > th,
+.table-modifier table > tfoot > tr > th,
+.table-modifier table > thead > tr > td,
+.table-modifier table > tbody > tr > td,
+.table-modifier table > tfoot > tr > td {
+    padding:-20px;
+    vertical-align: top;
+    
+}
+.table-modifier table > thead > tr > th {
+    vertical-align: bottom;
+    
+}
+.table-modifier table > caption + thead > tr:first-child > th,
+.table-modifier table > colgroup + thead > tr:first-child > th,
+.table-modifier table > thead:first-child > tr:first-child > th,
+.table-modifier table > caption + thead > tr:first-child > td,
+.table-modifier table > colgroup + thead > tr:first-child > td,
+.table-modifier table > thead:first-child > tr:first-child > td {
+    border-top: 0;
+}
+.table-modifier table > tbody + tbody {
+    
+}
+.table-modifier table table {
+    background-color: #fff;
+}
+.table-modifier table > thead > tr > th,
+.table-modifier table > tbody > tr > th,
+.table-modifier table > tfoot > tr > th,
+.table-modifier table > thead > tr > td,
+.table-modifier table > tbody > tr > td,
+.table-modifier table > tfoot > tr > td {
+    
+}
+.table-modifier table {
+    
+}
+.table-modifier table > thead > tr > th,
+.table-modifier table > tbody > tr > th,
+.table-modifier table > tfoot > tr > th,
+.table-modifier table > thead > tr > td,
+.table-modifier table > tbody > tr > td,
+.table-modifier table > tfoot > tr > td {
+    
+}
+.table-modifier table > thead > tr > th,
+.table-modifier table > thead > tr > td {
+    
+}
+
+.doc {float:left;margin-top:40px;}
+
+.doc td{ text-align:center; width: 260px;}
+
+table tr.tr_test td:first-child{ font-size:11px; padding-left:0px !important; padding-bottom: 7px !important;}
+			
+tr#t_bold td { border-bottom:1px solid #999 !important; padding:1px !important;}
+			
+.page_break{ page-break-after: always;}
+
+.cke_show_border {
+	width: 100%;
+}
+
+table.cke_show_border tbody tr td:first-child, table.cke_show_border thead tr th:first-child {
+	padding-right: 10px;
+}
+
+table.cke_show_border p {
+	margin-bottom: 3px;
+}
+
+table tr.tr_test td.tname{ padding-left:20px !important;} 
+
+.cname {
+	font-size: 14px;
+	font-weight: bold;
+	text-transform: uppercase;
+	font-style: italic;
+}
+
+@page {
+    margin: 0.5cm;
+}
+
+@media screen {
+	.nabl-logo img {
+		max-width: 30%;
+		margin-top: 0px;
+	}
+}
+@media print 
+{
+	.nabl-logo img {
+		margin-top: 0px;
+		max-width: 60% !important;
+	}
+}
+.nabl_text
+{
+ 
+ bottom:5px;
+ text-align:right;
+ width:90%;
+ font-size:10px;
+ }
+
+.row_height tr
+{
+	height:23px;
+}
+.test_gap
+{
+	height:10px;
+}
+.test_height
+{
+	height:25px;
+}
+
+
+body
+{
+	
+}
+
+#nb
+{
+	font-size:10px;
+	text-align:left;
+	padding-right:130px;
+	font-style:italic;
+}
+
+.normal_range
+{
+	font-size:15px;
+}
+
+.res_size b
+{
+	font-size:16px;
+}
