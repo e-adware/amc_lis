@@ -1,1 +1,23 @@
-INSERT INTO `testmaster`(`testid`, `test_code`, `testname`, `rate`, `instruction`, `notes`, `turn_around_time_routine_str`, `turn_around_time_routine`, `turn_around_time_urgent_str`, `turn_around_time_urgent`, `report_delivery`, `sample_details`, `category_id`, `type_id`, `type_name`, `equipment`, `sex`, `lineno`, `vac_charge`, `out_sample`, `suffix`, `sequence`) SELECT `testid`,'', `testname`, `rate`, `instruction`, `notes`,'','0','','0', '0', `sample_details`, `category_id`, `type_id`, `type_name`, `equipment`, `sex`, `lineno`, `vac_charge`, `out_sample`,'', `sequence` FROM `testmaster_old` 
+INSERT INTO `testmaster`(`testid`, `test_code`, `testname`, `rate`, `instruction`, `notes`, `turn_around_time_routine_str`, `turn_around_time_routine`, `turn_around_time_urgent_str`, `turn_around_time_urgent`, `report_delivery`, `sample_details`, `category_id`, `type_id`, `type_name`, `equipment`, `sex`, `lineno`, `vac_charge`, `out_sample`, `suffix`, `sequence`) SELECT `testid`,'', `testname`, `rate`, `instruction`, `notes`,'','0','','0', '0', `sample_details`, `category_id`, `type_id`, `type_name`, `equipment`, `sex`, `lineno`, `vac_charge`, `out_sample`,'', `sequence` FROM `testmaster_old` ;
+
+INSERT INTO `Parameter_old`(`ID`, `ResultType`, `Name`, `ResultOptionID`, `UnitsID`, `sample`, `vaccu`, `method`, `deci_val`, `sub_title`, `instrument`)SELECT `ID`, `ResultType`, `Name`, `ResultOptionID`, `UnitsID`,'0','0', `method`, `deci_val`, `sub_title`, `instrument` FROM `Parameter_old_old` ;
+
+
+INSERT INTO `vaccu_master`(`id`, `type`, `rate`, `barcode_suffix`)SELECT `id`, `type`, `rate`,'' FROM `vaccu_master_old`; 
+
+--------------For Sample-/vacu update in testparama-----------------------
+
+<?php
+$q1=mysqli_query($link,"SELECT DISTINCT `TestId` FROM `Testparameter` ");
+while($q2=mysqli_fetch_array($q1))
+{
+	
+		$q4=mysqli_fetch_array(mysqli_query($link,"SELECT `SampleId` FROM `TestSample` WHERE `TestId`='$q2[TestId]'"));
+		$q5=mysqli_fetch_array(mysqli_query($link,"SELECT `vac_id` FROM `test_vaccu` WHERE `testid`='$q2[TestId]'"));
+		//$qchkslno=mysqli_fetch_array(mysqli_query($link,"SELECT * FROM `Testparameter` WHERE `TestId`='$q2[TestId]' and `sample`=0 order by `slno` limit 0,1"));
+		mysqli_query($link,"UPDATE `Testparameter` SET `sample`='$q4[SampleId]',`vaccu`='$q5[vac_id]' where `TestId`='$q2[TestId]' ");
+		
+	
+}
+echo "Done";
+?>
