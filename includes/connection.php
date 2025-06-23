@@ -7,7 +7,7 @@ error_reporting(0);
 $host="localhost";
 $username="root";
 $password="cGVuZ3Vpbg==";
-$db_name="smch_lis";
+$db_name="amc_lis";
 
 
 //DATABASE
