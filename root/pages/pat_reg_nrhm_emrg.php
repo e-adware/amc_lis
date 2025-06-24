@@ -1247,7 +1247,7 @@ function load_pat_upd()
 		name:$("#name_upd").val(),
 		fdate:$("#fdate").val(),
 		tdate:$("#tdate").val(),
-		pat_type:2,
+		pat_type:5,
 		type:4
 	},
 	function(data,status)
