@@ -1,19 +1,4 @@
 <?php
-$q1=mysqli_query($link,"SELECT *  FROM `Testparameter_old` order by TestId ");
-while($q2=mysqli_fetch_array($q1))
-{
-	
-		$q4=mysqli_fetch_array(mysqli_query($link,"SELECT `SampleId` FROM `TestSample` WHERE `TestId`='$q2[TestId]'"));
-		$q5=mysqli_fetch_array(mysqli_query($link,"SELECT `vac_id` FROM `test_vaccu` WHERE `testid`='$q2[TestId]'"));
-		//$qchkslno=mysqli_fetch_array(mysqli_query($link,"SELECT * FROM `Testparameter` WHERE `TestId`='$q2[TestId]' and `sample`=0 order by `slno` limit 0,1"));
-		//mysqli_query($link,"UPDATE `Testparameter` SET `sample`='$q4[SampleId]',`vaccu`='$q5[vac_id]' where `TestId`='$q2[TestId]' ");
-		mysqli_query($link,"INSERT INTO `Testparameter`(`TestId`, `ParamaterId`, `sequence`, `sample`, `vaccu`, `status`) VALUES ('$q2[TestId]','$q2[ParamaterId]','$q2[sequence]','$q4[SampleId]','$q5[vac_id]','0') ");
-		
-	
-}
-echo "Done";
-?>
-<?php
 if ($p_info["levelid"] == 1) {
 	$branch_str = "";
 
