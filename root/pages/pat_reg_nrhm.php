@@ -21,7 +21,7 @@ if($exp)
 
 <!--header-->
 <div id="content-header">
-    <div class="header_div"> <span class="header"> Phelbotomy Sample Receive(IPD) </span></div>
+    <div class="header_div"> <span class="header">Phelbotomy Sample Receive(NRHM)</span></div>
 </div>
 <!--End-header-->
 <div class="container-fluid">
@@ -101,12 +101,14 @@ if($exp)
 		<tr>
 			<th colspan="6">
 				<select id="o_i_pd" style="display:none">
-					<option value="2">IPD</option>
+					<option value="3">EMER</option>
 				</select>
 			</th>
 		</tr>
 		<tr>
-			<th><!--Scan Bill No-->Patient Type</th>
+			<th>
+				Patient Type:
+			</th>
 			<th>
 			<?php
 			if($man==0)
@@ -118,36 +120,12 @@ if($exp)
 				?> <input type="hidden" id="bill_no" onkeyup="check_barcode_mon(event)" name="c_3" ondrop="drag_data()"/> <?php
 			}
 			?>
-				<!--<select id="free" onchange="load_auth()" onkeyup="select_enter(event,'p_free')">-->
-				<select id="free" onkeyup="select_enter(this.id,event)" autofocus>
-					<option value="0">Generel</option>
-					<?php
-					$free=mysqli_query($link,"select * from pat_free_master order by id");
-					while($fr=mysqli_fetch_array($free))
-					{
-						echo "<option value='$fr[id]'>$fr[free_name]</option>";
-					}	
-					?>
-				</select>
-				<select id="auth" style="display:none" name="c_2">
-					<option value="0">--Select Auth. Person--</option>
-					<?php
-					$auth=mysqli_query($link,"select * from pat_free_auth order by seq");
-					while($at=mysqli_fetch_array($auth))
-					{
-						echo "<option value='$at[id]'>$at[auth_person]</option>";
-					}
-					?>	
-				</select>
-				<select id="auth_disc" name="c_13" style="display:none;width:100px;">
-						<option value="0">-Select-</option>
-						<option>25</option> <option>50</option> <option>75</option> <option>100</option>
-				</select>
+			<select id="pat_type" name="c_0" onkeyup="select_enter(this.id,event)" autofocus><option>IPD</option><option>OPD</option></select>
 			</th>
-			<!--<th><input type="text" id="bill_no" onkeyup="check_barcode(event)" name="c_3" ondrop="drag_data()"/></th>
-			<th><input type="text" id="bill_no" onkeyup="check_barcode_mon(event)" name="c_3" ondrop="drag_data()"/></th>-->
+			<!--<th><input type="text" id="bill_no" onkeydown="check_barcode(event)" name="c_3" ondrop="drag_data()"/></th>
+			<th><input type="text" id="bill_no" onkeydown="check_barcode_mon(event)" name="c_3" ondrop="drag_data()"/></th>-->
 			<th style="width:100px">Hosp No:</th>
-			<td colspan="2"> <input type="text" id="hosp_no" name="c_4" placeholder="Enter Hosp. No" onkeyup="check_hosp_no(event)"  autofocus/> </td>
+			<td colspan="2"> <input type="text" id="hosp_no" name="c_4" placeholder="Enter Hosp. No" onkeyup="check_hosp_no(event)"  autofocus /> </td>
 			<td><span id="date_serial"></span></td>
 		</tr>
 		<tr>
@@ -207,10 +185,57 @@ if($exp)
 				</select>
 			</th>
 		</tr>
-			<th colspan="7"><div style="font-size:15px;text-align:center">Patient No: <span id="patient_no"></span></div></th>
+		<tr>
+			<th>
+				<label style="display:none;"><input type="checkbox" id="nr" onclick="check_pat_type()"> NR</label>
+			</th>
+			<th>
+				Sample No
+				<input type="text" class="span1" id="samp_no" name="" class="imp" />
+			</th>
+			<th colspan="4">
+				<select id="pat_type_covid" onkeyup="select_enter(this.id,event)">
+					<option value="0">--Select Patient Type(Covid)--</option>
+					<option value="1">COVID-19</option>
+					<option value="2">COVID-19 Suspected</option>
+					<option value="3">COVID-19 Treated</option>
+				</select>
+				<select id="pat_type_nrhm" onkeyup="select_enter(this.id,event)" style="width:150px;">
+					<option value="0">Select Patient Type</option>
+					<option value="1">Pregnant Women</option>
+					<option value="2">Infant</option>
+					<option value="3">Cancer</option>
+				</select>
+				<select id="free" onchange="load_auth()" style="display:none;" onkeyup="select_enter(this.id,event)">
+				<!--<select id="free" onkeydown="select_enter(event,'p_free')" autofocus>-->
+					<option value="0">Generel</option>
+					<?php
+					$free=mysqli_query($link,"select * from pat_free_master order by id");
+					while($fr=mysqli_fetch_array($free))
+					{
+						echo "<option value='$fr[id]'>$fr[free_name]</option>";
+					}	
+					?>
+				</select>
+				<select id="auth" style="display:none" name="c_2" onkeyup="select_enter(this.id,event)">
+					<option value="0">--Select Auth. Person--</option>
+					<?php
+					$auth=mysqli_query($link,"select * from pat_free_auth order by seq");
+					while($at=mysqli_fetch_array($auth))
+					{
+						echo "<option value='$at[id]'>$at[auth_person]</option>";
+					}
+					?>	
+				</select>
+				
+				<select id="auth_disc" name="c_13" style="display:none;width:100px;" onkeyup="select_enter(this.id,event)">
+						<option value="0">-Select-</option>
+						<option>25</option> <option>50</option> <option>75</option> <option>100</option>
+				</select>
+			</th>
 		</tr>
 		<tr>
-			<td colspan="7">
+			<th colspan="7">
 			<div style="border-bottom:1px solid #DDDDDD">
 			<div align="center" style="border-bottom:1px solid #CCC">
 				<input type="text" class="span5" id="srch_test" onfocus="load_tests1()" onblur="$('#ref_doc').empty().hide();" placeholder="Search Test Name" />
@@ -242,7 +267,10 @@ if($exp)
 			<div id="test_list">
 				
 			</div>
-			</td>
+			</th>
+		</tr>
+		<tr>
+			<th colspan="7"><div style="font-size:15px;text-align:center">Patient No: <span id="patient_no"></span></div></th>
 		</tr>
 		<tr style="display:none;">
 			<td colspan="7" style="text-align:center">
@@ -418,7 +446,7 @@ input[type="radio"]
 
 
 	$(document).ready(function(){
-		load_serial(2);
+		load_serial(3);
 		//load_test('','');
 		$(".datepicker").datepicker({
 			dateFormat: 'yy-mm-dd',
@@ -448,6 +476,18 @@ input[type="radio"]
 		};
 	});
 
+function check_pat_type()
+{
+	if($("#nr").prop('checked'))
+	{
+		$("#pat_type_nrhm").fadeIn(200);
+	}
+	else
+	{
+		$("#pat_type_nrhm").fadeOut(200);
+		$("#pat_type_nrhm").val("0");
+	}
+}
 function hid_div(e)
 {
 	
@@ -896,10 +936,14 @@ function save_data(val)
 			recp_samp:recp_samp,
 			
 			tst:tst,
-			pat_type:"IPD",
-			free:$("#free").val(),		
+			
+			pat_type:$("#pat_type").val(),
+			pat_type_covid:$("#pat_type_covid").val(),
+			pat_type_nrhm:$("#pat_type_nrhm").val(),
+			samp_no:$("#samp_no").val(),
+			free:$("#free").val(),
 			auth:$("#auth").val(),
-			auth_disc:$("#auth_disc").val(),	
+			auth_disc:$("#auth_disc").val(),
 			user:$("#user").text().trim(),
 			val:val,
 			opd_id:$("#opd_id").val(),
@@ -1308,7 +1352,7 @@ function load_selected_tests()
 }
 function load_new()
 {
-	document.location="index.php?param="+btoa(1042);
+	document.location="index.php?param="+btoa(1044);
 }
 
 function load_auth()
@@ -1498,14 +1542,50 @@ function select_enter(id,e)
 {
 	if(e.which==13)
 	{
-		alert(id);
-		if(id=="free")
+		if(id=="pat_type")
 		{
 			$("#hosp_no").focus();
 		}
 		if(id=="pat_dis")
 		{
+			$("#samp_no").focus();
+		}
+		if(id=="pat_type_covid")
+		{
+			$("#pat_type_nrhm").focus();
+		}
+		if(id=="pat_type_nrhm")
+		{
 			$("#srch_test").focus();
+		}
+		if(id=="free")
+		{
+			if($("#auth:visible").length>0)
+			{
+				$("#auth").focus();
+			}
+			else
+			{
+				$("#srch_test").focus();
+			}
+		}
+		if(id=="auth" && $("#"+id).val()!=0)
+		{
+			if($("#auth_disc:visible").length>0)
+			{
+				$("#auth_disc").focus();
+			}
+			else
+			{
+				$("#srch_test").focus();
+			}
+		}
+		if(id=="auth_disc")
+		{
+			if($("#auth_disc").val()!=0)
+			{
+				$("#srch_test").focus();
+			}
 		}
 	}
 }

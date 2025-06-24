@@ -149,15 +149,11 @@ else if($type==2)
 	$age=mysqli_real_escape_string($link,$_POST['age']);
 	$sex=$_POST['sex'];
 	$age_type=$_POST['age_type'];
-	//$slno=$_POST['slno'];
-	//$slno=mysqli_real_escape_string($link,$_POST['slno']);
-	//$slno=str_replace(" ","",$slno);
-	
 	$date_serial=$_POST['date_serial'];
 	$ward=$_POST['ward'];
 	$dept=$_POST['dept'];
 	
-	$address=$_POST['add'];
+	$address=mysqli_real_escape_string($link,$_POST['add']);
 	$phone=$_POST['phone'];
 	$dis=$_POST['dis'];
 	
@@ -165,9 +161,15 @@ else if($type==2)
 	
 	$tst=$_POST['tst'];
 	
+	$pat_type=$_POST['pat_type'];
+	$pat_type_covid=$_POST['pat_type_covid'];
+	if(!$pat_type_covid){$pat_type_covid=0;}
+	$pat_type_nrhm=$_POST['pat_type_nrhm'];
+	if(!$pat_type_nrhm){$pat_type_nrhm=0;}
+	$samp_no=$_POST['samp_no'];
 	$free=$_POST['free'];
-	//$auth=$_POST['auth'];
-	//$auth_disc=$_POST['auth_disc'];
+	$auth=$_POST['auth'];
+	$auth_disc=$_POST['auth_disc'];
 	
 	//$entry_type=$_POST['entry_type'];
 	
@@ -190,6 +192,31 @@ else if($type==2)
 	
 	$val=$_POST['val'];
 	$user=$_POST['user'];
+	
+	if($p_type==1)
+	{
+		$prefix="OPD_BIO/";
+	}
+	else if($p_type==2)
+	{
+		$prefix="IPD_BIO/";
+		//$p_type='';
+	}
+	else if($p_type==3)
+	{
+		$prefix="NRHM/";
+		//$p_type='';
+	}
+	else if($p_type==4)
+	{
+		$prefix="EC/";
+		//$p_type='';
+		$nr=$_POST[nr];
+	}
+	else if($p_type==5)
+	{
+		$prefix="NRM_EMRG/";
+	}
 	
 	$arr=array();
 	if($val=="save")
@@ -245,7 +272,7 @@ else if($type==2)
 			$opd_id=$opd_idd."/".$dis_month.$dis_year_sm;
 		}
 		
-		if(mysqli_query($link, "INSERT INTO `uhid_and_opdid`(`patient_id`, `opd_id`, `ward`, `dept`, `hosp_no`, `bill_no`, `date`, `time`, `user`, `type`, `pat_type`, `date_serial`) VALUES ('$new_patient_id','$opd_id','$ward','$dept','$hosp_no','$bill_no','$date','$time','$user','$p_type','$free','$date_serial') "))
+		if(mysqli_query($link, "INSERT INTO `uhid_and_opdid`(`patient_id`, `opd_id`, `ward`, `dept`, `hosp_no`, `bill_no`, `urgent`, `date`, `time`, `user`, `type`, `type_prefix`, `sample_serial`, `pat_type`, `free`, `auth`, `auth_disc`, `date_serial`, `emer_nr`, `nr_pat_type`, `nr_covid`) VALUES ('$new_patient_id','$opd_id','$ward','$dept','$hosp_no','$bill_no','0','$date','$time','$user','$p_type','$prefix','$samp_no','$pat_type','$free','$auth','$auth_disc','$date_serial','0','$pat_type_nrhm','$pat_type_covid') "))
 		{
 			mysqli_query($link,"INSERT INTO `patient_info`(`patient_id`, `hosp_no`, `name`, `sex`, `dob`, `age`, `age_type`, `phone`, `address`, `date`, `time`, `user`) VALUES ('$new_patient_id','$hosp_no','$name','$sex','$dob','$age','$age_type','$phone','$address','$date','$time','$user')");
 			
@@ -281,12 +308,12 @@ else if($type==2)
 		}
 		else
 		{
-			//echo "INSERT INTO `uhid_and_opdid`(`patient_id`, `opd_id`, `ward`, `dept`, `hosp_no`, `bill_no`, `date`, `time`, `user`, `type`, `pat_type`, `date_serial`) VALUES ('$new_patient_id','$opd_id','$ward','$dept','$hosp_no','$bill_no','$date','$time','$user','2','$pat_type','$date_serial')";
+			$tt="INSERT INTO `uhid_and_opdid`(`patient_id`, `opd_id`, `ward`, `dept`, `hosp_no`, `bill_no`, `urgent`, `date`, `time`, `user`, `type`, `type_prefix`, `sample_serial`, `pat_type`, `free`, `auth`, `auth_disc`, `date_serial`, `emer_nr`, `nr_pat_type`, `nr_covid`) VALUES ('$new_patient_id','$opd_id','$ward','$dept','$hosp_no','$bill_no','0','$date','$time','$user','$p_type','$prefix','$samp_no','$pat_type','$free','$auth','$auth_disc','$date_serial','0','$pat_type_nrhm','$pat_type_covid') ";
 			$arr['pid']="";
 			$arr['opd']="";
 			$arr['bch']="";
 			$arr['response']=0;
-			$arr['msg']="Error";
+			$arr['msg']="Error $tt";
 		}
 	
 	}

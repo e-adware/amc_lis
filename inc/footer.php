@@ -273,7 +273,7 @@ if($p_info['emp_id']==102 && $_GET["buttons"])
 
 		function password_checked()
 		{
-			$.post("pages/global_check.php",{type:"password_checked",old_pass:"ASSAM MEDICAL COLLEGE",},function(data,status){if(data!='1'){bootbox.alert("<h5>"+data+"</h5>");window.location.href='../';}})
+			$.post("pages/global_check.php",{type:"password_checked",old_pass:"CENTRAL CLINICAL LABORATORY",},function(data,status){if(data!='1'){bootbox.alert("<h5>"+data+"</h5>");window.location.href='../';}})
 		}
 		function checked_varibale()
 		{

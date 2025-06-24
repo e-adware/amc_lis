@@ -102,9 +102,23 @@ if($exp)
 				<select id="o_i_pd" style="display:none">
 					<option value="1">OPD</option>
 				</select>
-				
+			</th>
+		</tr>
+		<tr>
+			<th>Patient Type</th>
+			<th>
+			<?php
+			if($man==0)
+			{
+				?> <input type="hidden" id="bill_no" onkeydown="check_barcode(event)" name="c_3" ondrop="drag_data()"/> <?php
+			}
+			else
+			{
+				?> <input type="hidden" id="bill_no" onkeydown="check_barcode_mon(event)" name="c_3" ondrop="drag_data()"/> <?php
+			}
+			?>
 				<!--<select id="free" onchange="load_auth()" onkeydown="select_enter(event,'p_free')">-->
-				<select id="free" onkeydown="select_enter(event,'p_free')" autofocus>
+				<select id="free" onkeydown="select_enter(this.id,event)" autofocus>
 					<option value="0">Generel</option>
 					<?php
 					$free=mysqli_query($link,"select * from pat_free_master order by id");
@@ -124,21 +138,10 @@ if($exp)
 					}
 					?>	
 				</select>
-				
+				<select id="auth_disc" style="display:none">
+					<option value="0">-Select-</option>
+				</select>
 			</th>
-		</tr>
-		<tr>
-			<th>Scan Bill No</th>
-			<?php
-			if($man==0)
-			{
-				?> <th><input type="text" id="bill_no" onkeydown="check_barcode(event)" name="c_3" ondrop="drag_data()"/></th> <?php
-			}
-			else
-			{
-				?> <th><input type="text" id="bill_no" onkeydown="check_barcode_mon(event)" name="c_3" ondrop="drag_data()"/></th> <?php
-			}
-			?>
 			<!--<th><input type="text" id="bill_no" onkeydown="check_barcode(event)" name="c_3" ondrop="drag_data()"/></th>
 			<th><input type="text" id="bill_no" onkeydown="check_barcode_mon(event)" name="c_3" ondrop="drag_data()"/></th>-->
 			<th style="width:100px">Hosp No:</th>
@@ -187,7 +190,7 @@ if($exp)
 			</th>
 			<th>Disease</th>
 			<th>
-				<select id="pat_dis" onchange="save_disease(this.value)" name="c_12">
+				<select id="pat_dis" onchange="save_disease(this.value)" name="c_12" onkeyup="select_enter(this.id,event)">
 					<option value="0">None</option>
 					<?php
 					$pat_dis=mysqli_fetch_array(mysqli_query($link,"select * from patient_disease_details where patient_id='$uhid' and opd_id='$opd_id'"));
@@ -847,6 +850,7 @@ function save_data(val)
 				
 				$("#save").prop("disabled",false);
 	}
+	/*
 	else if(bill_no=="")
 	{
 		bootbox.dialog({ message: "<h5>Bill No Can Not Be Blank</h5>"});
@@ -857,6 +861,7 @@ function save_data(val)
 				
 				$("#save").prop("disabled",false);
 	}
+	*/
 	/*else if($("#slno").hasClass("error") && val=="save")
 	{
 		bootbox.dialog({ message: "<h5>Serial No already exist</h5>"});
@@ -893,8 +898,10 @@ function save_data(val)
 			recp_samp:recp_samp,
 			
 			tst:tst,
-			
-			free:$("#free").val(),			
+			pat_type:"OPD",
+			free:$("#free").val(),
+			auth:$("#auth").val(),
+			auth_disc:$("#auth_disc").val(),
 			user:$("#user").text().trim(),
 			val:val,
 			opd_id:$("#opd_id").val(),
@@ -1493,20 +1500,17 @@ function slide_test()
 	$("html, body").animate({ scrollTop: 300 },"slow");
 }
 
-function select_enter(e,typ)
+function select_enter(id,e)
 {
 	if(e.which==13)
 	{
-		if(typ=="p_typ")
+		if(id=="free")
 		{
-			if($("#o_i_pd").val()>0)
-			{
-				$("#free").focus();
-			}
+			$("#hosp_no").focus();
 		}
-		else if(typ=="p_free")
+		if(id=="pat_dis")
 		{
-			$("#bill_no").focus();
+			$("#srch_test").focus();
 		}
 	}
 }

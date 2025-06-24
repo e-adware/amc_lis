@@ -474,7 +474,11 @@ $page[1031] = 'pages/free_cases.php';
 
 $page[1041] = 'pages/pat_reg_opd.php';
 $page[1042] = 'pages/pat_reg_indoor.php';
-$page[1043] = 'pages/sample_vaccu_map.php';
+$page[1043] = 'pages/pat_reg_emer.php';
+$page[1044] = 'pages/pat_reg_nrhm.php';
+$page[1045] = 'pages/pat_reg_nrhm_emrg.php';
+
+$page[1050] = 'pages/sample_vaccu_map.php';
 
 
 $page[1051] = 'pages/ward_wise_patient_report.php';
