@@ -1498,7 +1498,6 @@ function select_enter(id,e)
 {
 	if(e.which==13)
 	{
-		alert(id);
 		if(id=="free")
 		{
 			$("#hosp_no").focus();

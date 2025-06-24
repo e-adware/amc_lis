@@ -65,7 +65,7 @@ if($qryy_num!=0)
 <table class="table table-bordered table-condensed table-hover table-report">
 	<th width="32">#</th>
 	<th>Hospital No</th>
-	<th>Bill No.</th>
+	<th>Sample No.</th>
 	<th class="serial_num">Serial</th>
 	<th>Name</th>
 	<th>Age/Sex</th>
@@ -160,7 +160,7 @@ if($qryy_num!=0)
 				<!--<td rowspan="<?php echo $batch_num; ?>"><span class="btn_round" style="<?php echo $style_span; ?>"><?php echo $n; ?></span></td>-->
 				<td rowspan="<?php echo $batch_num; ?>"><?php echo $n; ?></td>
 				<td rowspan="<?php echo $batch_num; ?>"><?php echo $pat_reg['hosp_no']; ?></td>
-				<td rowspan="<?php echo $batch_num; ?>"><?php echo $pat_reg['bill_no']; ?></td>
+				<td rowspan="<?php echo $batch_num; ?>"><?php echo $pat_reg['sample_serial']; ?></td>
 <!--
 				<td rowspan="<?php echo $batch_num; ?>"><?php echo $pin; ?></td>
 -->
