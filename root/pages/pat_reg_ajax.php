@@ -457,7 +457,7 @@ else if($type==4)
 	<table class="table table-bordered table-condensed table-report">
 	<tr>
 		<th>#</th>
-		<th>Bill No</th>
+		<th>Sample No</th>
 		<th>Hosp No</th>
 		<th>Patient No</th>
 		<th>Name</th>
@@ -474,7 +474,7 @@ else if($type==4)
 		?>
 		<tr onclick="load_pat_details('<?php echo $q[opd_id];?>')">
 			<th><?php echo $i;?></th>
-			<th><?php echo $q[bill_no];?></th>
+			<th><?php echo $q[sample_serial];?></th>
 			<th><?php echo $q[hosp_no];?></th>
 			<th><?php echo $q[opd_id];?></th>
 			<th><?php echo $info[name];?></th>
@@ -516,7 +516,7 @@ else if($type==5)
 	{
 		$s_det.="@@".$smp[sample_id];
 	}
-	$pat_info.="@k_details@".$s_det;
+	$pat_info.="@k_details@".$s_det."@k_details@".$det['sample_serial'];
 	
 	echo $pat_info."#test_det#".$tst;
 }

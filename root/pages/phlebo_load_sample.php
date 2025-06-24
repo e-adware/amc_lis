@@ -55,7 +55,7 @@ $dis_id=$prefix_det["prefix"].": ".$pin;
 if($pinfo["dob"]!=""){ $age=age_calculator($pinfo["dob"]); }else{ $age=$pinfo["age"]." ".$pinfo["age_type"]; }
 
 echo "<tr style='display:none;'><th colspan='1'>UHID: <span id='h_no'>$pinfo[patient_id]</span></th><th>OPD ID: <span id='opd_id'>$opd</span></th><th>IPD ID: <span id='ipd_id'>$ipd</span></th><th>Batch No: <span id='batch_no'>$batch_no</span></th></tr>";
-echo "<tr><th>Hospital No : $pinfo[hosp_no]</th><th colspan='1'>Bill No : $dt_tm[bill_no]</th><th style='display:none;'>Batch No: $batch_no</th></tr>";
+echo "<tr><th>Hospital No : $pinfo[hosp_no]</th><th colspan='1'>Sample No : $dt_tm[sample_serial]</th><th style='display:none;'>Batch No: $batch_no</th></tr>";
 echo "<tr style='display:none;'><th>Cash Memo No : $dt_tm[cashMemoNo]</th><th colspan='1'>Barcode No : $pin</th><th style='display:none;'>Batch No: $batch_no</th></tr>";
 echo "<tr><th>Name : $pinfo[name]</th><th colspan='2'>Age-Sex : $age - $pinfo[sex]</th></tr>";
 echo "</table>";
