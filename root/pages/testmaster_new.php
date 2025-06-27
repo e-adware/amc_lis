@@ -152,28 +152,45 @@ $branch_id = $p_info["branch_id"];
 <script src="../js/jquery.dataTables.min_all.js"></script>
 <!-- Loader -->
 <link rel="stylesheet" href="../css/loader.css" />
+
+<link href="../css/jquery.gritter.css" rel="stylesheet" />
+<script src="../js/jquery.gritter.min.js"></script>
+
 <script>
 
 	$(document).ready(function () {
 		load_all_test();
 	});
+	
+	function alertmsg(msg, n)
+	{
+		$.gritter.add({
+			//title:	'Normal notification',
+			text: '<h5 style="text-align:center;">' + msg + '</h5>',
+			time: 1000,
+			sticky: false
+		});
+		if (n > 0) {
+			$(".gritter-item").css("background", "#237438");
+		}
+	}
 
 	function ser_category_change() {
 		$("#loader").show();
 		$.post("pages/load_all_test_data.php",
-			{
-				type: "load_departments",
-				category_id: $("#ser_category_id").val(),
-			},
-			function (data, status) {
-				$("#loader").hide();
-				//alert(data);
-				$("#ser_dep").html(data);
+		{
+			type: "load_departments",
+			category_id: $("#ser_category_id").val(),
+		},
+		function (data, status) {
+			$("#loader").hide();
+			//alert(data);
+			$("#ser_dep").html(data);
 
-				setTimeout(function () {
-					load_all_test();
-				}, 100);
-			});
+			setTimeout(function () {
+				load_all_test();
+			}, 100);
+		});
 	}
 	function load_all_test() {
 		$("#loader").show();
@@ -445,36 +462,36 @@ $branch_id = $p_info["branch_id"];
 		}
 
 		$.post("pages/testmaster_save_ajax.php",
-			{
-				testid: testid,
-				testname: $("#testname").val(),
-				test_code: $("#test_code").val(),
-				category_id: $("#category_id").val(),
-				type_id: $("#type_id").val(),
-				instruction: $("#instruction").val(),
-				rd_day: $("#turn_day").val(),
-				rd_hour: $("#turn_hour").val(),
-				rd_minute: $("#turn_minute").val(),
-				max_day: $("#max_turn_day").val(),
-				max_hour: $("#max_turn_hour").val(),
-				max_minute: $("#max_turn_minute").val(),
-				report_delivery_2: $("#report_delivery_2").val(),
-				sample_details: $("#sample_details").val(),
-				out_sample: $("#out_sample").val(),
-				vacc: vacc,
-				rate: $("#rate").val(),
-				sex: $("#sex").val(),
-				equipment: $("#equipment").val(),
-				user: $("#user").text().trim(),
-				typ: 'save',
-			},
-			function (data, status) {
-				setTimeout(function () {
-					bootbox.hideAll();
-					bootbox.alert(data);
-				}, 2000);
-				load_all_test();
-			})
+		{
+			testid: testid,
+			testname: $("#testname").val(),
+			test_code: $("#test_code").val(),
+			category_id: $("#category_id").val(),
+			type_id: $("#type_id").val(),
+			instruction: $("#instruction").val(),
+			rd_day: $("#turn_day").val(),
+			rd_hour: $("#turn_hour").val(),
+			rd_minute: $("#turn_minute").val(),
+			max_day: $("#max_turn_day").val(),
+			max_hour: $("#max_turn_hour").val(),
+			max_minute: $("#max_turn_minute").val(),
+			report_delivery_2: $("#report_delivery_2").val(),
+			sample_details: $("#sample_details").val(),
+			out_sample: $("#out_sample").val(),
+			vacc: vacc,
+			rate: $("#rate").val(),
+			sex: $("#sex").val(),
+			equipment: $("#equipment").val(),
+			user: $("#user").text().trim(),
+			typ: 'save',
+		},
+		function (data, status) {
+			setTimeout(function () {
+				bootbox.hideAll();
+				bootbox.alert(data);
+			}, 2000);
+			load_all_test();
+		})
 	}
 
 	function save_online(id) {
@@ -506,42 +523,29 @@ $branch_id = $p_info["branch_id"];
 						else {
 							inc_val++;
 						}
-
 						var nval = parseInt(parseInt(inc_val) + 1);
 						$(seq[i]).val(nval)
 					}
 				}
-
 			}
 		}
 	}
 
 	function map_para(id) {
 		$.post("pages/testmaster_map_para.php",
-			{
-				id: id
-			},
-			function (data, status) {
-				$("#results").html(data);
-				//$(".modal-dialog").css({'width':'1200px'});
-				$("#mod").click();
-
-				$("#results").fadeIn(500, function () { });
-				load_param('0');
-				setTimeout(function () {
-					$("#searchh").focus();
-				}, 1000);
-
-				/*
-				$("#back").fadeIn(100);
-				$("#results").html(data);
-				$("#results").css({'width':'95%','height':'90%'});
-				var w=$("#results").width()/2+90;
-				var h=$("#results").height()/2;
-				document.getElementById("results").style.cssText+="margin-left:-"+w+"px;margin-top:-"+h+"px";
-				$("#results").slideDown(500);
-				*/
-			})
+		{
+			id: id
+		},
+		function (data, status) {
+			$("#results").html(data);
+			$("#mod").click();
+			//$("#results").fadeIn(500, function () { });
+			load_param('0');
+			load_testParam(id);
+			setTimeout(function () {
+				$("#searchh").focus();
+			}, 1000);
+		})
 	}
 	function add_all_param() {
 		var chk = $(".sel_param");
@@ -867,8 +871,8 @@ $branch_id = $p_info["branch_id"];
 	}
 
 	#myModal {
-		left: 23%;
-		width: 95%;
+		left: 20%;
+		width: 90%;
 	}
 
 	.modal.fade.in {
@@ -899,5 +903,12 @@ $branch_id = $p_info["branch_id"];
 	.dataTables_length,
 	.dataTables_filter {
 		display: none;
+	}
+	
+	#gritter-notice-wrapper
+	{
+		top: 45% !important;
+		right: 44% !important;
+		z-index: 999999 !important;
 	}
 </style>
