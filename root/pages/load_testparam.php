@@ -11,7 +11,7 @@ if($type=="load_param")
 	
 	if($testid>0)
 	{
-		$str="SELECT a.ID,a.Name,a.ResultType FROM `Parameter_old` a, `Testparameter` b WHERE a.ID=b.ParamaterId AND b.TestId='$testid' AND a.`Name`!='' ORDER BY a.`Name` ASC";
+		$str="SELECT a.ID,a.Name,a.ResultType FROM `Parameter_old` a, `Testparameter` b WHERE a.ID=b.ParamaterId AND b.TestId='$testid' AND a.`Name`!='' ORDER BY b.`sequence` ASC";
 	}
 	
 	$qry=mysqli_query($link, $str);
