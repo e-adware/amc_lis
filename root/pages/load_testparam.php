@@ -311,7 +311,23 @@ if($type=="saveMapParameter")
 				
 				if(mysqli_query($link, "INSERT INTO `Testparameter`(`TestId`, `ParamaterId`, `sequence`, `sample`, `vaccu`, `status`) VALUES ('$testid','$param_id','$sequence','$sample_id','$vaccu_id','$status')"))
 				{
+					mysqli_query($link, "UPDATE `Parameter_old` SET `vaccu`='$vaccu_id' WHERE `ID`='$param_id'");
+					mysqli_query($link, "UPDATE `Parameter_old` SET `sample`='$sample_id' WHERE `ID`='$param_id'");
 					
+					mysqli_query($link, "UPDATE `Testparameter` SET `sample`='$sample_id',`vaccu`='$vaccu_id' WHERE `ParamaterId`='$param_id' AND `sample`='0' AND `vaccu`='0'");
+					
+					/*
+					$param_chk=mysqli_fetch_assoc(mysqli_query($link, "SELECT `vaccu`,`sample` FROM `Parameter_old` WHERE `ID`='$param_id'"));
+					if($param_chk["vaccu"]==0)
+					{
+						mysqli_query($link, "UPDATE `Parameter_old` SET `vaccu`='$vaccu_id' WHERE `ID`='$param_id'");
+					}
+					
+					if($param_chk["sample"]==0)
+					{
+						mysqli_query($link, "UPDATE `Parameter_old` SET `sample`='$sample_id' WHERE `ID`='$param_id'");
+					}
+					*/
 				}else
 				{
 					$response["error"] = 1;

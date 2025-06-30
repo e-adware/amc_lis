@@ -107,6 +107,13 @@ if ($_POST["type"] == "load_param_list") {
 			</tr>
 			<?php
 			$n++;
+			
+			// Test Param Sample Vaccu Chk
+			/*$testParamChk=mysqli_fetch_assoc(mysqli_query($link, "SELECT `sample`,`vaccu` FROM `Testparameter` WHERE `ParamaterId`='$data[ID]' AND `sample`!='0' AND `vaccu`!='0' ORDER BY `slno` DESC"));
+			if($testParamChk)
+			{
+				mysqli_query($link, "UPDATE `Parameter_old` SET `sample`='$testParamChk[sample]',`vaccu`='$testParamChk[vaccu]' WHERE `ID`='$data[ID]'");
+			}*/
 		}
 		?>
 	</table>
