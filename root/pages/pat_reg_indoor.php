@@ -213,7 +213,7 @@ if($exp)
 			<td colspan="7">
 			<div style="border-bottom:1px solid #DDDDDD">
 			<div align="center" style="border-bottom:1px solid #CCC">
-				<input type="text" class="span5" id="srch_test" onfocus="load_tests1()" onblur="$('#ref_doc').empty().hide();" placeholder="Search Test Name" />
+				<input type="text" class="span5" id="srch_test" onfocus="load_tests1()" onblur="setTimeout(function(){$('#ref_doc').empty().hide();},600);" placeholder="Search Test Name" />
 				<input type="hidden" placeholder="Search Test" onkeyup="select_test(this.value,event)" id="tst_search" name="c_13" onfocus="slide_test()"/> 
 			</div>		
 			
