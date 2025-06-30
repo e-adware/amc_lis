@@ -1294,6 +1294,7 @@ function load_pat_details(opdid)
 		
 		$("#bill_no").val(info[17]).prop("disabled",true);
 		$("#free").val(info[18]);
+		$("#samp_no").val(info[21]);
 		
 		$(".recp_smp").val("0");
 		var samp=info[16].split("@@");
