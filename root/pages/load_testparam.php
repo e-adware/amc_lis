@@ -36,12 +36,18 @@ if($type=="load_param")
 				<td ondblclick="add_parameter('<?php echo $testid; ?>','<?php echo $param_info["ID"]; ?>')" style="cursor:pointer;" title="Duoble Click To Add"><?php echo $param_info["Name"]; ?></td>
 				<td ondblclick="add_parameter('<?php echo $testid; ?>','<?php echo $param_info["ID"]; ?>')" style="cursor:pointer;" title="Duoble Click To Add"><?php echo $param_type["ResultType_name"]; ?></td>
 				<td>
-					<button class="btn btn-default btn-mini" onclick="add_parameter('<?php echo $testid; ?>','<?php echo $param_info["ID"]; ?>')"> <i class="icon-step-forward"></i></button>
+					<input type="hidden" class="testParamCls" value="<?php echo $testid."P".$param_info["ID"]; ?>">
+					<button class="btn btn-default btn-mini" id="add_btn<?php echo $testid."P".$param_info["ID"]; ?>" onclick="add_parameter('<?php echo $testid; ?>','<?php echo $param_info["ID"]; ?>')"> <i class="icon-step-forward"></i></button>
 				</td>
 			</tr>
 <?php
 		}
 ?>
+			<tr>
+				<td colspan="4">
+					<button class="btn btn-new" onCLick="add_all_param('<?php echo $testid; ?>')"><i class="icon-forward"></i> Add All Params</button>
+				</td>
+			</tr>
 		</table>
 	</div>
 <?php
@@ -315,7 +321,6 @@ if($type=="saveMapParameter")
 					mysqli_query($link, "UPDATE `Parameter_old` SET `sample`='$sample_id' WHERE `ID`='$param_id'");
 					
 					mysqli_query($link, "UPDATE `Testparameter` SET `sample`='$sample_id',`vaccu`='$vaccu_id' WHERE `ParamaterId`='$param_id' AND `sample`='0' AND `vaccu`='0'");
-					
 					/*
 					$param_chk=mysqli_fetch_assoc(mysqli_query($link, "SELECT `vaccu`,`sample` FROM `Parameter_old` WHERE `ID`='$param_id'"));
 					if($param_chk["vaccu"]==0)

@@ -547,7 +547,7 @@ $branch_id = $p_info["branch_id"];
 			}, 1000);
 		})
 	}
-	function add_all_param() {
+	function add_all_param_old() {
 		var chk = $(".sel_param");
 		for (var i = 1; i <= chk.length; i++) {
 			var pid = $("#pid" + i).text();
