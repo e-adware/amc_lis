@@ -159,7 +159,7 @@ $test_qry=mysqli_query($link, "SELECT `testid`,`testname` FROM `testmaster` WHER
 		}
 	}
 	
-	function add_all_param(testid)
+	async function add_all_param(testid)
 	{
 		var each_row=$(".testParamCls");
 		for(var i=0;i<each_row.length;i++)
@@ -167,6 +167,8 @@ $test_qry=mysqli_query($link, "SELECT `testid`,`testname` FROM `testmaster` WHER
 			var testParamVal=each_row[i].value;
 			
 			$("#add_btn"+testParamVal).click();
+			
+			 await new Promise(resolve => setTimeout(resolve, 300));
 		}
 	}
 	

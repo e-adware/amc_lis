@@ -274,7 +274,7 @@ if($type=="add_parameter")
 			</label>
 		</td>
 		<td>
-			<input type="text" class="sequence sequence<?php echo $tr_counter; ?>" id="paramSequence<?php echo $param_id; ?>" onkeyup="sequence_up('<?php echo $tr_counter; ?>',event)" value="0" style="width:50px">
+			<input type="text" class="sequence sequence<?php echo $tr_counter; ?>" id="paramSequence<?php echo $param_id; ?>" onkeyup="sequence_up('<?php echo $tr_counter; ?>',event)" value="<?php echo $tr_counter; ?>" style="width:50px">
 		</td>
 		<td>
 			<button class="btn btn-delete" onclick="$(this).closest('tr').remove();"><i class="icon-trash"></i></button>
