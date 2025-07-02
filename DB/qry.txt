@@ -6,3 +6,6 @@ INSERT INTO `menu_master` (`par_id`, `par_name`, `header`, `sequence`, `hidden`,
 INSERT INTO `menu_master` (`par_id`, `par_name`, `header`, `sequence`, `hidden`, `remarks`) VALUES ('1045', 'Sample Receive (NRHM Emergency)', '1', '5', '0', '');
 
 INSERT INTO `menu_access_detail` (`levelid`, `par_id`) VALUES ('1', '1043'), ('1', '1044'), ('1', '1045');
+
+INSERT INTO `menu_master` (`par_id`, `par_name`, `header`, `sequence`, `hidden`, `remarks`) VALUES ('1052', 'Result Modification Audit Log', '5', '6', '0', ''), ('1053', ' Report Authentication Log', '5', '7', '0', '');
+INSERT INTO `menu_access_detail` (`levelid`, `par_id`) VALUES ('1', '1052'), ('1', '1053');

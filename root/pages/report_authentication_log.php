@@ -19,29 +19,6 @@
                     <button class="btn btn-success btn " onclick="load_data()">View</button>
 
                 </div>
-                <div
-                    style="display: flex; justify-content: center; align-items: center; gap: 20px; background-color: #f8f9fa; padding: 5px; border-radius: 5px;">
-
-                    <select id="entryTypeFilter" class="form-select" onchange="filterEntryType()"
-                        style="width: 200px; display: inline-block; margin-left: 10px;">
-                        <option value="All">All</option>
-                        <option value="Manual">Manual</option>
-                        <option value="Edited">Edited</option>
-                        <option value="Machine">Machine</option>
-                    </select>
-
-                    <input type="text" id="cashMemoSearch" placeholder="Hospital No" onkeyup="filterByCashMemo()" />
-                </div>
-                <!-- <div style="margin-bottom: 15px; text-align: center;">
-                    <label for="entryTypeFilter"><strong>Filter by Entry Type:</strong></label>
-                    <select id="entryTypeFilter" class="form-select" onchange="filterEntryType()"
-                        style="width: 200px; display: inline-block; margin-left: 10px;">
-                        <option value="All">All</option>
-                        <option value="Manual">Manual</option>
-                        <option value="Edited">Edited</option>
-                        <option value="Machine">Machine</option>
-                    </select>
-                </div> -->
 
             </th>
         </tr>
@@ -94,7 +71,7 @@
 
     function load_data() {
         $("#loader").show();
-        $.post("pages/result_entry_audit_data.php",
+        $.post("pages/report_authentication_log_data.php",
             {
                 type: "load_data",
                 to_date: $("#to_date").val(),
@@ -108,37 +85,10 @@
             })
     }
 
-    function filterEntryType() {
-        var selected = document.getElementById("entryTypeFilter").value;
-        var rows = document.querySelectorAll("#resultTable tbody tr");
-
-        rows.forEach(function (row) {
-            var type = row.getAttribute("data-entry-type");
-            if (selected === "All" || type === selected) {
-                row.style.display = "";
-            } else {
-                row.style.display = "none";
-            }
-        });
-    }
 
 
-    function filterByCashMemo() {
-        const input = document.getElementById("cashMemoSearch").value.toLowerCase().trim();
-        const rows = document.querySelectorAll("#resultTable tbody tr");
 
-        rows.forEach(row => {
-            const cashMemoCell = row.cells[2]; // 3rd column: Cash Memo No.
-            if (cashMemoCell) {
-                const text = cashMemoCell.textContent.toLowerCase();
-                if (text.includes(input)) {
-                    row.style.display = "";
-                } else {
-                    row.style.display = "none";
-                }
-            }
-        });
-    }
+
     // function exportTableToExcel(fdate, tdate, test, priority, time, ward) {
     //     var url = "pages/ward_test_volume_excel.php?from_date=" + btoa(fdate) + "&to_date=" + btoa(tdate) + "&sel_test=" + btoa(test) + "&priority=" + btoa(priority) + "&time_period=" + btoa(time) + "&ward=" + btoa(ward);
     //     window.open(url, 'Window', 'scrollbars=1,menubar=1,toolbar=0,height=670,width=1000');

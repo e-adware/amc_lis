@@ -25,8 +25,7 @@ if ($type == 'load_data') {
                 <thead>
                     <tr style="background-color: #f2f2f2;">
                         <th>Slno.</th>
-                        <th>Patient No.</th>
-                        <th>Cash Memo No.</th>
+                        <th>Hospital No.</th>
                         <th>Test Name</th>
                         <th>Parameter Name</th>
                         <th>Result Value</th>
@@ -62,7 +61,7 @@ if ($type == 'load_data') {
                     while ($audit = mysqli_fetch_array($audit_qry)) {
                         $test_name = mysqli_fetch_array(mysqli_query($link, "SELECT `testname` FROM `testmaster` WHERE `testid` = '$audit[testid]'"));
                         $param_name = mysqli_fetch_array(mysqli_query($link, "SELECT `Name` FROM `Parameter_old` WHERE `ID` = '$audit[paramid]'"));
-                        $cash_memo = mysqli_fetch_array(mysqli_query($link, "SELECT `cashMemoNo` FROM `uhid_and_opdid` WHERE `patient_id`='$audit[patient_id]' AND `opd_id`='$audit[opd_id]'"));
+                        $hosp_no = mysqli_fetch_array(mysqli_query($link, "SELECT `hosp_no` FROM `patient_info` WHERE `patient_id`='$audit[patient_id]'"));
 
                         $formula_check = mysqli_fetch_array(mysqli_query($link, "SELECT `ParameterID` FROM `parameter_formula` WHERE `ParameterID` = '{$audit['paramid']}'"));
                         $is_formula_based = !empty($formula_check);
@@ -128,7 +127,7 @@ if ($type == 'load_data') {
                         <tr data-entry-type="<?php echo $entry_type; ?>">
                             <td><?php echo $n++; ?></td>
                             <td><?php echo $audit['patient_id']; ?></td>
-                            <td><?php echo $cash_memo['cashMemoNo']; ?></td>
+                            <td><?php echo $hosp_no['hosp_no']; ?></td>
                             <td><?php echo $test_name['testname']; ?></td>
                             <td><?php echo $param_name['Name']; ?></td>
                             <td><?php echo $audit['result']; ?></td>

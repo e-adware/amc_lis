@@ -483,4 +483,5 @@ $page[1050] = 'pages/sample_vaccu_map.php';
 
 $page[1051] = 'pages/ward_wise_patient_report.php';
 $page[1052] = 'pages/result_entry_audit.php';
+$page[1053] = 'pages/report_authentication_log.php';
 ?>
