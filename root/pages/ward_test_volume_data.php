@@ -90,56 +90,57 @@ if ($type == 'load_data') {
 
     $colspan = 1;
     ?>
-    <div id="no_print" style="margin-left: auto; padding: 4px 10px; text-align: right;">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <div><strong>Report Generated On : </strong> <?php echo date('d-M-y') . " / " . date('h:i A'); ?></div>
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div><strong>Report Generated On : </strong> <?php echo date('d-M-y') . " / " . date('h:i A'); ?></div>
+        <div id="no_print" style="margin-left: auto; padding: 4px 10px; text-align: right;">
             <button
                 onclick="exportTableToExcel('<?= $f_date; ?>','<?= $t_date; ?>','<?= $sel_test; ?>','<?= $priority; ?>', '<?= $time_per ?>', '<?= $ward; ?>')"
                 class="btn btn-mini btn-warning"><i class="icon-file icon-large"></i> Excel</button>
         </div>
-        <div class="table-container">
-            <table class="table table-responsive table-bordered align-middle text-nowrap">
-                <thead>
-                    <tr>
-                        <th>Ward Name ↓ /Test Name →</th>
-                        <?php foreach ($test_names as $testname): ?>
-                            <th><?= $testname ?></th>
-                            <?php $colspan++; ?>
-                        <?php endforeach; ?>
-                        <th>Total</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($ward_names as $ward_name): ?>
-                        <tr>
-                            <th><?= $ward_name ?></th>
-                            <?php
-                            $ward_total = 0;
-                            foreach ($test_ids as $test_id) {
-                                $count = $counts[$ward_name][$test_id] ?? 0;
-                                $ward_total += $count;
-                                $test_totals[$test_id] += $count;
-                                $bg_color = $count ? "highlight" : "";
-                                echo "<td class=\"$bg_color\">$count</td>";
-                            }
-                            $grand_total += $ward_total;
-                            echo "<td><strong>$ward_total</strong></td>";
-                            ?>
-                        </tr>
+    </div>
+    <div class="table-container">
+        <table class="table table-responsive table-bordered align-middle text-nowrap">
+            <thead>
+                <tr>
+                    <th>Ward Name ↓ /Test Name →</th>
+                    <?php foreach ($test_names as $testname): ?>
+                        <th><?= $testname ?></th>
+                        <?php $colspan++; ?>
                     <?php endforeach; ?>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($ward_names as $ward_name): ?>
                     <tr>
-                        <th>Total:</th>
+                        <th><?= $ward_name ?></th>
                         <?php
+                        $ward_total = 0;
                         foreach ($test_ids as $test_id) {
-                            $count = $test_totals[$test_id];
-                            echo "<td><strong>$count</strong></td>";
+                            $count = $counts[$ward_name][$test_id] ?? 0;
+                            $ward_total += $count;
+                            $test_totals[$test_id] += $count;
+                            $bg_color = $count ? "highlight" : "";
+                            echo "<td class=\"$bg_color\">$count</td>";
                         }
+                        $grand_total += $ward_total;
+                        echo "<td><strong>$ward_total</strong></td>";
                         ?>
-                        <td><strong><?= $grand_total ?></strong></td>
                     </tr>
+                <?php endforeach; ?>
+                <tr>
+                    <th>Total:</th>
+                    <?php
+                    foreach ($test_ids as $test_id) {
+                        $count = $test_totals[$test_id];
+                        echo "<td><strong>$count</strong></td>";
+                    }
+                    ?>
+                    <td><strong><?= $grand_total ?></strong></td>
+                </tr>
 
-                </tbody>
-            </table>
-        </div>
-        <?php
+            </tbody>
+        </table>
+    </div>
+    <?php
 }

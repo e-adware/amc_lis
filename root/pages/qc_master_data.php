@@ -103,7 +103,7 @@ if ($type == 'load_reagent_list') {
     $qc_id = $_POST['qc_id'];
     $str = "";
     if ($search_reagent = $_POST['src_text']) {
-        $str = " AND `testname` LIKE '$search_reagent%'";
+        $str = " WHERE `testname` LIKE '$search_reagent%'";
     }
 
     ?>
@@ -125,8 +125,7 @@ if ($type == 'load_reagent_list') {
             </thead>
             <tbody id="myTable">
                 <?php
-
-                $reagent_qry = mysqli_query($link, "SELECT * FROM `qc_testmaster` WHERE `qc_id` = '$qc_id' $str  ORDER BY `testname`");
+                $reagent_qry = mysqli_query($link, "SELECT * FROM `qc_testmaster` $str ORDER BY `testname`");
 
                 while ($reagent = mysqli_fetch_assoc($reagent_qry)) {
                     $test_id = $reagent['test_id'];
@@ -166,17 +165,15 @@ if ($type == 'load_reagent_list') {
 
 if ($type == "reload_test_master") {
     $qc_id = $_POST['qc_id'];
-    mysqli_query($link, "DELETE FROM `qc_testmaster` WHERE `qc_id` = '$qc_id'");
+    mysqli_query($link, "TRUNCATE TABLE `qc_testmaster`");
     mysqli_query($link, "DELETE FROM `qc_mapping` WHERE `qc_id` = '$qc_id'");
     mysqli_query($link, "DELETE FROM `qc_results` WHERE `qc_id` = '$qc_id'");
-    $sample_id = mysqli_fetch_array(mysqli_query($link, "SELECT `sample_id` FROM qc_master WHERE `qc_id` = '$qc_id'"));
 
     // <!----- Pull TestMaster For Debug -----!>
-    $testmaster_host = $db->setQuery("SELECT equip_test AS test_id, MIN(test_name) AS testname, MIN(unit) AS unit FROM tpl_patient_orders WHERE sample_id = '$sample_id[sample_id]' GROUP BY equip_test;")->fetch_all();
+    $testmaster_host = $db->setQuery("SELECT DISTINCT(equip_test) AS test_id, test_name AS testname, unit FROM tpl_patient_orders WHERE result_type='CONTROL';")->fetch_all();
 
     foreach ($testmaster_host as $res) {
-
-        mysqli_query($link, "INSERT INTO `qc_testmaster`(`qc_id`,`test_id`, `testname`, `unit`) VALUES ('$qc_id','$res[test_id]','$res[testname]','$res[unit]')");
+        mysqli_query($link, "INSERT INTO `qc_testmaster`(`test_id`, `testname`, `unit`) VALUES ('$res[test_id]','$res[testname]','$res[unit]')");
     }
 }
 
