@@ -25,6 +25,7 @@ if ($type == 'load_data') {
                 <thead>
                     <tr style="background-color: #f2f2f2;">
                         <th>Slno.</th>
+                        <th>Patient ID.</th>
                         <th>Hospital No.</th>
                         <th>Test Name</th>
                         <th>Parameter Name</th>
