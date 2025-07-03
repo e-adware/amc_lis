@@ -476,6 +476,16 @@ while($test_info=mysqli_fetch_array($test_qry))
 						if($lab_instrument)
 						{
 							$instrument_id=$lab_instrument["instrument_id"];
+						}else
+						{
+							if($test_sample_result["equip_name"]=="" || !$lab_instrument)
+							{
+								if(mysqli_query($link, "INSERT INTO `lab_instrument_master`(`name`, `report_text`, `short_name`, `status`) VALUES ('$test_sample_result[equip_name]','','','0')"))
+								{
+									$lab_instrument = mysqli_fetch_array(mysqli_query($link, "SELECT `id` AS `instrument_id` FROM `lab_instrument_master` WHERE `name`='$test_sample_result[equip_name]'"));
+									$instrument_id = $lab_instrument["instrument_id"];
+								}
+							}
 						}
 						
 						$instrument_name=$test_sample_result["equip_name"];

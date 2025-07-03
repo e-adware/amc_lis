@@ -486,49 +486,25 @@ if($flagEntry)
 								$repeat_param_btn_display++;
 							} else {
 								$test_sample_result = mysqli_fetch_array(mysqli_query($link, "SELECT `result`,`equip_name` FROM `test_sample_result` WHERE `patient_id`='$patient_id' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `paramid`='$paramid' AND `iso_no`=''"));
-								if ($test_sample_result["result"]) {
-									/*if(strtolower(trim($test_sample_result["result"]))=="no result")
-													  {
-														  //$each_param_delete_btn=" <button class='btn btn-danger btn-mini' onclick=\"each_param_sample_result_delete('$testid','$paramid','')\"><i class='icon-remove'></i></button>";
-														  $test_results=mysqli_fetch_array(mysqli_query($link, "SELECT * FROM `testresults` WHERE `patient_id`='$patient_id' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `paramid`='$paramid' AND `iso_no`='$iso_no'"));
-														  $iso_no_str=$iso_no;
-														  $repeat_reason=$test_sample_result["result"];
-														  if($iso_no==0){ $iso_no_str=""; }
-														  
-														  if(mysqli_query($link, "UPDATE `test_sample_result` SET `result`='' WHERE `patient_id`='$patient_id' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `paramid`='$paramid' AND `iso_no`='$iso_no_str'"))
-														  {
-														  
-														  $test_sample_result=mysqli_fetch_array(mysqli_query($link, "SELECT `result`,`equip_name` FROM `test_sample_result` WHERE `patient_id`='$patient_id' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `paramid`='$paramid' AND `iso_no`=''"));
-														  
-														  $max_repeat=mysqli_fetch_array(mysqli_query($link, "SELECT COUNT(`repeat_no`) AS `repeat_no` FROM `pathology_repeat_param_details` WHERE `patient_id`='$patient_id' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `paramid`='$paramid' AND `iso_no`='$iso_no' "));
-									  
-														  $repeat_no=$max_repeat["repeat_no"]+1;
-														  if($test_results)
-														  {
-														  mysqli_query($link, "INSERT INTO `pathology_repeat_param_details`(`patient_id`, `opd_id`, `ipd_id`, `batch_no`, `testid`, `paramid`, `iso_no`, `reason`, `user`, `date`, `time`, `repeat_no`) VALUES ('$patient_id','$opd_id','$ipd_id','$batch_no','$testid','$paramid','$iso_no','$repeat_reason','$c_user','$date','$time','$repeat_no')");
-														  
-														  $last_row=mysqli_fetch_array(mysqli_query($link, "SELECT `repeat_id` FROM `pathology_repeat_param_details` WHERE `patient_id`='$patient_id' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `paramid`='$paramid' AND `iso_no`='$iso_no' AND `repeat_no`='$repeat_no' ORDER BY `repeat_id` DESC LIMIT 1"));
-														  $repeat_id=$last_row["repeat_id"];
-														  
-														  mysqli_query($link, "INSERT INTO `testresults_repeat`(`patient_id`, `opd_id`, `ipd_id`, `batch_no`, `testid`, `paramid`, `iso_no`, `sequence`, `result`, `range_status`, `range_id`, `status`, `time`, `date`, `doc`, `tech`, `main_tech`, `for_doc`, `repeat_id`) VALUES ('$patient_id','$opd_id','$ipd_id','$batch_no','$testid','$paramid','$iso_no','$test_results[sequence]','$test_results[result]','$test_results[range_status]','$test_results[range_id]','$test_results[status]','$test_results[time]','$test_results[date]','$test_results[doc]','$test_results[tech]','$test_results[main_tech]','$test_results[for_doc]','$repeat_id')");
-														  mysqli_query($link, "DELETE FROM `testresults` WHERE `patient_id`='$patient_id' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `paramid`='$paramid' AND `iso_no`='$iso_no'");
-														  }
-														  }
-													  }*/
-
-									//~ if($paramid==124 || $paramid==215 || $paramid==503) // Total Count = 124,215,503
-									//~ {
-									//~ $test_sample_result["result"]=$test_sample_result["result"]*1000;
-									//~ }
-		
+								if ($test_sample_result["result"])
+								{
 									$result = $test_sample_result["result"];
 									$approve_result = $result;
 
 									$lab_instrument = mysqli_fetch_array(mysqli_query($link, "SELECT `id` AS `instrument_id` FROM `lab_instrument_master` WHERE `name`='$test_sample_result[equip_name]'"));
 									if ($lab_instrument) {
 										$instrument_id = $lab_instrument["instrument_id"];
+									}else
+									{
+										if($test_sample_result["equip_name"]=="" || !$lab_instrument)
+										{
+											if(mysqli_query($link, "INSERT INTO `lab_instrument_master`(`name`, `report_text`, `short_name`, `status`) VALUES ('$test_sample_result[equip_name]','','','0')"))
+											{
+												$lab_instrument = mysqli_fetch_array(mysqli_query($link, "SELECT `id` AS `instrument_id` FROM `lab_instrument_master` WHERE `name`='$test_sample_result[equip_name]'"));
+												$instrument_id = $lab_instrument["instrument_id"];
+											}
+										}
 									}
-
 									$instrument_name = $test_sample_result["equip_name"];
 
 									$repeat_param_btn_display++;
