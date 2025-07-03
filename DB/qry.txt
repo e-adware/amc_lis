@@ -19,3 +19,6 @@ INSERT INTO `menu_master` (`par_id`, `par_name`, `header`, `sequence`, `hidden`,
 
 
 
+
+
+ALTER TABLE `uhid_and_opdid` ADD `disease_id` INT NOT NULL DEFAULT '0' AFTER `ward`; 
