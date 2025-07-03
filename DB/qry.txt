@@ -9,3 +9,13 @@ INSERT INTO `menu_access_detail` (`levelid`, `par_id`) VALUES ('1', '1043'), ('1
 
 INSERT INTO `menu_master` (`par_id`, `par_name`, `header`, `sequence`, `hidden`, `remarks`) VALUES ('1052', 'Result Modification Audit Log', '5', '6', '0', ''), ('1053', ' Report Authentication Log', '5', '7', '0', '');
 INSERT INTO `menu_access_detail` (`levelid`, `par_id`) VALUES ('1', '1052'), ('1', '1053');
+
+
+
+//SET ACCESS SEPERATELY
+INSERT INTO `menu_master` (`par_id`, `par_name`, `header`, `sequence`, `hidden`, `remarks`) VALUES ('1008', 'Test Volume Details', '5', '10', '0', ''); 
+INSERT INTO `menu_master` (`par_id`, `par_name`, `header`, `sequence`, `hidden`, `remarks`) VALUES ('1028', 'Report Print Log', '5', '13', '0', '');
+INSERT INTO `menu_master` (`par_id`, `par_name`, `header`, `sequence`, `hidden`, `remarks`) VALUES ('1051', 'Ward Wise Patient Report', '5', '11', '0', '');
+
+
+
