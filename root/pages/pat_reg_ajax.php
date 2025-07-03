@@ -419,8 +419,9 @@ if ($type == 1) {
 
 	$info = mysqli_fetch_array(mysqli_query($link, "select * from patient_info where patient_id='$det[patient_id]'"));
 
-	$dis = mysqli_fetch_array(mysqli_query($link, "select * from patient_disease_details where patient_id='$det[patient_id]' and opd_id='$opd_id'"));
+	// $dis = mysqli_fetch_array(mysqli_query($link, "select * from patient_disease_details where patient_id='$det[patient_id]' and opd_id='$opd_id'"));
 
+	$dis = $det['disease_id'];
 	$pat_info = $det[hosp_no] . "@k_details@" . $info[name] . "@k_details@" . $info[age] . "@k_details@" . $info[age_type] . "@k_details@" . $info[sex] . "@k_details@@k_details@" . $det[type] . "@k_details@@k_details@@k_details@" . $det[date_serial] . "@k_details@" . $ndate . "@k_details@@k_details@" . $det[ward] . "@k_details@" . $info[phone] . "@k_details@" . $info[address] . "@k_details@" . $dis[disease_id] . "@k_details@@k_details@" . $det[bill_no] . "@k_details@" . $det[pat_type] . "@k_details@" . $info[patient_id];
 
 	$tst_det = mysqli_query($link, "select * from patient_test_details where patient_id='$det[patient_id]' and opd_id='$opd_id'");
