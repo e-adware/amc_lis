@@ -230,7 +230,7 @@ if ($type == 1) {
 			$opd_id = $opd_idd . "/" . $dis_month . $dis_year_sm;
 		}
 
-		if (mysqli_query($link, "INSERT INTO `uhid_and_opdid`(`patient_id`, `opd_id`, `ward`, `dept`, `disease_id`,`hosp_no`, `bill_no`, `urgent`, `date`, `time`, `user`, `type`, `type_prefix`, `sample_serial`, `pat_type`, `free`, `auth`, `auth_disc`, `date_serial`, `emer_nr`, `nr_pat_type`, `nr_covid`) VALUES ('$new_patient_id','$opd_id','$ward','$dis','$dept','$hosp_no','$bill_no','0','$date','$time','$user','$p_type','$prefix','$samp_no','$pat_type','$free','$auth','$auth_disc','$date_serial','0','$pat_type_nrhm','$pat_type_covid') ")) {
+		if (mysqli_query($link, "INSERT INTO `uhid_and_opdid`(`patient_id`, `opd_id`, `ward`, `dept`, `disease_id`,`hosp_no`, `bill_no`, `urgent`, `date`, `time`, `user`, `type`, `type_prefix`, `sample_serial`, `pat_type`, `free`, `auth`, `auth_disc`, `date_serial`, `emer_nr`, `nr_pat_type`, `nr_covid`) VALUES ('$new_patient_id','$opd_id','$ward','$dept','$dis','$hosp_no','$bill_no','0','$date','$time','$user','$p_type','$prefix','$samp_no','$pat_type','$free','$auth','$auth_disc','$date_serial','0','$pat_type_nrhm','$pat_type_covid') ")) {
 			mysqli_query($link, "INSERT INTO `patient_info`(`patient_id`, `hosp_no`, `name`, `sex`, `dob`, `age`, `age_type`, `phone`, `address`, `date`, `time`, `user`) VALUES ('$new_patient_id','$hosp_no','$name','$sex','$dob','$age','$age_type','$phone','$address','$date','$time','$user')");
 
 			$test = explode("@koushik@", $tst);
@@ -423,20 +423,50 @@ if ($type == 1) {
 
 	$dis = $det['disease_id'];
 	$pat_info = $det[hosp_no] . "@k_details@" . $info[name] . "@k_details@" . $info[age] . "@k_details@" . $info[age_type] . "@k_details@" . $info[sex] . "@k_details@@k_details@" . $det[type] . "@k_details@@k_details@@k_details@" . $det[date_serial] . "@k_details@" . $ndate . "@k_details@@k_details@" . $det[ward] . "@k_details@" . $info[phone] . "@k_details@" . $info[address] . "@k_details@" . $dis[disease_id] . "@k_details@@k_details@" . $det[bill_no] . "@k_details@" . $det[pat_type] . "@k_details@" . $info[patient_id];
+	
+	$arr=array();
+	$arr['hosp_no']=$det['hosp_no'];
+	$arr['patient_id']=$info['patient_id'];
+	$arr['name']=$info['name'];
+	$arr['age']=$info['age'];
+	$arr['age_type']=$info['age_type'];
+	$arr['sex']=$info['sex'];
+	$arr['address']=$info['address'];
+	$arr['phone']=$info['phone'];
+	$arr['type']=$det['type'];
+	$arr['free_type']=$det['free'];
+	$arr['auth']=$det['auth'];
+	$arr['auth_disc']=$det['auth_disc'];
+	$arr['date_serial']=$det['date_serial'];
+	$arr['ndate']=$ndate;
+	$arr['ward']=$det['ward'];
+	$arr['dept']=$det['dept'];
+	$arr['disease_id']=$det['disease_id'];
+	$arr['bill_no']=$det['bill_no'];
+	$arr['pat_type']=$det['pat_type'];
+	$arr['sample_serial']=$det['sample_serial'];
+	$arr['emer_nr']=$det['emer_nr'];
+	$arr['nr_pat_type']=$det['nr_pat_type'];
+	$arr['nr_covid']=$det['nr_covid'];
 
-	$tst_det = mysqli_query($link, "select * from patient_test_details where patient_id='$det[patient_id]' and opd_id='$opd_id'");
-	while ($tst_l = mysqli_fetch_array($tst_det)) {
+	//$tst_det = mysqli_query($link, "select * from patient_test_details where patient_id='$det[patient_id]' and opd_id='$opd_id'");
+	//while ($tst_l = mysqli_fetch_array($tst_det))
+	{
 		//$tst.=$tst_l[testid]."@tst@";		
 	}
 
 	$s_det = "";
-	$samp = mysqli_query($link, "select * from patient_sample_details where patient_id='$det[patient_id]' and opd_id='$opd_id'");
-	while ($smp = mysqli_fetch_array($samp)) {
-		$s_det .= "@@" . $smp[sample_id];
+	//$samp = mysqli_query($link, "select * from patient_sample_details where patient_id='$det[patient_id]' and opd_id='$opd_id'");
+	//while ($smp = mysqli_fetch_array($samp))
+	{
+		//$s_det .= "@@" . $smp[sample_id];
 	}
 	$pat_info .= "@k_details@" . $s_det . "@k_details@" . $det['sample_serial'];
 
-	echo $pat_info . "#test_det#" . $tst;
+	//echo $pat_info . "#test_det#" . $tst;
+	
+	echo json_encode($arr);
+	
 } else if ($type == 6) {
 	$entry_type = $_POST['entry_type'];
 	$val = $_POST['val'];

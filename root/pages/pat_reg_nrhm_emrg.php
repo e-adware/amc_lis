@@ -1274,42 +1274,47 @@ function load_pat_details(opdid)
 	},
 	function(data,status)
 	{
-		var det=data.split("#test_det#");
-		var info=det[0].split("@k_details@");
-		var tst=det[1].split("@tst@");
+		var vl=JSON.parse(data);
+		//var det=data.split("#test_det#");
+		//var info=det[0].split("@k_details@");
+		//var tst=det[1].split("@tst@");
 		
-		$("#hosp_no").val(info[0]);
-		$("#name").val(info[1]);
-		$("#age").val(info[2]);
-		$("#age_type").val(info[3]);
-		$("#sex").val(info[4]);
+		$("#hosp_no").val(vl['hosp_no']);
+		$("#name").val(vl['name']);
+		$("#age").val(vl['age']);
+		$("#age_type").val(vl['age_type']);
+		$("#sex").val(vl['sex']);
 		
-		$("#o_i_pd").val(info[6]);
+		//$("#o_i_pd").val(info[6]);
 		
-		$("#ward").val(info[12]);
+		$("#pat_type").val(vl['pat_type']);
+		$("#ward").val(vl['ward']);
 		
-		$("#phone").val(info[13]);
-		$("#add").val(info[14]);
-		$("#pat_dis").val(info[15]);
+		$("#phone").val(vl['phone']);
+		$("#add").val(vl['address']);
+		$("#pat_dis").val(vl['disease_id']);
 		
-		$("#bill_no").val(info[17]).prop("disabled",true);
-		$("#free").val(info[18]);
-		$("#samp_no").val(info[21]);
+		$("#bill_no").val(vl['bill_no']).prop("disabled",true);
+		$("#free").val(vl['free_type']);
+		$("#samp_no").val(vl['sample_serial']);
 		
-		$(".recp_smp").val("0");
-		var samp=info[16].split("@@");
-		for(var i=0;i<samp.length;i++)
+		$("#pat_type_covid").val(vl['nr_covid']);
+		$("#pat_type_nrhm").val(vl['nr_pat_type']);
+		
+		//$(".recp_smp").val("0");
+		//var samp=info[16].split("@@");
+		//for(var i=0;i<samp.length;i++)
 		{
-			$("#"+samp[i]+"").val("1");
+			//$("#"+samp[i]+"").val("1");
 		}
 		
-		if(info[8]>0)
+		//if(info[8]>0)
 		{
-			$("#ath").val(info[8]).fadeIn(200);
+			//$("#ath").val(info[8]).fadeIn(200);
 		}
 		
-		var sno=info[10]+" / "+info[9];
-		$("#date_serial").text(sno);
+		//var sno=info[10]+" / "+info[9];
+		$("#date_serial").text(vl['ndate']+" / "+vl['date_serial']);
 		
 		/*
 		$(".tst_check:checkbox:checked").click();
@@ -1330,7 +1335,7 @@ function load_pat_details(opdid)
 		$("#save").val("Update").text("Update");
 		$("#opd_id").val(opdid);
 		$("#patient_no").text(opdid);
-		$("#patient_id").val(info[19]);
+		$("#patient_id").val(vl['patient_id']);
 		$("#batch").val('1');
 		load_search();
 		load_selected_tests();
