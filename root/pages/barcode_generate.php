@@ -50,13 +50,13 @@ $hosp_no=$pat_reg['type_prefix'].$pat_reg['sample_serial'];
 $memoDate=mysqli_fetch_array(mysqli_query($link,"SELECT `CashMemoDate` FROM `aPatientList` WHERE `PatientNo`='$pat_reg[hospital_no]' AND `CashMemoNo`='$pat_reg[cashMemoNo]'"));
 if($memoDate)
 {
-$cDate=explode(" ", $memoDate['CashMemoDate']);
-$c_date=explode("/", $cDate[0]);
-$cMemoDt=date("d/m/y", strtotime($c_date[2]."-".$c_date[1]."-".$c_date[0]));
+	$cDate=explode(" ", $memoDate['CashMemoDate']);
+	$c_date=explode("/", $cDate[0]);
+	$cMemoDt=date("d/m/y", strtotime($c_date[2]."-".$c_date[1]."-".$c_date[0]));
 }
 else
 {
-$cMemoDt=date("d/m/y", strtotime($pat_reg['date']));
+	$cMemoDt=date("d/m/y", strtotime($pat_reg['date']));
 }
 
 if($patType=="IPD")
@@ -87,60 +87,60 @@ $regDate=mysqli_fetch_array(mysqli_query($link,"SELECT `date` FROM `uhid_and_opd
 
 if($regDate['date']==$date)
 {
-$slQry=mysqli_query($link,"SELECT DISTINCT b.`type_id` FROM `patient_test_details` a, `testmaster` b WHERE a.`testid`=b.`testid` AND a.`patient_id`='$pid' AND a.`opd_id`='$pin' AND a.`dept_serial`='' AND a.`testid` IN ($tst_vac)");
-while($r=mysqli_fetch_assoc($slQry))
-{
-	$dept=$r['type_id'];
-	$tableName='test_dept_serial_generator_'.$dept.$patType;
-	//$val = mysqli_query($link,'select 1 from `$tableName` LIMIT 1');
-	if(!mysqli_query($link,"select 1 from `$tableName` LIMIT 1"))
+	$slQry=mysqli_query($link,"SELECT DISTINCT b.`type_id` FROM `patient_test_details` a, `testmaster` b WHERE a.`testid`=b.`testid` AND a.`patient_id`='$pid' AND a.`opd_id`='$pin' AND a.`dept_serial`='' AND a.`testid` IN ($tst_vac)");
+	while($r=mysqli_fetch_assoc($slQry))
 	{
-		if(mysqli_query($link,"CREATE TABLE `$tableName` (`slno` int(11) NOT NULL, `patient_id` varchar(50) NOT NULL, `opd_id` varchar(50) NOT NULL, `type_id` int(11) NOT NULL, `date` date NOT NULL, `time` time NOT NULL, `user` int(11) NOT NULL ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci"))
+		$dept=$r['type_id'];
+		$tableName='test_dept_serial_generator_'.$dept.$patType;
+		//$val = mysqli_query($link,'select 1 from `$tableName` LIMIT 1');
+		if(!mysqli_query($link,"select 1 from `$tableName` LIMIT 1"))
 		{
-			mysqli_query($link,"ALTER TABLE `$tableName` ADD PRIMARY KEY (`slno`)");
-			mysqli_query($link,"ALTER TABLE `$tableName` MODIFY `slno` int(11) NOT NULL AUTO_INCREMENT");
-			mysqli_query($link,"ALTER TABLE `$tableName` ADD INDEX(`patient_id`)");
-			mysqli_query($link,"ALTER TABLE `$tableName` ADD INDEX(`opd_id`)");
-			mysqli_query($link,"ALTER TABLE `$tableName` ADD INDEX(`type_id`)");
-			mysqli_query($link,"ALTER TABLE `$tableName` ADD INDEX(`date`)");
-			mysqli_query($link,"ALTER TABLE `$tableName` ADD INDEX(`time`)");
-			mysqli_query($link,"ALTER TABLE `$tableName` ADD INDEX(`user`)");
+			if(mysqli_query($link,"CREATE TABLE `$tableName` (`slno` int(11) NOT NULL, `patient_id` varchar(50) NOT NULL, `opd_id` varchar(50) NOT NULL, `type_id` int(11) NOT NULL, `date` date NOT NULL, `time` time NOT NULL, `user` int(11) NOT NULL ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci"))
+			{
+				mysqli_query($link,"ALTER TABLE `$tableName` ADD PRIMARY KEY (`slno`)");
+				mysqli_query($link,"ALTER TABLE `$tableName` MODIFY `slno` int(11) NOT NULL AUTO_INCREMENT");
+				mysqli_query($link,"ALTER TABLE `$tableName` ADD INDEX(`patient_id`)");
+				mysqli_query($link,"ALTER TABLE `$tableName` ADD INDEX(`opd_id`)");
+				mysqli_query($link,"ALTER TABLE `$tableName` ADD INDEX(`type_id`)");
+				mysqli_query($link,"ALTER TABLE `$tableName` ADD INDEX(`date`)");
+				mysqli_query($link,"ALTER TABLE `$tableName` ADD INDEX(`time`)");
+				mysqli_query($link,"ALTER TABLE `$tableName` ADD INDEX(`user`)");
+			}
+		}
+		
+		if($current_time>=$sunrise && $current_time<=$sunset)
+		{
+			$blankTableName="test_dept_serial_generator_".$dept."EMER";
+			mysqli_query($link,"TRUNCATE TABLE `$blankTableName`");
+		}
+		else
+		{
+			$patType="EMER";
+			$prefix="E";
+			
+			$blankTableName="test_dept_serial_generator_".$dept."OPD";
+			mysqli_query($link,"TRUNCATE TABLE `$blankTableName`");
+			
+			$blankTableName="test_dept_serial_generator_".$dept."IPD";
+			mysqli_query($link,"TRUNCATE TABLE `$blankTableName`");
+		}
+		
+		//echo "<br/>INSERT INTO `$tableName`(`patient_id`, `opd_id`, `type_id`, `date`, `time`, `user`) VALUES ('$pid','$opd','$dept','$date','$time','$user')";
+		mysqli_query($link,"INSERT INTO `$tableName`(`patient_id`, `opd_id`, `type_id`, `date`, `time`, `user`) VALUES ('$pid','$opd','$dept','$date','$time','$user')");
+		//echo "<br/>SELECT `slno` FROM `$tableName` WHERE `patient_id`='$pid' AND `opd_id`='$opd' AND `date`='$date' AND `time`='$time' AND `user`='$user' ORDER BY `slno` DESC LIMIT 0,1";
+		$lastSl=mysqli_fetch_assoc(mysqli_query($link,"SELECT `slno` FROM `$tableName` WHERE `patient_id`='$pid' AND `opd_id`='$opd' AND `date`='$date' AND `time`='$time' AND `user`='$user' ORDER BY `slno` DESC LIMIT 0,1"));
+		//echo "<br/>SELECT `prefix` FROM `test_department` WHERE `id`='$dept'";
+		$tstPre=mysqli_fetch_assoc(mysqli_query($link,"SELECT `prefix` FROM `test_department` WHERE `id`='$dept'"));
+		$prefNo=$prefix."/".$lastSl['slno'];
+		
+		//echo "<br/>SELECT a.`slno` FROM `patient_test_details` a, `testmaster` b WHERE a.`testid`=b.`testid` AND b.`type_id`='$dept' AND a.`patient_id`='$pid' AND a.`opd_id`='$pin' AND a.`dept_serial`='' AND a.`testid` IN ($tst_vac)";
+		$tstSel=mysqli_query($link,"SELECT a.`slno` FROM `patient_test_details` a, `testmaster` b WHERE a.`testid`=b.`testid` AND b.`type_id`='$dept' AND a.`patient_id`='$pid' AND a.`opd_id`='$pin' AND a.`dept_serial`='' AND a.`testid` IN ($tst_vac)");
+		while($rr=mysqli_fetch_assoc($tstSel))
+		{
+			//echo "<br/>UPDATE `patient_test_details` SET `dept_serial`='$prefNo' WHERE `slno`='$r[slno]' AND `dept_serial`=''";
+			mysqli_query($link,"UPDATE `patient_test_details` SET `dept_serial`='$prefNo' WHERE `slno`='$rr[slno]' AND `dept_serial`=''");
 		}
 	}
-	
-	if($current_time>=$sunrise && $current_time<=$sunset)
-	{
-		$blankTableName="test_dept_serial_generator_".$dept."EMER";
-		mysqli_query($link,"TRUNCATE TABLE `$blankTableName`");
-	}
-	else
-	{
-		$patType="EMER";
-		$prefix="E";
-		
-		$blankTableName="test_dept_serial_generator_".$dept."OPD";
-		mysqli_query($link,"TRUNCATE TABLE `$blankTableName`");
-		
-		$blankTableName="test_dept_serial_generator_".$dept."IPD";
-		mysqli_query($link,"TRUNCATE TABLE `$blankTableName`");
-	}
-	
-	//echo "<br/>INSERT INTO `$tableName`(`patient_id`, `opd_id`, `type_id`, `date`, `time`, `user`) VALUES ('$pid','$opd','$dept','$date','$time','$user')";
-	mysqli_query($link,"INSERT INTO `$tableName`(`patient_id`, `opd_id`, `type_id`, `date`, `time`, `user`) VALUES ('$pid','$opd','$dept','$date','$time','$user')");
-	//echo "<br/>SELECT `slno` FROM `$tableName` WHERE `patient_id`='$pid' AND `opd_id`='$opd' AND `date`='$date' AND `time`='$time' AND `user`='$user' ORDER BY `slno` DESC LIMIT 0,1";
-	$lastSl=mysqli_fetch_assoc(mysqli_query($link,"SELECT `slno` FROM `$tableName` WHERE `patient_id`='$pid' AND `opd_id`='$opd' AND `date`='$date' AND `time`='$time' AND `user`='$user' ORDER BY `slno` DESC LIMIT 0,1"));
-	//echo "<br/>SELECT `prefix` FROM `test_department` WHERE `id`='$dept'";
-	$tstPre=mysqli_fetch_assoc(mysqli_query($link,"SELECT `prefix` FROM `test_department` WHERE `id`='$dept'"));
-	$prefNo=$prefix."/".$lastSl['slno'];
-	
-	//echo "<br/>SELECT a.`slno` FROM `patient_test_details` a, `testmaster` b WHERE a.`testid`=b.`testid` AND b.`type_id`='$dept' AND a.`patient_id`='$pid' AND a.`opd_id`='$pin' AND a.`dept_serial`='' AND a.`testid` IN ($tst_vac)";
-	$tstSel=mysqli_query($link,"SELECT a.`slno` FROM `patient_test_details` a, `testmaster` b WHERE a.`testid`=b.`testid` AND b.`type_id`='$dept' AND a.`patient_id`='$pid' AND a.`opd_id`='$pin' AND a.`dept_serial`='' AND a.`testid` IN ($tst_vac)");
-	while($rr=mysqli_fetch_assoc($tstSel))
-	{
-		//echo "<br/>UPDATE `patient_test_details` SET `dept_serial`='$prefNo' WHERE `slno`='$r[slno]' AND `dept_serial`=''";
-		mysqli_query($link,"UPDATE `patient_test_details` SET `dept_serial`='$prefNo' WHERE `slno`='$rr[slno]' AND `dept_serial`=''");
-	}
-}
 }
 else
 {
@@ -173,6 +173,41 @@ else
 }
 
 
+// Barcode Start
+$vowels = array("a", "e", "i", "o", "u", "A", "E", "I", "O", "U", " ");
+
+$date_str=explode("-", $pat_reg["date"]);
+$dis_year=$date_str[0];
+$dis_month=$date_str[1];
+$dis_date=$date_str[2];
+
+$alp = range('A', 'Z');
+$mnt=intval($date_str[1]-1);
+
+$bar_id=$dis_year[2].$dis_year[3].$alp[$mnt].$dis_date;
+
+if($pat_reg["type"]==1)
+{
+	$bar_id=$bar_id."N".$pat_reg["pat_type"][0].$pat_reg["pat_type"][1].$pat_reg["sample_serial"];
+}
+else if($pat_reg["type"]==2)
+{
+	$bar_id=$bar_id."OP".$pat_reg["sample_serial"];
+}
+else if($pat_reg["type"]==3)
+{
+	$bar_id=$bar_id."IP".$pat_reg["sample_serial"];
+}
+else if($pat_reg["type"]==4)
+{
+	$bar_id=$bar_id."EC".$pat_reg["sample_serial"];
+}
+else if($pat_reg["type"]==5)
+{
+	$bar_id=$bar_id."NE".$pat_reg["sample_serial"];
+}
+
+// Barcode End
 
 
 $pat_test=mysqli_fetch_array(mysqli_query($link," SELECT * FROM `patient_test_details` WHERE `patient_id`='$pid' AND `opd_id`='$opd' AND `ipd_id`='$ipd' AND `batch_no`='$batch_no' AND `testid` IN ($tst_vac)"));
@@ -201,10 +236,11 @@ foreach($vac as $vc)
 	if($vc)
 	{
 		$nreg=str_replace("/","",$pin);
-		//~ $nreg=$nreg.$batch_no;
-		$barcode_id=$nreg;
+		//$barcode_id=$nreg;
+		
+		$barcode_id=$bar_id;
+		
 		$vac_det=mysqli_fetch_array(mysqli_query($link,"select * from vaccu_master where id='$vc'"));
-		//$vac_det["barcode_suffix"]="";
 		$barcode_id=$barcode_id.$vac_det["barcode_suffix"];
 		
 		if(!$_GET['sing'])
@@ -285,7 +321,10 @@ foreach($vac as $vc)
 					if(!$culture_setup_testid){ $culture_setup_testid=3374; }
 					
 					//$barcode_id=str_replace("/","",$pin);
-					$barcode_id=$pin;
+					//$barcode_id=$pin;
+					
+					$barcode_id=$bar_id;
+					
 					if($culture_suff>0)
 					{
 						$barcode_id=$barcode_id.$test_info["suffix"];
