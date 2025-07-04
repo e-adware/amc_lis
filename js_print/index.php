@@ -33,7 +33,7 @@ foreach($PoiU as $text)
 		//$age_sex_str=$memoDt;
 		$age_sex_str.=" (".$vaccu_name.")";
 		
-		$id_str="Hosp No: ".$uhid;
+		$id_str="SNO: ".$hosp;
 		if($dept_serial)
 		{
 			//$id_str.=" (".$dept_serial.")";

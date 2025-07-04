@@ -30,7 +30,7 @@ $header3 = "     Phone Number(s): " . $phon;
 
 if ($qr_code_file_path) {
 	?>
-	<div style="position: absolute;left: 85%;top:1%;border: 1px solid #000;">
+	<div style="position: absolute;left: 85%;top:1%;border: 1px solid #000; display: none;">
 		<img src="<?php echo $qr_code_file_path; ?>" style="width:80px;" alt="QR Code">
 	</div>
 <?php } elseif ($opd_id) {

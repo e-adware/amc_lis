@@ -179,7 +179,7 @@ $doc_det=mysqli_fetch_array(mysqli_query($link,"select * from lab_doctor where i
 	if($aprv_by>0 && $doc_det)
 	{
 ?>
-	<img src='../../sign/<?php echo $aprv_by;?>.jpg' style='height: 45px; width: 30px;' /> <br/>
+	<img src='../../sign/<?php echo $aprv_by;?>.jpg' style='height: 45px;' /> <br/>
 <?php
 	}
 	else

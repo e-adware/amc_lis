@@ -45,7 +45,7 @@ $pat_info=mysqli_fetch_array(mysqli_query($link," SELECT * FROM `patient_info` W
 
 $pat_reg=mysqli_fetch_array(mysqli_query($link,"select * from uhid_and_opdid where `patient_id`='$pid' AND `opd_id`='$pin'"));
 $patType=$pat_reg['receipt_no'];
-$hosp_no=$pat_reg['hospital_no'];
+$hosp_no=$pat_reg['type_prefix'].$pat_reg['sample_serial'];
 
 $memoDate=mysqli_fetch_array(mysqli_query($link,"SELECT `CashMemoDate` FROM `aPatientList` WHERE `PatientNo`='$pat_reg[hospital_no]' AND `CashMemoNo`='$pat_reg[cashMemoNo]'"));
 if($memoDate)

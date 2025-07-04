@@ -263,7 +263,7 @@ if (isset($_GET['param'])) {
 				<div
 					style="font-weight:bold; background:#f5f5f5; padding:8px; border:1px solid #ddd; border-radius:4px; width:fit-content; margin: 0 auto; text-align:center;">
 					<?php
-					$pat_counting = mysqli_fetch_array(mysqli_query($link, "SELECT COUNT(`cashMemoNo`) AS `total_pat` FROM `uhid_and_opdid` WHERE `date`='$date'"));
+					$pat_counting = mysqli_fetch_array(mysqli_query($link, "SELECT COUNT(`opd_id`) AS `total_pat` FROM `uhid_and_opdid` WHERE `date`='$date'"));
 					?>
 					<span
 						style="background:#A24EDB; color:#fff; padding:6px 14px; border-radius:4px; margin-right:8px; display:inline-block;">

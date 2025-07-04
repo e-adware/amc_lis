@@ -55,7 +55,7 @@ $header3="     Phone Number(s): ".$phon;
 	<!--<div class="span2" style="margin-left:55px;">
 		<img src="../../images/<?php echo $dept_logo; ?>" type="image/jpg/png" style="width:80px;margin-top:0px;margin-bottom:0px;" />	
 	</div>-->
-	<div style="position: fixed;left: 85%;top:1%;border: 1px solid #000;">
+	<div style="position: fixed;left: 85%;top:1%;border: 1px solid #000; display: none;">
 		<img src="../../images/<?php echo $dept_logo; ?>" style="width:90px;" alt="QR Code">
 	</div>
 </div>
