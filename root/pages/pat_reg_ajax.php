@@ -100,9 +100,9 @@ if ($type == 1) {
 		$i = 1;
 		while ($tst = mysqli_fetch_array($test)) {
 			?>
-			<div class="tst_span <?php echo strtolower($tst[testname]); ?> <?php echo $tst[type_id]; ?>"
+			<div class="tst_span <?php echo strtolower($tst[testname]); ?> <?php echo $tst[type_id]; ?> dv<?php echo $tst[testid]; ?>"
 				id="div_<?php echo $i; ?>" onclick="select_check(<?php echo $i; ?>)"> <input type="checkbox"
-					value="<?php echo $tst[testid]; ?>" id="check_<?php echo $i; ?>" class="tst_check" />
+					value="<?php echo $tst[testid]; ?>" id="check_<?php echo $i; ?>" class="tst_check tst<?php echo $tst[testid]; ?>" />
 				<label><span></span></label> <?php echo $tst[testname]; ?>
 			</div>
 			<?php
@@ -364,7 +364,7 @@ if ($type == 1) {
 		$qry = "select * from uhid_and_opdid where date between '$fdate' and '$tdate' and type='$pat_type' order by slno desc";
 	} else {
 		if ($bill_no != '') {
-			$qry = "select * from uhid_and_opdid where type='$pat_type' and bill_no='$bill_no' order by slno desc";
+			$qry = "select * from uhid_and_opdid where type='$pat_type' and sample_serial='$bill_no' order by slno desc";
 		} else if ($hosp_no != '') {
 			$qry = "select * from uhid_and_opdid where hosp_no='$hosp_no' and type='$pat_type' order by slno desc";
 		} else if ($patient_no != '') {
@@ -395,7 +395,7 @@ if ($type == 1) {
 				?>
 						<tr onclick="load_pat_details('<?php echo $q[opd_id]; ?>')">
 							<th><?php echo $i; ?></th>
-							<th><?php echo $q[sample_serial]; ?></th>
+							<th><?php echo $q['type_prefix'].$q['sample_serial']; ?></th>
 							<th><?php echo $q[hosp_no]; ?></th>
 							<th><?php echo $q[opd_id]; ?></th>
 							<th><?php echo $info[name]; ?></th>

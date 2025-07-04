@@ -75,4 +75,22 @@ if($type==2)
 	</table>
 	<?php
 }
+
+if($type==3)
+{
+	//print_r($_POST);
+	$pid=$_POST['pid'];
+	$opd=$_POST['opd'];
+	$qry="SELECT `testid` FROM `patient_test_details` WHERE `patient_id`='$pid' AND `opd_id`='$opd'";
+	//echo $qry;
+	
+	$arr=array();
+	$q=mysqli_query($link,$qry);
+	while($r=mysqli_fetch_array($q))
+	{
+		array_push($arr, $r['testid']);
+	}
+	
+	echo json_encode($arr);
+}
 ?>

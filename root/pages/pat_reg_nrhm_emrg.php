@@ -61,15 +61,16 @@ if($exp)
 				</td>
 			</tr>
 			<tr>
-				<th>Bill No <br/>
-					<input type="text" id="bill_no_upd" onkeyup="load_emp_event(event)" placeholder="Enter BILL.NO" >
+				<th>Sample No <br/>
+					<input type="text" style="width:100px;" value="NHRM_EMER/" readonly >
+					<input type="text" style="width:120px;" id="bill_no_upd" onkeyup="load_emp_event(event)" placeholder="Sample NO" >
 				</th>
 				<th>HOSP.NO <br/>
-					<input type="text" id="hosp_no_upd" onkeyup="load_emp_event(event)" placeholder="Enter HOSP.NO" >
+					<input type="text" id="hosp_no_upd" onkeyup="load_emp_event(event)" placeholder="HOSP NO" >
 				</td>
 				
-				<th>Patient No <br/>
-					<input type='text' value="" id="patient_no_upd" onkeyup="load_emp_event(event)" placeholder="Enter PATIENT.NO"/>
+				<th>
+					<input type='hidden' value="" id="patient_no_upd" onkeyup="load_emp_event(event)" placeholder="Enter PATIENT.NO"/>
 				</th>
 				<th>Name <br/>
 					<input type="text" id="name_upd" onkeyup="load_emp_event(event)" placeholder="Type Name" >
@@ -78,7 +79,7 @@ if($exp)
 			<tr>
 				<th colspan="4" style="text-align:center">
 					<input type="button" id="search_pat" value="Search" class="btn btn-info" onclick="load_pat_upd()"/>
-					<input type="button" id="search_clr" value="Clear" class="btn btn-info" onclick="$('#hosp_no_upd').val('');$('#sample_no_upd').val('');$('#name_upd').val('');"/>
+					<input type="button" id="search_clr" value="Clear" class="btn btn-info" onclick="$('#hosp_no_upd').val('');$('#bill_no_upd').val('');$('#name_upd').val('');"/>
 				</th>
 			</tr>
 			<tr>
@@ -134,19 +135,21 @@ if($exp)
 			<th>Address</th>
 			<th><input type="text" id="add" name="c_6" class="no_imp"/></th>
 			<th>Phone</th>
-			<th><input type="text" id="phone" name="c_7" class="no_imp"/></th>
+			<th><input type="text" id="phone" name="c_7" class="no_imp" onkeyup="if(/\D/g.test(this.value))this.value=this.value.replace(/\D/g,'');" maxlength="10" /></th>
 		</tr>
 		<tr>
 			<th style="width:200px">Age :<input type="text" id="age"  style="width:50px"  name="c_8"/> <select id="age_type" name="c_9" style="width:50px"><option value="Years">Y</option><option value="Months">M</option><option value="Days">D</option></select></th>
 			<th>Sex :<select id="sex" name="c_10" style="width:50px"><option value="Male">M</option><option value="Female">F</option></select></th>
-			<!--
-			<th style="width:100px">Sample No</th>
-			<th style="width:50px"><input type="text" id="slno"  name="c_8" class="span1" onkeyup="chk_smp(2)"/></th>
-			-->
+			<th>
+				Sample No
+			</th>
+			<td>
+				<input type="text" class="imp span2" id="samp_no" name="c_11" />
+			</td>
 			<th>Ward</th>
 			<th>
-				<select id="ward"  name="c_11">
-					<option value="0">--Select Ward--</option>
+				<select id="ward"  name="c_12">
+					<option value="0">Select Ward</option>
 					<?php
 						$ward=mysqli_query($link,"select * from ward_master order by ward_name");
 						while($w=mysqli_fetch_array($ward))
@@ -169,9 +172,11 @@ if($exp)
 				</select>
 				<!-------------------------------->
 			</th>
+		</tr>
+		<tr>
 			<th>Disease</th>
 			<th>
-				<select id="pat_dis" onchange="save_disease(this.value)" name="c_12" onkeyup="select_enter(this.id,event)">
+				<select id="pat_dis" onchange="save_disease(this.value)" name="c_13">
 					<option value="0">None</option>
 					<?php
 					$pat_dis=mysqli_fetch_array(mysqli_query($link,"select * from patient_disease_details where patient_id='$uhid' and opd_id='$opd_id'"));
@@ -184,23 +189,15 @@ if($exp)
 					?>
 				</select>
 			</th>
-		</tr>
-		<tr>
-			<th>
-				<label style="display:none;"><input type="checkbox" id="nr" onclick="check_pat_type()"> NR</label>
-			</th>
-			<th>
-				Sample No
-				<input type="text" class="span1" id="samp_no" name="" class="imp" />
-			</th>
 			<th colspan="4">
-				<select id="pat_type_covid" onkeyup="select_enter(this.id,event)">
+				<label style="display:none;"><input type="checkbox" id="nr" onclick="check_pat_type()"> NR</label>
+				<select id="pat_type_covid" name="c_14" onkeyup="select_enter(this.id,event)">
 					<option value="0">--Select Patient Type(Covid)--</option>
 					<option value="1">COVID-19</option>
 					<option value="2">COVID-19 Suspected</option>
 					<option value="3">COVID-19 Treated</option>
 				</select>
-				<select id="pat_type_nrhm" onkeyup="select_enter(this.id,event)" style="width:150px;">
+				<select id="pat_type_nrhm" name="c_15" onkeyup="select_enter(this.id,event)" style="width:150px;">
 					<option value="0">Select Patient Type</option>
 					<option value="1">Pregnant Women</option>
 					<option value="2">Infant</option>
@@ -217,7 +214,7 @@ if($exp)
 					}	
 					?>
 				</select>
-				<select id="auth" style="display:none" name="c_2" onkeyup="select_enter(this.id,event)">
+				<select id="auth" style="display:none" name="" onkeyup="select_enter(this.id,event)">
 					<option value="0">--Select Auth. Person--</option>
 					<?php
 					$auth=mysqli_query($link,"select * from pat_free_auth order by seq");
@@ -238,8 +235,8 @@ if($exp)
 			<th colspan="7">
 			<div style="border-bottom:1px solid #DDDDDD">
 			<div align="center" style="border-bottom:1px solid #CCC">
-				<input type="text" class="span5" id="srch_test" onfocus="load_tests1()" onblur="setTimeout(function(){$('#ref_doc').empty().hide();},600);" placeholder="Search Test Name" />
-				<input type="hidden" placeholder="Search Test" onkeyup="select_test(this.value,event)" id="tst_search" name="c_13" onfocus="slide_test()"/> 
+				<input type="hidden" class="span5" id="srch_test" onfocus="load_tests1()" onblur="setTimeout(function(){$('#ref_doc').empty().hide();},600);" placeholder="Search Test Name" />
+				<input type="text" placeholder="Search Test" onkeyup="select_test(this.value,event)" id="tst_search" name="c_13" onfocus="slide_test()"/> 
 			</div>		
 			
 			<div style="display:none;">
@@ -272,7 +269,7 @@ if($exp)
 		<tr>
 			<th colspan="7"><div style="font-size:15px;text-align:center">Patient No: <span id="patient_no"></span></div></th>
 		</tr>
-		<tr style="display:none;">
+		<tr>
 			<td colspan="7" style="text-align:center">
 			<?php
 			$sampl_det=mysqli_query($link,"select * from recp_sample order by id");
@@ -389,12 +386,13 @@ input[type="checkbox"]:not(old) + label, input[type="radio"]:not(old) + label
 
 #test_list
 {
-	//height:400px;
-	//overflow:scroll;
-	//overflow-x:hidden;
+	height:400px;
+	overflow:scroll;
+	overflow-x:hidden;
 }
 #date_serial
 {
+	//display: none;
 	font-weight:bold;
 	font-size:20px;
 	text-align:right;
@@ -447,7 +445,7 @@ input[type="radio"]
 
 	$(document).ready(function(){
 		load_serial(5);
-		//load_test('','');
+		load_test('','');
 		$(".datepicker").datepicker({
 			dateFormat: 'yy-mm-dd',
 			maxDate: '0',
@@ -953,25 +951,34 @@ function save_data(val)
 		{
 			//alert(data);
 			var vl=JSON.parse(data);
-			if(val=="save")
+			if(vl['response']>0)
 			{
-				$("#patient_id").val(vl['pid']);
-				$("#opd_id").val(vl['opd']);
-				$("#batch").val(vl['bch']);
-				$("#patient_no").text(vl['opd']);
-				$("#save").text("Update");
-				bootbox.hideAll();
-				bootbox.dialog({ message: "<h5>Saved. Redirecting to barcode generation</h5>"});
-				setTimeout(function(){
+				if(val=="save")
+				{
+					$("#patient_id").val(vl['pid']);
+					$("#opd_id").val(vl['opd']);
+					$("#batch").val(vl['bch']);
+					$("#patient_no").text(vl['opd']);
+					$("#save").text("Update");
 					bootbox.hideAll();
-					load_sample(vl['pid'],vl['opd'],'',vl['bch'])
-				},1500);
+					bootbox.dialog({ message: "<h5>Saved. Redirecting to barcode generation</h5>"});
+					setTimeout(function(){
+						bootbox.hideAll();
+						load_sample(vl['pid'],vl['opd'],'',vl['bch'])
+					},1500);
+				}
+				else
+				{
+					bootbox.hideAll();
+					bootbox.dialog({ message: "<h5>UPDATED</h5>"});
+					setTimeout(function(){	bootbox.hideAll();	},1500);
+				}
 			}
 			else
 			{
 				bootbox.hideAll();
-				bootbox.dialog({ message: "<h5>UPDATED</h5>"});
-				setTimeout(function(){	bootbox.hideAll();	},1500);
+				bootbox.dialog({ message: "<h5>Error</h5>"});
+				setTimeout(function(){	bootbox.hideAll();	},2000);
 			}
 			//$("#save").prop("disabled",false);
 		});
@@ -1015,6 +1022,29 @@ function print_barcode()
 	{
 		load_sample($("#patient_id").val().trim(), $("#opd_id").val().trim(), '', $("#batch").val().trim());
 	}
+}
+function barcode_single(pid,opd,ipd,batch_no,vc)
+{
+	var tst_vac="";
+	var tst_vac_n=$(".tst_vac:checked");
+	for(var j=0;j<tst_vac_n.length;j++)
+	{
+		if($(tst_vac_n[j]).val())
+		{
+			if(j==0)
+			{
+				tst_vac=$(tst_vac_n[j]).val();
+			}
+			else
+			{
+				tst_vac+=","+$(tst_vac_n[j]).val();
+			}
+		}
+	}
+	
+	var user=$("#user").text();
+	var url="pages/barcode_generate.php?pid="+pid+"&opd_id="+opd+"&ipd_id="+ipd+"&batch_no="+batch_no+"&user="+user+"&vac="+vc+"&tst_vac="+tst_vac+"&sing="+1;
+	window.open(url,'','fullscreen=yes,scrollbars=yes');
 }
 function load_sample(uhid,opd,ipd,batch_no)
 {
@@ -1274,6 +1304,7 @@ function load_pat_details(opdid)
 	},
 	function(data,status)
 	{
+		//alert(data);
 		var vl=JSON.parse(data);
 		//var det=data.split("#test_det#");
 		//var info=det[0].split("@k_details@");
@@ -1284,10 +1315,10 @@ function load_pat_details(opdid)
 		$("#age").val(vl['age']);
 		$("#age_type").val(vl['age_type']);
 		$("#sex").val(vl['sex']);
+		$("#pat_type").val(vl['pat_type']);
 		
 		//$("#o_i_pd").val(info[6]);
 		
-		$("#pat_type").val(vl['pat_type']);
 		$("#ward").val(vl['ward']);
 		
 		$("#phone").val(vl['phone']);
@@ -1338,9 +1369,32 @@ function load_pat_details(opdid)
 		$("#patient_id").val(vl['patient_id']);
 		$("#batch").val('1');
 		load_search();
-		load_selected_tests();
+		//load_selected_tests();
+		load_selected_test_list();
 	})
 	
+}
+function load_selected_test_list()
+{
+	$.post("pages/load_test_list.php",
+	{
+		pid:$("#patient_id").val().trim(),
+		opd:$("#opd_id").val().trim(),
+		type:3
+	},
+	function(data,status)
+	{
+		//alert(data);
+		var vl=JSON.parse(data);
+		//$("#results").html(data);
+		$(".tst_span").css("background-color", "#EEEEEE");
+		$(".tst_check").prop("checked", false);
+		for(var i=0; i<(vl.length); i++)
+		{
+			$(".dv"+vl[i]).css("background-color", "#DDDDDD");
+			$(".tst"+vl[i]).prop("checked", true);
+		}
+	});
 }
 function load_selected_tests()
 {
@@ -1562,7 +1616,7 @@ function select_enter(id,e)
 		}
 		if(id=="pat_type_nrhm")
 		{
-			$("#srch_test").focus();
+			$("#tst_search").focus(200);
 		}
 		if(id=="free")
 		{
@@ -1572,7 +1626,7 @@ function select_enter(id,e)
 			}
 			else
 			{
-				$("#srch_test").focus();
+				$("#tst_search").focus(200);
 			}
 		}
 		if(id=="auth" && $("#"+id).val()!=0)
@@ -1583,14 +1637,14 @@ function select_enter(id,e)
 			}
 			else
 			{
-				$("#srch_test").focus();
+				$("#tst_search").focus(200);
 			}
 		}
 		if(id=="auth_disc")
 		{
 			if($("#auth_disc").val()!=0)
 			{
-				$("#srch_test").focus();
+				$("#tst_search").focus(200);
 			}
 		}
 	}
