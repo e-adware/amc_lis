@@ -92,7 +92,7 @@ if($_SESSION['emp_id'])
 					}
 					else if($l['levelid']==2)
 					{
-						echo "222"; // Reception
+						echo "1"; // Reception
 					}
 					else
 					{

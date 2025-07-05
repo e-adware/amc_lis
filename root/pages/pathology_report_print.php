@@ -3579,7 +3579,7 @@ foreach($doctors AS $doctor)
 		if($("#view").val()==0)
 		{
 			window.print();
-			//window.close();
+			window.close();
 		}
 	});
 	
