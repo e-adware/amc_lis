@@ -295,18 +295,18 @@ if ($type == 1) {
 
 		$chk_info = mysqli_num_rows(mysqli_query($link, "select * from patient_info where patient_id='$det[patient_id]'"));
 		if ($chk_info > 0) {
-			if ($emp[levelid] == 1 || $emp[levelid] == 13) {
+			//if ($emp[levelid] == 1 || $emp[levelid] == 13) {
 				mysqli_query($link, "update patient_info set name='$name',sex='$sex',age='$age',age_type='$age_type',hosp_no='$hosp_no',phone='$phone',address='$address' where patient_id='$det[patient_id]'");
-			}
+			//}
 		} else {
 			mysqli_query($link, "INSERT INTO `patient_info`(`patient_id`, `hosp_no`, `name`, `sex`, `dob`, `age`, `age_type`, `phone`, `address`, `user`, `date`, `time`) VALUES ('$det[patient_id]','$hosp_no','$name','$sex','','$age','$age_type','$phone','$address','$user','$date','$time')");
 		}
 
-		if ($emp[levelid] == 1 || $emp[levelid] == 13) {
+		//if ($emp[levelid] == 1 || $emp[levelid] == 13) {
 			mysqli_query($link, "update patient_info set name='$name',sex='$sex',age='$age',age_type='$age_type' where hosp_no='$hosp_no'");
-		}
+		//}
 
-		if ($emp[levelid] == 1 || $emp[levelid] == 13) {
+		//if ($emp[levelid] == 1 || $emp[levelid] == 13) {
 			mysqli_query($link, "delete from patient_test_details where patient_id='$det[patient_id]' and opd_id='$opd_id'");
 			//mysqli_query($link,"delete from phlebo_sample where patient_id='$det[patient_id]' and opd_id='$opd_id'");
 
@@ -325,7 +325,7 @@ if ($type == 1) {
 
 					mysqli_query($link, "INSERT INTO `patient_test_details`(`patient_id`, `opd_id`, `ipd_id`, `batch_no`, `testid`, `sample_id`, `test_rate`, `test_discount`, `dept_serial`, `addon_testid`, `date`, `time`, `user`, `type`) VALUES ('$det[patient_id]','$opd_id','','1','$test','$smpl[SampleId]','$rate','0','','0','$date','$time','$user','2')");
 				}
-			}
+			//}
 
 
 			mysqli_query($link, "delete from patient_disease_details where patient_id='$det[patient_id]' and opd_id='$opd_id'");

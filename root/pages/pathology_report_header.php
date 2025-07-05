@@ -2,8 +2,8 @@
 <div>
 	<table class="table table-condensed patient_header">
 		<tr>
-			<th style="width: 15%;">Bill No.</th>
-			<th style="width: 45%;">: <?php echo $pat_reg['bill_no']; ?></th>
+			<th style="width: 15%;">Sample No.</th>
+			<th style="width: 45%;">: <?php echo $pat_reg['type_prefix'] . $pat_reg['sample_serial'] ; ?></th>
 			<th style="width: 15%;">Hospital No.</th>
 			<th>: <?php echo $pat_info["hosp_no"]; ?></th>
 		</tr>

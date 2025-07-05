@@ -47,7 +47,7 @@ $header3="     Phone Number(s): ".$phon;
 		<h4>
 			<?php echo $company_info["name"]; ?><br>
 			<small><?php echo $company_info["address"]; ?><br/>
-			<span>Helpline - 9395087661 WA only. Tollfree - 18008331388</span>
+			<span style='font-size: 16px'>Advanced Clinical Biochemistry Laboratory</span>
 			<!--Phone No. : (0373) 2300080, 2300352, Website : www.assammedicalcollege.in-->
 			</small>
 		</h4>
