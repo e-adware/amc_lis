@@ -350,7 +350,8 @@ foreach($vac as $vc)
 				{
 					$iso_no="";
 					
-					$param_qry=mysqli_query($link, "SELECT `TestId`, `ParamaterId`, `sample`, `vaccu` FROM `Testparameter` WHERE `TestId`='$testid' AND `vaccu`='$vc' ORDER BY `sequence` ASC");
+					//$param_qry=mysqli_query($link, "SELECT `TestId`, `ParamaterId`, `sample`, `vaccu` FROM `Testparameter` WHERE `TestId`='$testid' AND `vaccu`='$vc' ORDER BY `sequence` ASC");
+					$param_qry=mysqli_query($link, "SELECT `TestId`, `ParamaterId`, `sample`, `vaccu` FROM `Testparameter` WHERE `TestId`='$testid' AND (`vaccu` = '$vc' OR `ParamaterId` IN (639, 640, 641)) ORDER BY `sequence` ASC");
 					while($param_info=mysqli_fetch_array($param_qry))
 					{
 						$paramid=$param_info["ParamaterId"];
