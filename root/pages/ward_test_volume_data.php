@@ -53,7 +53,6 @@ if ($type == 'load_data') {
         $test_names[] = $row['testname'];
     }
 
-    // Optimized query to get all counts at once
     // $main_qry = "SELECT b.`wardName`, a.`testid`, COUNT(a.`opd_id`) AS `count`
     //     FROM `patient_test_details` a
     //     JOIN `uhid_and_opdid` b ON a.`opd_id` = b.`opd_id`
