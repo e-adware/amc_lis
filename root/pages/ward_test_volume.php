@@ -35,9 +35,9 @@
                     <select id="sel_ward" class="span2">
                         <option value="0">SELECT WARD</option>
                         <?php
-                        $ward_qry = mysqli_query($link, "SELECT DISTINCT(wardName) FROM `uhid_and_opdid` ORDER BY `wardName`");
+                        $ward_qry = mysqli_query($link, "SELECT * FROM `ward_master` ORDER BY `ward_name`");
                         while ($ward = mysqli_fetch_array($ward_qry)) {
-                            echo "<option value='$ward[wardName]'>$ward[wardName]</option>";
+                            echo "<option value='$ward[id]'>$ward[ward_name]</option>";
                         }
                         ?>
                     </select>

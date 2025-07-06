@@ -19,19 +19,20 @@ if ($type == 'load_data') {
     $endTime = $end . ":59";
 
     // Get ward names
-    $ward_qry = "SELECT DISTINCT(`wardName`) FROM `uhid_and_opdid` WHERE `date` BETWEEN '$f_date' AND '$t_date' AND `type` = 2";
+    // $ward_qry = "SELECT DISTINCT(`wardName`) FROM `uhid_and_opdid` WHERE `date` BETWEEN '$f_date' AND '$t_date' AND `type` = 2";
+    $ward_qry = "SELECT DISTINCT(ward_name) FROM ward_master a, uhid_and_opdid b WHERE `date` BETWEEN '$f_date' AND '$t_date' AND a.id = b.ward";
     if ($ward) {
-        $ward_qry .= " AND `wardName` = '$ward'";
+        $ward_qry .= " AND a.`id` = '$ward'";
     }
     if ($time_per) {
-        $ward_qry .= " AND `time` BETWEEN '$startTime' AND '$endTime'";
+        $ward_qry .= " AND b.`time` BETWEEN '$startTime' AND '$endTime'";
     }
-    $ward_qry .= " ORDER BY `wardName`";
+    $ward_qry .= " ORDER BY a.`ward_name`";
 
     $ward_names = [];
     $ward_sql = mysqli_query($link, $ward_qry);
     while ($row = mysqli_fetch_array($ward_sql)) {
-        $ward_names[] = $row['wardName'];
+        $ward_names[] = $row['ward_name'];
     }
 
     // Get test names and IDs
@@ -53,18 +54,22 @@ if ($type == 'load_data') {
     }
 
     // Optimized query to get all counts at once
-    $main_qry = "SELECT b.`wardName`, a.`testid`, COUNT(a.`opd_id`) AS `count`
-        FROM `patient_test_details` a
-        JOIN `uhid_and_opdid` b ON a.`opd_id` = b.`opd_id`
-        WHERE a.`date` BETWEEN '$f_date' AND '$t_date'
-        AND b.`type` = 2";
+    // $main_qry = "SELECT b.`wardName`, a.`testid`, COUNT(a.`opd_id`) AS `count`
+    //     FROM `patient_test_details` a
+    //     JOIN `uhid_and_opdid` b ON a.`opd_id` = b.`opd_id`
+    //     WHERE a.`date` BETWEEN '$f_date' AND '$t_date'
+    //     AND b.`type` = 2";
+
+    // $main_qry = "SELECT b.`wardName`, a.`testid`, COUNT(a.`opd_id`) AS `count` FROM `patient_test_details` a, `uhid_and_opdid` b WHERE a.`opd_id` = b.`opd_id`  AND a.`date` BETWEEN '2025-07-05' AND '2025-07-06' AND b.`type` = 2 ";
+
+    $main_qry = "SELECT c.ward_name, a.`testid`, COUNT(a.`opd_id`) AS `count` FROM `patient_test_details` a, `uhid_and_opdid` b, `ward_master` c WHERE a.`opd_id` = b.`opd_id` AND a.`date` BETWEEN '$f_date' AND '$t_date' AND b.`ward` = c.`id`";
 
     if ($time_per) {
         $main_qry .= " AND a.`time` BETWEEN '$startTime' AND '$endTime'";
     }
 
     if ($ward) {
-        $main_qry .= " AND b.`wardName` = '$ward'";
+        $main_qry .= " AND c.`id` = '$ward'";
     }
 
     if ($sel_test) {
@@ -79,13 +84,13 @@ if ($type == 'load_data') {
         }
     }
 
-    $main_qry .= " GROUP BY b.`wardName`, a.`testid`";
+    $main_qry .= " GROUP BY c.`ward_name`, a.`testid`";
 
     // Store counts in associative array
     $counts = [];
     $result_sql = mysqli_query($link, $main_qry);
     while ($row = mysqli_fetch_array($result_sql)) {
-        $counts[$row['wardName']][$row['testid']] = $row['count'];
+        $counts[$row['ward_name']][$row['testid']] = $row['count'];
     }
 
     $colspan = 1;
