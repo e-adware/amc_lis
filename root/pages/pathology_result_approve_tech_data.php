@@ -541,7 +541,7 @@ if ($type == "load_pat_list_multi_print") {
 
 	$test_str .= " ORDER BY a.`slno` DESC LIMIT " . $list_start;
 
-	echo $test_str;
+	$test_str;
 
 	$barcode_num = 1;
 
