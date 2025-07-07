@@ -97,10 +97,10 @@ if ($type == "load_pat_list") {
 
 		if ($sample_type) {
 			$test_str .= " AND b.`type_prefix`='$sample_type'";
-		}
-
-		if ($sample_serial != "") {
-			$test_str .= " AND b.`sample_serial`='$sample_serial'";
+			
+			if ($sample_serial != "") {
+				$test_str .= " AND b.`sample_serial`='$sample_serial'";
+			}
 		}
 
 		if ($bill_no != "") {
@@ -508,6 +508,9 @@ if ($type == "load_pat_list_multi_print") {
 	$patType = $_POST["patType"];
 	$flaggedPatient = $_POST["flaggedPatient"];
 	$list_start = $_POST["list_start"];
+	
+	$sample_type = $_POST['sample_type'];
+	$sample_serial = $_POST['sample_serial'];
 
 	$zz = 0;
 
@@ -517,9 +520,15 @@ if ($type == "load_pat_list_multi_print") {
 	if ($patType) {
 		$test_str .= " AND b.`receipt_no`='$patType'";
 	}
-
-
-
+	
+	if ($sample_type) {
+		$test_str .= " AND b.`type_prefix`='$sample_type'";
+		
+		if ($sample_serial != "") {
+			$test_str .= " AND b.`sample_serial`='$sample_serial'";
+		}
+	}
+	
 	if ($uhid != "") {
 		$test_str .= " AND b.`patient_id`='$uhid'";
 
@@ -552,6 +561,7 @@ if ($type == "load_pat_list_multi_print") {
 			<tr>
 				<th>#</th>
 				<th>Hospital No.</th>
+				<th>Sample No.</th>
 				<?php
 				if ($glob_patient_type == 1) {
 					echo "<th>Batch No</th>";
@@ -562,7 +572,7 @@ if ($type == "load_pat_list_multi_print") {
 					//echo "<th>Barcode</th>";
 				}
 				?>
-				<th>Bill No</th>
+				<!--<th>Bill No</th>-->
 				<th>Name</th>
 				<th>Date</th>
 				<th>Test</th>
@@ -605,6 +615,7 @@ if ($type == "load_pat_list_multi_print") {
 			<tr class="<?php echo $flag_class; ?> <?php echo $printClass; ?>" id="<?php echo $tr_id; ?>">
 				<td><?php echo $i; ?></td>
 				<td><?php echo $pat_info['hosp_no']; ?></td>
+				<td><?= $pat_reg['type_prefix'] . $pat_reg['sample_serial'] ?></td>
 				<td style="display:none;">
 					<?php echo $opd_id; ?>
 					<input type="hidden" id="pid_<?php echo $i; ?>" value="<?php echo $patient_id; ?>" />
@@ -633,7 +644,7 @@ if ($type == "load_pat_list_multi_print") {
 					}
 				}
 				?>
-				<td><?php echo $pat_reg['bill_no']; ?></td>
+				<!--<td><?php echo $pat_reg['bill_no']; ?></td>-->
 				<td><?php echo $pat_info['name']; ?></td>
 				<td><?php echo $pat_reg['date']; ?></td>
 				<td><?php echo $tstNames; ?></td>

@@ -58,17 +58,21 @@ if($glob_patient_type==0)
 			<tr>
 				<td  style="text-align:center;font-weight:bold">
 					<!--Cash Memo No.--> <br/> <input type="text" id="bill_no" style="<?php echo $pat_typ;?>" onkeyup="load_pat_event(event)"/>
-					<select class="span2" id="patType" onchange="load_pat_ser(0)">
-						<option value="0">Select All</option>
-						<?php
-						$q=mysqli_query($link,"SELECT DISTINCT `receipt_no` FROM `uhid_and_opdid` ORDER BY `receipt_no`");
-						while($r=mysqli_fetch_array($q))
+					Sample Type
+					<select id="type_prefix" class="span2" onchange="load_pat_ser(0)">
+						<option value="">All</option>
+					<?php
+						//$type_qry = mysqli_query($link, "SELECT DISTINCT `type_prefix` FROM `uhid_and_opdid`");
+						$type_qry = mysqli_query($link, "SELECT `sample_prefix` FROM `sample_prefix_master` WHERE `status`=0");
+						while ($type = mysqli_fetch_array($type_qry))
 						{
-						?>
-						<option value="<?php echo $r['receipt_no'];?>"><?php echo $r['receipt_no'];?></option>
-						<?php
-						}?>
+							$type_name = str_replace("/", "", $type['sample_prefix']);
+							echo "<option value='$type[sample_prefix]'>$type_name</option>";
+						}
+					?>
 					</select>
+					<input onkeyup="load_pat_ser(0)" type="text" id="sample_serial" class="span1" />
+					
 				</td>
 				<td  style="text-align:center;font-weight:bold">
 					Hospital No. <br/> <input type="text" id="uhid" onkeyup="load_pat_event(event)"/> 
@@ -510,7 +514,9 @@ if($glob_patient_type==0)
 			list_start:$("#list_start").val(),
 			dept_serial:$("#dept_serial").val(),
 			dept_serial_no:$("#dept_serial_no").val().trim(),
-			patType:$("#patType").val()
+			patType:$("#patType").val(),
+			sample_type: $("#type_prefix").val(),
+			sample_serial: $("#sample_serial").val()
 		},
 		function(data,status)
 		{

@@ -22,3 +22,8 @@ INSERT INTO `menu_master` (`par_id`, `par_name`, `header`, `sequence`, `hidden`,
 
 
 ALTER TABLE `uhid_and_opdid` ADD `disease_id` INT NOT NULL DEFAULT '0' AFTER `ward`; 
+=========================================================================================
+
+ALTER TABLE `uhid_and_opdid` ADD INDEX(`type_prefix`); 
+ALTER TABLE `uhid_and_opdid` ADD INDEX(`sample_serial`); 
+

@@ -63,29 +63,27 @@ if ($glob_patient_type == 0) {
 
 			<tr>
 				<td style="text-align:center;font-weight:bold">
-					<!--Cash Memo No.--><input type="text" id="bill_no" style="<?php echo $pat_typ; ?>"
-						onkeyup="load_pat_event(event)" />
+					<!--Cash Memo No.--><input type="text" id="bill_no" style="<?php echo $pat_typ; ?>" onkeyup="load_pat_event(event)" />
 					Sample Type<br>
-					<select id="reg_type" class="span2" onchange="load_pat_ser(0)">
+					<select id="type_prefix" class="span2" onchange="load_pat_event('')">
 						<option value="0">All</option>
 						<?php
-						$type_qry = mysqli_query($link, "SELECT DISTINCT `type_prefix` FROM `uhid_and_opdid`");
-						while ($type = mysqli_fetch_array($type_qry)) {
-
-							$type_name = str_replace("/", "", $type['type_prefix']);
-							echo "<option value='$type[type_prefix]'>$type_name</option>";
+						//$type_qry = mysqli_query($link, "SELECT DISTINCT `type_prefix` FROM `uhid_and_opdid`");
+						$type_qry = mysqli_query($link, "SELECT `sample_prefix` FROM `sample_prefix_master` WHERE `status`=0");
+						while ($type = mysqli_fetch_array($type_qry))
+						{
+							$type_name = str_replace("/", "", $type['sample_prefix']);
+							echo "<option value='$type[sample_prefix]'>$type_name</option>";
 						}
 						?>
 					</select>
-					<input onkeyup="load_pat_ser(0)" type="text" id="sample_serial" class="span1" />
-
+					<input onkeyup="load_pat_event(event)" type="text" id="sample_serial" class="span1" />
 				</td>
 				<td style="text-align:center;font-weight:bold">
 					Hospital No. <br /> <input type="text" id="uhid" onkeyup="load_pat_event(event)" />
 				</td>
 				<td style="text-align:center;font-weight:bold; display:none;<?php echo $bar_sty; ?>">
-					Barcode ID <br /> <input type="text" id="barcode_id" list="bar_list"
-						onkeyup="load_pat_event(event)" />
+					Barcode ID <br /> <input type="text" id="barcode_id" list="bar_list" onkeyup="load_pat_event(event)" />
 					<datalist id="bar_list">
 						<?php
 						$date = date('Y-m-d');
@@ -415,7 +413,7 @@ if ($glob_patient_type == 0) {
 				dept_serial: $("#dept_serial").val(),
 				dept_serial_no: $("#dept_serial_no").val().trim(),
 				patType: $("#patType").val(),
-				sample_type: $("#reg_type").val(),
+				sample_type: $("#type_prefix").val(),
 				sample_serial: $("#sample_serial").val(),
 
 			},
