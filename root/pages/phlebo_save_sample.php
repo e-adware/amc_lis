@@ -13,6 +13,16 @@ $sampStat=$_POST['sampStat'];
 $slno=$_POST['dailySlno'];
 $user=$_POST['user'];
 
+if($opd!="")
+{
+	$pin=$opd;
+}else if($ipd!="")
+{
+	$pin=$ipd;
+}
+
+$dt_tm=mysqli_fetch_array(mysqli_query($link, " SELECT * FROM `uhid_and_opdid` WHERE `patient_id`='$pid' and `opd_id`='$pin' "));
+
 $date=date('Y-m-d');
 $time=date("H:i:s");
 
@@ -58,6 +68,45 @@ foreach($vac as $vc)
 			
 			$tst_ar.=$t["testid"].",";
 		}
+		
+		if($vc==2 && $dt_tm["type"]==1) // OPD && GLUCOSE RBS
+		{
+			// 
+			$tid=mysqli_query($link,"select distinct testid from patient_test_details where patient_id='$pid' and opd_id='$opd' and ipd_id='$ipd' and batch_no='$batch_no' and testid=1327");
+			
+			while($t=mysqli_fetch_array($tid))
+			{
+				$samp=mysqli_fetch_array(mysqli_query($link,"select sample from Testparameter where TestId='$t[testid]' and vaccu='$vc' and sample>0"));
+				
+				if(!$samp["sample"]){ $samp["sample"]=0; }
+				
+				$chk_tst=mysqli_fetch_array(mysqli_query($link,"select count(slno) as tot from phlebo_sample where patient_id='$pid' and opd_id='$opd' and ipd_id='$ipd' and testid='$t[testid]' and `batch_no`='$batch_no' and `vaccu`='$vc'"));
+				if($chk_tst["tot"]==0)
+				{
+					// Urine Test Serial No. Start
+					$test_serial=0;
+					if($t["testid"]==806)
+					{
+						$testid=$t["testid"];
+						
+						$testCount=mysqli_fetch_assoc(mysqli_query($link, "SELECT COUNT(`testid`) AS `total` FROM `phlebo_sample` WHERE `testid`='$testid' AND `date`='$date'"));
+						
+						$test_serial=$testCount["total"]+1;
+					}
+					// Urine Sample Serial End
+					
+					mysqli_query($link, "insert into phlebo_sample(`patient_id`, `opd_id`, `ipd_id`, `batch_no`,`vaccu`, `testid`, `sampleid`, `user`, `time`, `date`, `test_serial`) values('$pid','$opd','$ipd','$batch_no','$vc','$t[testid]','$samp[sample]','$user','$time','$date','$test_serial')");
+					mysqli_query($link, "INSERT INTO `patient_vaccu_details`(`patient_id`, `opd_id`, `ipd_id`, `batch_no`, `vaccu_id`, `rate`, `time`, `date`) VALUES ('$pid','$opd','$ipd','$batch_no','$vc','0','$time','$date')");
+				}
+				else
+				{
+					//mysqli_query($link,"update phlebo_sample set vaccu='$vc',sampleid='$samp[sample]' where patient_id='$pid' and opd_id='$opd' and ipd_id='$ipd' and testid='$t[testid]' and `batch_no`='$batch_no' and vaccu!='$vc'");
+				}
+				
+				$tst_ar.=$t["testid"].",";
+			}
+		}
+		
 		$vv.=$vc.",";
 	}
 }

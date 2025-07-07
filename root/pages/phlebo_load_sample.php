@@ -63,7 +63,6 @@ echo "</table>";
 echo "<table class='table table-bordered table-condensed table-report table-hover' id='samp_det_table'>";
 
 
-
 $test=mysqli_query($link,"select * from patient_test_details where `patient_id`='$pid' and `opd_id`='$opd' and `ipd_id`='$ipd' and batch_no='$batch_no'");
 while($tst=mysqli_fetch_array($test))
 {
@@ -99,11 +98,17 @@ while($tst=mysqli_fetch_array($test))
 	}
 	else
 	{
-		$vaccu=mysqli_query($link,"select distinct vaccu from Testparameter where TestId='$tst[testid]' and vaccu>0");
-		while($vac=mysqli_fetch_array($vaccu))
+		if($dt_tm["type"]==1 && $tst["testid"]==1327) // OPD && GLUCOSE RBS
 		{
-			$vcc[]=$vac["vaccu"];
-		}	
+			$vcc[]=2;
+		}else
+		{
+			$vaccu=mysqli_query($link,"select distinct vaccu from Testparameter where TestId='$tst[testid]' and vaccu>0");
+			while($vac=mysqli_fetch_array($vaccu))
+			{
+				$vcc[]=$vac["vaccu"];
+			}
+		}
 	}
 }
 
@@ -171,6 +176,7 @@ foreach($vcc2 as $vc)
 		<td style="width:30%;">
 			<?php
 				$tid=mysqli_query($link,"select distinct a.testid from patient_test_details a,Testparameter b where a.testid=b.TestId and b.vaccu='$vc' and a.patient_id='$pid' and a.opd_id='$opd' and a.ipd_id='$ipd' and a.batch_no='$batch_no'");
+				
 				while($td=mysqli_fetch_array($tid))
 				{
 					$tname=mysqli_fetch_array(mysqli_query($link,"select testname from testmaster where testid='$td[testid]'"));
@@ -190,6 +196,32 @@ foreach($vcc2 as $vc)
 					<input type="checkbox" id="test_check<?php echo $td["testid"]; ?>" value="<?php echo $td["testid"]; ?>" class="tst_vac test_vac_cls<?php echo $vc; ?>" <?php echo $test_chk_str; ?> <?php echo $test_dis_str; ?> />
 				<?php
 					echo $tname["testname"]."</label></div>";
+				}
+				
+				if($vc==2 && $dt_tm["type"]==1) // OPD && GLUCOSE RBS
+				{
+					$tid=mysqli_query($link,"select distinct testid from patient_test_details where patient_id='$pid' and opd_id='$opd' and ipd_id='$ipd' and batch_no='$batch_no' and testid=1327");
+					
+					while($td=mysqli_fetch_array($tid))
+					{
+						$tname=mysqli_fetch_array(mysqli_query($link,"select testname from testmaster where testid='$td[testid]'"));
+					
+						echo "<div class='tests_phlebo'>";
+						
+						$test_chk_str="";
+						$test_dis_str="";
+						$test_chk=mysqli_fetch_array(mysqli_query($link,"select count(*) as tot from phlebo_sample where `patient_id`='$pid' and `opd_id`='$opd' and testid='$td[testid]'"));
+						if($test_chk[tot]>0)
+						{
+							$test_chk_str="checked";
+							$test_dis_str="disabled";
+						}
+					?>
+					<label onclick="checked_test('<?php echo $i; ?>','<?php echo $vc; ?>','<?php echo $td["testid"]; ?>')">
+						<input type="checkbox" id="test_check<?php echo $td["testid"]; ?>" value="<?php echo $td["testid"]; ?>" class="tst_vac test_vac_cls<?php echo $vc; ?>" <?php echo $test_chk_str; ?> <?php echo $test_dis_str; ?> />
+					<?php
+						echo $tname["testname"]."</label></div>";
+					}
 				}
 				
 				if(mysqli_num_rows($tid)==0)
