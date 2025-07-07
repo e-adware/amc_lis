@@ -79,20 +79,6 @@ else
 	$reg_time	=$pat_reg["time"];
 }
 
-$barcodes="";
-$each_barcode_qry=mysqli_query($link,"SELECT DISTINCT a.`barcode_id` FROM `test_sample_result` a, `testmaster` c WHERE a.`testid`=c.`testid` AND a.`patient_id`='$uhid' AND a.`opd_id`='$opd_id' AND a.`ipd_id`='$ipd_id' AND a.`batch_no`='$batch_no'");
-while($bCode=mysqli_fetch_array($each_barcode_qry))
-{
-	if($barcodes)
-	{
-		$barcodes.=",".$bCode['barcode_id'];
-	}
-	else
-	{
-		$barcodes=$bCode['barcode_id'];
-	}
-}
-
 //$centre_info=mysqli_fetch_array(mysqli_query($link, "SELECT `centrename` FROM `centremaster` WHERE `centreno`='$pat_reg[center_no]'"));
 
 if($pat_info["dob"]!=""){ $age=age_calculator_date_only($pat_info["dob"],$reg_date); }else{ $age=$pat_info["age"]." ".$pat_info["age_type"]; }
