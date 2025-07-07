@@ -471,6 +471,7 @@ $page[1029] = 'pages/flagged_patient_report.php';
 $page[1030] = 'pages/machine_utilization.php';
 
 $page[1031] = 'pages/free_cases.php';
+$page[1032] = 'pages/report_dep_wise.php';
 
 $page[1041] = 'pages/pat_reg_opd.php';
 $page[1042] = 'pages/pat_reg_indoor.php';
