@@ -875,9 +875,10 @@ foreach($doctors AS $doctor)
 							$paramid=$test_param["ParamaterId"];
 							$print_status=$test_param["status"];
 							
-							$test_result=mysqli_fetch_array(mysqli_query($link,"SELECT `result` FROM `testresults` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `paramid`='$paramid'"));// AND `doc`='$doctor'
+							$test_result=mysqli_fetch_array(mysqli_query($link,"SELECT `result`,`result_hide` FROM `testresults` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `paramid`='$paramid'"));// AND `doc`='$doctor'
 							
 							$summary_text=$test_result["result"];
+							$print_status=$test_result["result_hide"];
 							
 							if(strpos($summary_text, $page_breaker) !== false)
 							{
@@ -930,7 +931,8 @@ foreach($doctors AS $doctor)
 							$paramid=$test_param["ParamaterId"];
 							$print_status=$test_param["status"];
 							
-							$test_result=mysqli_fetch_array(mysqli_query($link,"SELECT `result`,`range_id` FROM `testresults` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `paramid`='$paramid'"));// AND `doc`='$doctor'
+							$test_result=mysqli_fetch_array(mysqli_query($link,"SELECT `result`,`range_id`,`result_hide` FROM `testresults` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `paramid`='$paramid'"));// AND `doc`='$doctor'
+							$print_status=$test_result["result_hide"];
 							
 							$param_info=mysqli_fetch_array(mysqli_query($link, "SELECT `ResultType` FROM `Parameter_old` WHERE `ID`='$paramid'"));
 							
@@ -1099,7 +1101,8 @@ foreach($doctors AS $doctor)
 									$paramid=$test_param["ParamaterId"];
 									$print_status=$test_param["status"];
 									
-									$test_result=mysqli_fetch_array(mysqli_query($link,"SELECT `result`,`range_id` FROM `testresults` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `paramid`='$paramid'"));// AND `doc`='$doctor'
+									$test_result=mysqli_fetch_array(mysqli_query($link,"SELECT `result`,`range_id`,`result_hide` FROM `testresults` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `paramid`='$paramid'"));// AND `doc`='$doctor'
+									$print_status=$test_result["result_hide"];
 									
 									$param_info=mysqli_fetch_array(mysqli_query($link, "SELECT `ResultType` FROM `Parameter_old` WHERE `ID`='$paramid'"));
 									
@@ -1167,7 +1170,9 @@ foreach($doctors AS $doctor)
 									$paramid=$test_param["ParamaterId"];
 									$print_status=$test_param["status"];
 									
-									$test_result=mysqli_fetch_array(mysqli_query($link,"SELECT `range_id` FROM `testresults` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `paramid`='$paramid'"));// AND `doc`='$doctor'
+									$test_result=mysqli_fetch_array(mysqli_query($link,"SELECT `range_id`,`result_hide` FROM `testresults` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `paramid`='$paramid'"));// AND `doc`='$doctor'
+									
+									$print_status=$test_result["result_hide"];
 									
 									$param_info=mysqli_fetch_array(mysqli_query($link, "SELECT `ResultType` FROM `Parameter_old` WHERE `ID`='$paramid'"));
 									
@@ -1269,29 +1274,29 @@ foreach($doctors AS $doctor)
 <?php
 	$nabl_true=0;
 	
-	$total_pages=mysqli_num_rows(mysqli_query($link, "SELECT DISTINCT `page_no` FROM `pathology_report_print` WHERE `patient_id`='$uhid' AND `opd_id`='$bill_id' AND `batch_no`='$batch_no' AND `testid` IN($testall) AND `user`='$c_user' AND `ip_addr`='$ip_addr'"));
+	$total_pages=mysqli_num_rows(mysqli_query($link, "SELECT DISTINCT `page_no` FROM `pathology_report_print` WHERE `patient_id`='$uhid' AND `opd_id`='$bill_id' AND `batch_no`='$batch_no' AND `testid` IN($testall) AND `user`='$c_user' AND `ip_addr`='$ip_addr' AND `status`=0"));
 	
 	// Test Result and summary
 	
 	$result_table="1,2";
 	
-	$report_doc_qry=mysqli_query($link, "SELECT DISTINCT `doc_id` FROM `pathology_report_print` WHERE `patient_id`='$uhid' AND `opd_id`='$bill_id' AND `batch_no`='$batch_no' AND `testid` IN($testall) AND `user`='$c_user' AND `ip_addr`='$ip_addr' AND `result_table` IN($result_table) ORDER BY `slno` ASC");
+	$report_doc_qry=mysqli_query($link, "SELECT DISTINCT `doc_id` FROM `pathology_report_print` WHERE `patient_id`='$uhid' AND `opd_id`='$bill_id' AND `batch_no`='$batch_no' AND `testid` IN($testall) AND `user`='$c_user' AND `ip_addr`='$ip_addr' AND `result_table` IN($result_table) AND `status`=0 ORDER BY `slno` ASC");
 	
 	$page=1;
 	while($report_doc=mysqli_fetch_array($report_doc_qry))
 	{
 		$doc_id=$report_doc["doc_id"];
 		
-		$report_page_qry=mysqli_query($link, "SELECT DISTINCT `page_no` FROM `pathology_report_print` WHERE `patient_id`='$uhid' AND `opd_id`='$bill_id' AND `batch_no`='$batch_no' AND `testid` IN($testall) AND `doc_id`='$doc_id' AND `user`='$c_user' AND `ip_addr`='$ip_addr' AND `result_table` IN($result_table) ORDER BY `slno` ASC");
+		$report_page_qry=mysqli_query($link, "SELECT DISTINCT `page_no` FROM `pathology_report_print` WHERE `patient_id`='$uhid' AND `opd_id`='$bill_id' AND `batch_no`='$batch_no' AND `testid` IN($testall) AND `doc_id`='$doc_id' AND `user`='$c_user' AND `ip_addr`='$ip_addr' AND `result_table` IN($result_table) AND `status`=0 ORDER BY `slno` ASC");
 		$report_page_num=mysqli_num_rows($report_page_qry);
 		while($report_page=mysqli_fetch_array($report_page_qry))
 		{
 			$report_page_num--;
 			$page_no=$report_page["page_no"];
 			
-			$only_result_testid_num=mysqli_num_rows(mysqli_query($link, "SELECT DISTINCT `page_no` FROM `pathology_report_print` WHERE `patient_id`='$uhid' AND `opd_id`='$bill_id' AND `batch_no`='$batch_no' AND `testid` IN($only_result_testid) AND `doc_id`='$doc_id' AND `user`='$c_user' AND `ip_addr`='$ip_addr' AND `result_table` IN($result_table) AND `page_no`='$page_no' ORDER BY `slno` ASC"));
+			$only_result_testid_num=mysqli_num_rows(mysqli_query($link, "SELECT DISTINCT `page_no` FROM `pathology_report_print` WHERE `patient_id`='$uhid' AND `opd_id`='$bill_id' AND `batch_no`='$batch_no' AND `testid` IN($only_result_testid) AND `doc_id`='$doc_id' AND `user`='$c_user' AND `ip_addr`='$ip_addr' AND `result_table` IN($result_table) AND `page_no`='$page_no' AND `status`=0 ORDER BY `slno` ASC"));
 			
-			$dept_info=mysqli_fetch_array(mysqli_query($link, "SELECT `id`,`name` FROM `test_department` WHERE `id` IN(SELECT `type_id` FROM `pathology_report_print` WHERE `patient_id`='$uhid' AND `opd_id`='$bill_id' AND `batch_no`='$batch_no' AND `page_no`='$page_no')"));
+			$dept_info=mysqli_fetch_array(mysqli_query($link, "SELECT `id`,`name` FROM `test_department` WHERE `id` IN(SELECT `type_id` FROM `pathology_report_print` WHERE `patient_id`='$uhid' AND `opd_id`='$bill_id' AND `batch_no`='$batch_no' AND `page_no`='$page_no' AND `status`=0)"));
 			$type_id=$dept_info["type_id"];
 			
 			if($page>1)
@@ -1300,11 +1305,11 @@ foreach($doctors AS $doctor)
 			}
 			
 			$sample_names_array=array();
-			//$sample_qry=mysqli_query($link, "SELECT DISTINCT a.`sampleid` FROM `phlebo_sample` a, `pathology_report_print` b WHERE a.`patient_id`=b.`patient_id` AND (a.`opd_id`=b.`opd_id` OR a.`ipd_id`=b.`opd_id`) AND a.`batch_no`=b.`batch_no` AND a.`testid`=b.`testid` AND b.`patient_id`='$uhid' AND b.`opd_id`='$bill_id' AND b.`batch_no`='$batch_no' AND b.`doc_id`='$doc_id' AND b.`page_no`='$page_no'");
+			//$sample_qry=mysqli_query($link, "SELECT DISTINCT a.`sampleid` FROM `phlebo_sample` a, `pathology_report_print` b WHERE a.`patient_id`=b.`patient_id` AND (a.`opd_id`=b.`opd_id` OR a.`ipd_id`=b.`opd_id`) AND a.`batch_no`=b.`batch_no` AND a.`testid`=b.`testid` AND b.`patient_id`='$uhid' AND b.`opd_id`='$bill_id' AND b.`batch_no`='$batch_no' AND b.`doc_id`='$doc_id' AND b.`page_no`='$page_no' AND b.`status`=0");
 			
-			//$sample_qry=mysqli_query($link, "SELECT DISTINCT a.`SampleId` FROM `TestSample` a, `pathology_report_print` b WHERE a.`TestId`=b.`testid` AND b.`patient_id`='$uhid' AND b.`opd_id`='$bill_id' AND b.`batch_no`='$batch_no' AND b.`doc_id`='$doc_id' AND b.`page_no`='$page_no'");
+			//$sample_qry=mysqli_query($link, "SELECT DISTINCT a.`SampleId` FROM `TestSample` a, `pathology_report_print` b WHERE a.`TestId`=b.`testid` AND b.`patient_id`='$uhid' AND b.`opd_id`='$bill_id' AND b.`batch_no`='$batch_no' AND b.`doc_id`='$doc_id' AND b.`page_no`='$page_no' AND b.`status`=0");
 			
-			$sample_qry=mysqli_query($link, "SELECT DISTINCT a.`sample` FROM `Testparameter` a, `pathology_report_print` b WHERE a.`ParamaterId`=b.`param_id` AND a.`TestId`=b.`testid` AND b.`patient_id`='$uhid' AND b.`opd_id`='$bill_id' AND b.`batch_no`='$batch_no' AND b.`doc_id`='$doc_id' AND b.`page_no`='$page_no'");
+			$sample_qry=mysqli_query($link, "SELECT DISTINCT a.`sample` FROM `Testparameter` a, `pathology_report_print` b WHERE a.`ParamaterId`=b.`param_id` AND a.`TestId`=b.`testid` AND b.`patient_id`='$uhid' AND b.`opd_id`='$bill_id' AND b.`batch_no`='$batch_no' AND b.`doc_id`='$doc_id' AND b.`page_no`='$page_no' AND b.`status`=0");
 			
 			while($samples=mysqli_fetch_array($sample_qry))
 			{
@@ -1314,9 +1319,9 @@ foreach($doctors AS $doctor)
 					$sample_names_array[]=$sample_info["Name"];
 				}
 			}
-			if($sample_names=="")
+			if(sizeof($sample_names_array)==0)
 			{
-				$sample_qry=mysqli_query($link, "SELECT DISTINCT a.`SampleId` FROM `TestSample` a, `pathology_report_print` b WHERE a.`TestId`=b.`testid` AND b.`patient_id`='$uhid' AND b.`opd_id`='$bill_id' AND b.`batch_no`='$batch_no' AND b.`doc_id`='$doc_id' AND b.`page_no`='$page_no'");
+				$sample_qry=mysqli_query($link, "SELECT DISTINCT a.`SampleId` FROM `TestSample` a, `pathology_report_print` b WHERE a.`TestId`=b.`testid` AND b.`patient_id`='$uhid' AND b.`opd_id`='$bill_id' AND b.`batch_no`='$batch_no' AND b.`doc_id`='$doc_id' AND b.`page_no`='$page_no' AND b.`status`=0");
 				while($samples=mysqli_fetch_array($sample_qry))
 				{
 					$sample_info=mysqli_fetch_array(mysqli_query($link, "SELECT `Name` FROM `Sample` WHERE `ID`='$samples[SampleId]'"));
@@ -1330,7 +1335,7 @@ foreach($doctors AS $doctor)
 			$sample_names=implode(",",$sample_names_array);
 			
 			// Sample Collection Time
-			$sample_collection=mysqli_fetch_array(mysqli_query($link, "SELECT DISTINCT a.`time`,a.`date` FROM `phlebo_sample` a, `pathology_report_print` b WHERE a.`patient_id`=b.`patient_id` AND (a.`opd_id`=b.`opd_id` OR a.`ipd_id`=b.`opd_id`) AND a.`batch_no`=b.`batch_no` AND a.`testid`=b.`testid` AND b.`patient_id`='$uhid' AND b.`opd_id`='$bill_id' AND b.`batch_no`='$batch_no' AND b.`doc_id`='$doc_id' AND b.`page_no`='$page_no'"));
+			$sample_collection=mysqli_fetch_array(mysqli_query($link, "SELECT DISTINCT a.`time`,a.`date` FROM `phlebo_sample` a, `pathology_report_print` b WHERE a.`patient_id`=b.`patient_id` AND (a.`opd_id`=b.`opd_id` OR a.`ipd_id`=b.`opd_id`) AND a.`batch_no`=b.`batch_no` AND a.`testid`=b.`testid` AND b.`patient_id`='$uhid' AND b.`opd_id`='$bill_id' AND b.`batch_no`='$batch_no' AND b.`doc_id`='$doc_id' AND b.`page_no`='$page_no' AND b.`status`=0"));
 			if($sample_collection)
 			{
 				$sample_collection_date=$sample_collection["date"];
@@ -1343,7 +1348,7 @@ foreach($doctors AS $doctor)
 			}
 			
 			// Sample Receive Time
-			$sample_receive=mysqli_fetch_array(mysqli_query($link, "SELECT DISTINCT a.`time`,a.`date` FROM `lab_sample_receive` a, `pathology_report_print` b WHERE a.`patient_id`=b.`patient_id` AND (a.`opd_id`=b.`opd_id` OR a.`ipd_id`=b.`opd_id`) AND a.`batch_no`=b.`batch_no` AND a.`testid`=b.`testid` AND b.`patient_id`='$uhid' AND b.`opd_id`='$bill_id' AND b.`batch_no`='$batch_no' AND b.`doc_id`='$doc_id' AND b.`page_no`='$page_no'"));
+			$sample_receive=mysqli_fetch_array(mysqli_query($link, "SELECT DISTINCT a.`time`,a.`date` FROM `lab_sample_receive` a, `pathology_report_print` b WHERE a.`patient_id`=b.`patient_id` AND (a.`opd_id`=b.`opd_id` OR a.`ipd_id`=b.`opd_id`) AND a.`batch_no`=b.`batch_no` AND a.`testid`=b.`testid` AND b.`patient_id`='$uhid' AND b.`opd_id`='$bill_id' AND b.`batch_no`='$batch_no' AND b.`doc_id`='$doc_id' AND b.`page_no`='$page_no' AND b.`status`=0"));
 			if($sample_receive)
 			{
 				$sample_receive_date=$sample_receive["date"];
@@ -1361,14 +1366,14 @@ foreach($doctors AS $doctor)
 			}
 			
 			// Reporting Time
-			$report_time=mysqli_fetch_array(mysqli_query($link, "SELECT DISTINCT a.`time`,a.`date` FROM `testresults` a, `pathology_report_print` b WHERE a.`patient_id`=b.`patient_id` AND (a.`opd_id`=b.`opd_id` OR a.`ipd_id`=b.`opd_id`) AND a.`batch_no`=b.`batch_no` AND a.`testid`=b.`testid` AND b.`patient_id`='$uhid' AND b.`opd_id`='$bill_id' AND b.`batch_no`='$batch_no' AND b.`doc_id`='$doc_id' AND b.`page_no`='$page_no'"));
+			$report_time=mysqli_fetch_array(mysqli_query($link, "SELECT DISTINCT a.`time`,a.`date` FROM `testresults` a, `pathology_report_print` b WHERE a.`patient_id`=b.`patient_id` AND (a.`opd_id`=b.`opd_id` OR a.`ipd_id`=b.`opd_id`) AND a.`batch_no`=b.`batch_no` AND a.`testid`=b.`testid` AND b.`patient_id`='$uhid' AND b.`opd_id`='$bill_id' AND b.`batch_no`='$batch_no' AND b.`doc_id`='$doc_id' AND b.`page_no`='$page_no' AND b.`status`=0"));
 			if(!$report_time)
 			{
-				$report_time=mysqli_fetch_array(mysqli_query($link, "SELECT DISTINCT a.`time`,a.`date` FROM `patient_test_summary` a, `pathology_report_print` b WHERE a.`patient_id`=b.`patient_id` AND (a.`opd_id`=b.`opd_id` OR a.`ipd_id`=b.`opd_id`) AND a.`batch_no`=b.`batch_no` AND a.`testid`=b.`testid` AND b.`patient_id`='$uhid' AND b.`opd_id`='$bill_id' AND b.`batch_no`='$batch_no' AND b.`doc_id`='$doc_id' AND b.`page_no`='$page_no'"));
+				$report_time=mysqli_fetch_array(mysqli_query($link, "SELECT DISTINCT a.`time`,a.`date` FROM `patient_test_summary` a, `pathology_report_print` b WHERE a.`patient_id`=b.`patient_id` AND (a.`opd_id`=b.`opd_id` OR a.`ipd_id`=b.`opd_id`) AND a.`batch_no`=b.`batch_no` AND a.`testid`=b.`testid` AND b.`patient_id`='$uhid' AND b.`opd_id`='$bill_id' AND b.`batch_no`='$batch_no' AND b.`doc_id`='$doc_id' AND b.`page_no`='$page_no' AND b.`status`=0"));
 				
 				if(!$report_time)
 				{
-					$report_time=mysqli_fetch_array(mysqli_query($link, "SELECT DISTINCT a.`time`,a.`date` FROM `widalresult` a, `pathology_report_print` b WHERE a.`patient_id`=b.`patient_id` AND (a.`opd_id`=b.`opd_id` OR a.`ipd_id`=b.`opd_id`) AND a.`batch_no`=b.`batch_no` AND b.`patient_id`='$uhid' AND b.`opd_id`='$bill_id' AND b.`batch_no`='$batch_no' AND b.`doc_id`='$doc_id' AND b.`page_no`='$page_no'"));
+					$report_time=mysqli_fetch_array(mysqli_query($link, "SELECT DISTINCT a.`time`,a.`date` FROM `widalresult` a, `pathology_report_print` b WHERE a.`patient_id`=b.`patient_id` AND (a.`opd_id`=b.`opd_id` OR a.`ipd_id`=b.`opd_id`) AND a.`batch_no`=b.`batch_no` AND b.`patient_id`='$uhid' AND b.`opd_id`='$bill_id' AND b.`batch_no`='$batch_no' AND b.`doc_id`='$doc_id' AND b.`page_no`='$page_no' AND b.`status`=0"));
 				}
 			}
 			
@@ -1376,14 +1381,14 @@ foreach($doctors AS $doctor)
 			$data_entry_users=array();
 			$data_checked_users=array();
 			
-			//~ $report_entry_qry=mysqli_query($link, "SELECT DISTINCT a.`tech`, a.`main_tech` FROM `testresults` a, `pathology_report_print` b WHERE a.`patient_id`=b.`patient_id` AND (a.`opd_id`=b.`opd_id` OR a.`ipd_id`=b.`opd_id`) AND a.`batch_no`=b.`batch_no` AND a.`testid`=b.`testid` AND b.`patient_id`='$uhid' AND b.`opd_id`='$bill_id' AND b.`batch_no`='$batch_no' AND b.`doc_id`='$doc_id' AND b.`page_no`='$page_no'");
+			//~ $report_entry_qry=mysqli_query($link, "SELECT DISTINCT a.`tech`, a.`main_tech` FROM `testresults` a, `pathology_report_print` b WHERE a.`patient_id`=b.`patient_id` AND (a.`opd_id`=b.`opd_id` OR a.`ipd_id`=b.`opd_id`) AND a.`batch_no`=b.`batch_no` AND a.`testid`=b.`testid` AND b.`patient_id`='$uhid' AND b.`opd_id`='$bill_id' AND b.`batch_no`='$batch_no' AND b.`doc_id`='$doc_id' AND b.`page_no`='$page_no' AND b.`status`=0");
 			//~ while($report_entry=mysqli_fetch_array($report_entry_qry))
 			//~ {
 				//~ $data_entry_users[]=$report_entry["tech"];
 				//~ $data_checked_users[]=$report_entry["main_tech"];
 			//~ }
 			
-			//~ $report_entry_qry=mysqli_query($link, "SELECT DISTINCT a.`user`, a.`main_tech` FROM `patient_test_summary` a, `pathology_report_print` b WHERE a.`patient_id`=b.`patient_id` AND (a.`opd_id`=b.`opd_id` OR a.`ipd_id`=b.`opd_id`) AND a.`batch_no`=b.`batch_no` AND a.`testid`=b.`testid` AND b.`patient_id`='$uhid' AND b.`opd_id`='$bill_id' AND b.`batch_no`='$batch_no' AND b.`doc_id`='$doc_id' AND b.`page_no`='$page_no'");
+			//~ $report_entry_qry=mysqli_query($link, "SELECT DISTINCT a.`user`, a.`main_tech` FROM `patient_test_summary` a, `pathology_report_print` b WHERE a.`patient_id`=b.`patient_id` AND (a.`opd_id`=b.`opd_id` OR a.`ipd_id`=b.`opd_id`) AND a.`batch_no`=b.`batch_no` AND a.`testid`=b.`testid` AND b.`patient_id`='$uhid' AND b.`opd_id`='$bill_id' AND b.`batch_no`='$batch_no' AND b.`doc_id`='$doc_id' AND b.`page_no`='$page_no' AND b.`status`=0");
 			//~ while($report_entry=mysqli_fetch_array($report_entry_qry))
 			//~ {
 				//~ $data_entry_users[]=$report_entry["user"];
@@ -1410,7 +1415,7 @@ foreach($doctors AS $doctor)
 				//~ $data_checked_names.=$tech_info["name"].",";
 			//~ }
 			
-			$page_param_chk=mysqli_fetch_array(mysqli_query($link, "SELECT COUNT(*) AS `param_num`, `result_table` FROM `pathology_report_print` WHERE `patient_id`='$uhid' AND `opd_id`='$bill_id' AND `batch_no`='$batch_no' AND `testid` IN($testall) AND `doc_id`='$doc_id' AND `page_no`='$page_no' AND `user`='$c_user' AND `ip_addr`='$ip_addr' ORDER BY `slno` ASC"));
+			$page_param_chk=mysqli_fetch_array(mysqli_query($link, "SELECT COUNT(*) AS `param_num`, `result_table` FROM `pathology_report_print` WHERE `patient_id`='$uhid' AND `opd_id`='$bill_id' AND `batch_no`='$batch_no' AND `testid` IN($testall) AND `doc_id`='$doc_id' AND `page_no`='$page_no' AND `user`='$c_user' AND `ip_addr`='$ip_addr' AND `status`=0 ORDER BY `slno` ASC"));
 		?>
 		<?php
 			$br=0;
@@ -1455,7 +1460,7 @@ foreach($doctors AS $doctor)
 					}
 				?>
 				<?php
-					$report_test_qry=mysqli_query($link, "SELECT DISTINCT `testid` FROM `pathology_report_print` WHERE `patient_id`='$uhid' AND `opd_id`='$bill_id' AND `batch_no`='$batch_no' AND `testid` IN($testall) AND `doc_id`='$doc_id' AND `page_no`='$page_no' AND `user`='$c_user' AND `ip_addr`='$ip_addr' ORDER BY `slno` ASC");
+					$report_test_qry=mysqli_query($link, "SELECT DISTINCT `testid` FROM `pathology_report_print` WHERE `patient_id`='$uhid' AND `opd_id`='$bill_id' AND `batch_no`='$batch_no' AND `testid` IN($testall) AND `doc_id`='$doc_id' AND `page_no`='$page_no' AND `user`='$c_user' AND `ip_addr`='$ip_addr' AND `status`=0 ORDER BY `slno` ASC");
 					while($report_test=mysqli_fetch_array($report_test_qry))
 					{
 						$testid=$report_test["testid"];
@@ -1494,7 +1499,7 @@ foreach($doctors AS $doctor)
 				<?php
 						}
 						
-						$report_qry=mysqli_query($link, "SELECT * FROM `pathology_report_print` WHERE `testid`='$testid' AND `param_id`>0 AND `doc_id`='$doc_id' AND `page_no`='$page_no' AND `user`='$c_user' AND `ip_addr`='$ip_addr' ORDER BY `slno` ASC");
+						$report_qry=mysqli_query($link, "SELECT * FROM `pathology_report_print` WHERE `testid`='$testid' AND `param_id`>0 AND `doc_id`='$doc_id' AND `page_no`='$page_no' AND `user`='$c_user' AND `ip_addr`='$ip_addr' AND `status`=0 ORDER BY `slno` ASC");
 						$report_num=mysqli_num_rows($report_qry);
 						if($report_num>0)
 						{
@@ -1511,7 +1516,7 @@ foreach($doctors AS $doctor)
 								{
 									$test_result=mysqli_fetch_array(mysqli_query($link, "SELECT `result`,`range_status`,`range_id`,`result_hide` FROM `testresults` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `paramid`='$report[param_id]'"));// AND `doc`='$doc_id'
 									
-									if($test_result && $test_result["result_hide"]>=0)
+									if($test_result && $test_result["result_hide"]==0)
 									{
 										$normal_range=mysqli_fetch_array(mysqli_query($link,"SELECT `normal_range` FROM `parameter_normal_check` WHERE `slno`='$test_result[range_id]'"));
 										
@@ -1659,7 +1664,7 @@ foreach($doctors AS $doctor)
 								{
 									$test_result=mysqli_fetch_array(mysqli_query($link, "SELECT `result`,`range_status`,`range_id` FROM `testresults` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `paramid`='$test_param[ParamaterId]'"));// AND `doc`='$doc_id'
 									
-									if($test_result)
+									if($test_result && $test_result["result_hide"]==0)
 									{
 										$normal_range=mysqli_fetch_array(mysqli_query($link,"SELECT `normal_range` FROM `parameter_normal_check` WHERE `slno`='$test_result[range_id]'"));
 										
@@ -1778,23 +1783,23 @@ foreach($doctors AS $doctor)
 	
 	$result_table="6";
 	
-	$report_doc_qry=mysqli_query($link, "SELECT DISTINCT `doc_id` FROM `pathology_report_print` WHERE `patient_id`='$uhid' AND `opd_id`='$bill_id' AND `batch_no`='$batch_no' AND `testid` IN($testall) AND `user`='$c_user' AND `ip_addr`='$ip_addr' AND `result_table` IN($result_table) ORDER BY `slno` ASC");
+	$report_doc_qry=mysqli_query($link, "SELECT DISTINCT `doc_id` FROM `pathology_report_print` WHERE `patient_id`='$uhid' AND `opd_id`='$bill_id' AND `batch_no`='$batch_no' AND `testid` IN($testall) AND `user`='$c_user' AND `ip_addr`='$ip_addr' AND `result_table` IN($result_table) AND `status`=0 ORDER BY `slno` ASC");
 	
 	$page=1;
 	while($report_doc=mysqli_fetch_array($report_doc_qry))
 	{
 		$doc_id=$report_doc["doc_id"];
 		
-		$report_page_qry=mysqli_query($link, "SELECT DISTINCT `page_no` FROM `pathology_report_print` WHERE `patient_id`='$uhid' AND `opd_id`='$bill_id' AND `batch_no`='$batch_no' AND `testid` IN($testall) AND `doc_id`='$doc_id' AND `user`='$c_user' AND `ip_addr`='$ip_addr' AND `result_table` IN($result_table) ORDER BY `slno` ASC");
+		$report_page_qry=mysqli_query($link, "SELECT DISTINCT `page_no` FROM `pathology_report_print` WHERE `patient_id`='$uhid' AND `opd_id`='$bill_id' AND `batch_no`='$batch_no' AND `testid` IN($testall) AND `doc_id`='$doc_id' AND `user`='$c_user' AND `ip_addr`='$ip_addr' AND `result_table` IN($result_table) AND `status`=0 ORDER BY `slno` ASC");
 		$report_page_num=mysqli_num_rows($report_page_qry);
 		while($report_page=mysqli_fetch_array($report_page_qry))
 		{
 			$report_page_num--;
 			$page_no=$report_page["page_no"];
 			
-			$only_result_testid_num=mysqli_num_rows(mysqli_query($link, "SELECT DISTINCT `page_no` FROM `pathology_report_print` WHERE `patient_id`='$uhid' AND `opd_id`='$bill_id' AND `batch_no`='$batch_no' AND `testid` IN($only_result_testid) AND `doc_id`='$doc_id' AND `user`='$c_user' AND `ip_addr`='$ip_addr' AND `result_table` IN($result_table) AND `page_no`='$page_no' ORDER BY `slno` ASC"));
+			$only_result_testid_num=mysqli_num_rows(mysqli_query($link, "SELECT DISTINCT `page_no` FROM `pathology_report_print` WHERE `patient_id`='$uhid' AND `opd_id`='$bill_id' AND `batch_no`='$batch_no' AND `testid` IN($only_result_testid) AND `doc_id`='$doc_id' AND `user`='$c_user' AND `ip_addr`='$ip_addr' AND `result_table` IN($result_table) AND `page_no`='$page_no' AND `status`=0 ORDER BY `slno` ASC"));
 			
-			$dept_info=mysqli_fetch_array(mysqli_query($link, "SELECT `id`,`name` FROM `test_department` WHERE `id` IN(SELECT `type_id` FROM `pathology_report_print` WHERE `patient_id`='$uhid' AND `opd_id`='$bill_id' AND `batch_no`='$batch_no' AND `page_no`='$page_no')"));
+			$dept_info=mysqli_fetch_array(mysqli_query($link, "SELECT `id`,`name` FROM `test_department` WHERE `id` IN(SELECT `type_id` FROM `pathology_report_print` WHERE `patient_id`='$uhid' AND `opd_id`='$bill_id' AND `batch_no`='$batch_no' AND `page_no`='$page_no' AND `status`=0)"));
 			$type_id=$dept_info["type_id"];
 			
 			if($page>1)
@@ -1803,11 +1808,11 @@ foreach($doctors AS $doctor)
 			}
 			
 			$sample_names_array=array();
-			//$sample_qry=mysqli_query($link, "SELECT DISTINCT a.`sampleid` FROM `phlebo_sample` a, `pathology_report_print` b WHERE a.`patient_id`=b.`patient_id` AND (a.`opd_id`=b.`opd_id` OR a.`ipd_id`=b.`opd_id`) AND a.`batch_no`=b.`batch_no` AND a.`testid`=b.`testid` AND b.`patient_id`='$uhid' AND b.`opd_id`='$bill_id' AND b.`batch_no`='$batch_no' AND b.`doc_id`='$doc_id' AND b.`page_no`='$page_no'");
+			//$sample_qry=mysqli_query($link, "SELECT DISTINCT a.`sampleid` FROM `phlebo_sample` a, `pathology_report_print` b WHERE a.`patient_id`=b.`patient_id` AND (a.`opd_id`=b.`opd_id` OR a.`ipd_id`=b.`opd_id`) AND a.`batch_no`=b.`batch_no` AND a.`testid`=b.`testid` AND b.`patient_id`='$uhid' AND b.`opd_id`='$bill_id' AND b.`batch_no`='$batch_no' AND b.`doc_id`='$doc_id' AND b.`page_no`='$page_no' AND b.`status`=0");
 			
-			//$sample_qry=mysqli_query($link, "SELECT DISTINCT a.`SampleId` FROM `TestSample` a, `pathology_report_print` b WHERE a.`TestId`=b.`testid` AND b.`patient_id`='$uhid' AND b.`opd_id`='$bill_id' AND b.`batch_no`='$batch_no' AND b.`doc_id`='$doc_id' AND b.`page_no`='$page_no'");
+			//$sample_qry=mysqli_query($link, "SELECT DISTINCT a.`SampleId` FROM `TestSample` a, `pathology_report_print` b WHERE a.`TestId`=b.`testid` AND b.`patient_id`='$uhid' AND b.`opd_id`='$bill_id' AND b.`batch_no`='$batch_no' AND b.`doc_id`='$doc_id' AND b.`page_no`='$page_no' AND b.`status`=0");
 			
-			$sample_qry=mysqli_query($link, "SELECT DISTINCT a.`sample` FROM `Testparameter` a, `pathology_report_print` b WHERE a.`ParamaterId`=b.`param_id` AND a.`TestId`=b.`testid` AND b.`patient_id`='$uhid' AND b.`opd_id`='$bill_id' AND b.`batch_no`='$batch_no' AND b.`doc_id`='$doc_id' AND b.`page_no`='$page_no' AND a.`ParamaterId` NOT IN(639,640,641)");
+			$sample_qry=mysqli_query($link, "SELECT DISTINCT a.`sample` FROM `Testparameter` a, `pathology_report_print` b WHERE a.`ParamaterId`=b.`param_id` AND a.`TestId`=b.`testid` AND b.`patient_id`='$uhid' AND b.`opd_id`='$bill_id' AND b.`batch_no`='$batch_no' AND b.`doc_id`='$doc_id' AND b.`page_no`='$page_no' AND b.`status`=0");
 			
 			while($samples=mysqli_fetch_array($sample_qry))
 			{
@@ -1819,7 +1824,7 @@ foreach($doctors AS $doctor)
 			}
 			if($sample_names=="")
 			{
-				$sample_qry=mysqli_query($link, "SELECT DISTINCT a.`SampleId` FROM `TestSample` a, `pathology_report_print` b WHERE a.`TestId`=b.`testid` AND b.`patient_id`='$uhid' AND b.`opd_id`='$bill_id' AND b.`batch_no`='$batch_no' AND b.`doc_id`='$doc_id' AND b.`page_no`='$page_no'");
+				$sample_qry=mysqli_query($link, "SELECT DISTINCT a.`SampleId` FROM `TestSample` a, `pathology_report_print` b WHERE a.`TestId`=b.`testid` AND b.`patient_id`='$uhid' AND b.`opd_id`='$bill_id' AND b.`batch_no`='$batch_no' AND b.`doc_id`='$doc_id' AND b.`page_no`='$page_no' AND b.`status`=0");
 				while($samples=mysqli_fetch_array($sample_qry))
 				{
 					$sample_info=mysqli_fetch_array(mysqli_query($link, "SELECT `Name` FROM `Sample` WHERE `ID`='$samples[SampleId]'"));
@@ -1833,7 +1838,7 @@ foreach($doctors AS $doctor)
 			$sample_names=implode(",",$sample_names_array);
 			
 			// Sample Collection Time
-			$sample_collection=mysqli_fetch_array(mysqli_query($link, "SELECT DISTINCT a.`time`,a.`date` FROM `phlebo_sample` a, `pathology_report_print` b WHERE a.`patient_id`=b.`patient_id` AND (a.`opd_id`=b.`opd_id` OR a.`ipd_id`=b.`opd_id`) AND a.`batch_no`=b.`batch_no` AND a.`testid`=b.`testid` AND b.`patient_id`='$uhid' AND b.`opd_id`='$bill_id' AND b.`batch_no`='$batch_no' AND b.`doc_id`='$doc_id' AND b.`page_no`='$page_no'"));
+			$sample_collection=mysqli_fetch_array(mysqli_query($link, "SELECT DISTINCT a.`time`,a.`date` FROM `phlebo_sample` a, `pathology_report_print` b WHERE a.`patient_id`=b.`patient_id` AND (a.`opd_id`=b.`opd_id` OR a.`ipd_id`=b.`opd_id`) AND a.`batch_no`=b.`batch_no` AND a.`testid`=b.`testid` AND b.`patient_id`='$uhid' AND b.`opd_id`='$bill_id' AND b.`batch_no`='$batch_no' AND b.`doc_id`='$doc_id' AND b.`page_no`='$page_no' AND b.`status`=0"));
 			if($sample_collection)
 			{
 				$sample_collection_date=$sample_collection["date"];
@@ -1846,7 +1851,7 @@ foreach($doctors AS $doctor)
 			}
 			
 			// Sample Receive Time
-			$sample_receive=mysqli_fetch_array(mysqli_query($link, "SELECT DISTINCT a.`time`,a.`date` FROM `lab_sample_receive` a, `pathology_report_print` b WHERE a.`patient_id`=b.`patient_id` AND (a.`opd_id`=b.`opd_id` OR a.`ipd_id`=b.`opd_id`) AND a.`batch_no`=b.`batch_no` AND a.`testid`=b.`testid` AND b.`patient_id`='$uhid' AND b.`opd_id`='$bill_id' AND b.`batch_no`='$batch_no' AND b.`doc_id`='$doc_id' AND b.`page_no`='$page_no'"));
+			$sample_receive=mysqli_fetch_array(mysqli_query($link, "SELECT DISTINCT a.`time`,a.`date` FROM `lab_sample_receive` a, `pathology_report_print` b WHERE a.`patient_id`=b.`patient_id` AND (a.`opd_id`=b.`opd_id` OR a.`ipd_id`=b.`opd_id`) AND a.`batch_no`=b.`batch_no` AND a.`testid`=b.`testid` AND b.`patient_id`='$uhid' AND b.`opd_id`='$bill_id' AND b.`batch_no`='$batch_no' AND b.`doc_id`='$doc_id' AND b.`page_no`='$page_no' AND b.`status`=0"));
 			if($sample_receive)
 			{
 				$sample_receive_date=$sample_receive["date"];
@@ -1864,14 +1869,14 @@ foreach($doctors AS $doctor)
 			}
 			
 			// Reporting Time
-			$report_time=mysqli_fetch_array(mysqli_query($link, "SELECT DISTINCT a.`time`,a.`date` FROM `testresults` a, `pathology_report_print` b WHERE a.`patient_id`=b.`patient_id` AND (a.`opd_id`=b.`opd_id` OR a.`ipd_id`=b.`opd_id`) AND a.`batch_no`=b.`batch_no` AND a.`testid`=b.`testid` AND b.`patient_id`='$uhid' AND b.`opd_id`='$bill_id' AND b.`batch_no`='$batch_no' AND b.`doc_id`='$doc_id' AND b.`page_no`='$page_no'"));
+			$report_time=mysqli_fetch_array(mysqli_query($link, "SELECT DISTINCT a.`time`,a.`date` FROM `testresults` a, `pathology_report_print` b WHERE a.`patient_id`=b.`patient_id` AND (a.`opd_id`=b.`opd_id` OR a.`ipd_id`=b.`opd_id`) AND a.`batch_no`=b.`batch_no` AND a.`testid`=b.`testid` AND b.`patient_id`='$uhid' AND b.`opd_id`='$bill_id' AND b.`batch_no`='$batch_no' AND b.`doc_id`='$doc_id' AND b.`page_no`='$page_no' AND b.`status`=0"));
 			if(!$report_time)
 			{
-				$report_time=mysqli_fetch_array(mysqli_query($link, "SELECT DISTINCT a.`time`,a.`date` FROM `patient_test_summary` a, `pathology_report_print` b WHERE a.`patient_id`=b.`patient_id` AND (a.`opd_id`=b.`opd_id` OR a.`ipd_id`=b.`opd_id`) AND a.`batch_no`=b.`batch_no` AND a.`testid`=b.`testid` AND b.`patient_id`='$uhid' AND b.`opd_id`='$bill_id' AND b.`batch_no`='$batch_no' AND b.`doc_id`='$doc_id' AND b.`page_no`='$page_no'"));
+				$report_time=mysqli_fetch_array(mysqli_query($link, "SELECT DISTINCT a.`time`,a.`date` FROM `patient_test_summary` a, `pathology_report_print` b WHERE a.`patient_id`=b.`patient_id` AND (a.`opd_id`=b.`opd_id` OR a.`ipd_id`=b.`opd_id`) AND a.`batch_no`=b.`batch_no` AND a.`testid`=b.`testid` AND b.`patient_id`='$uhid' AND b.`opd_id`='$bill_id' AND b.`batch_no`='$batch_no' AND b.`doc_id`='$doc_id' AND b.`page_no`='$page_no' AND b.`status`=0"));
 				
 				if(!$report_time)
 				{
-					$report_time=mysqli_fetch_array(mysqli_query($link, "SELECT DISTINCT a.`time`,a.`date` FROM `widalresult` a, `pathology_report_print` b WHERE a.`patient_id`=b.`patient_id` AND (a.`opd_id`=b.`opd_id` OR a.`ipd_id`=b.`opd_id`) AND a.`batch_no`=b.`batch_no` AND b.`patient_id`='$uhid' AND b.`opd_id`='$bill_id' AND b.`batch_no`='$batch_no' AND b.`doc_id`='$doc_id' AND b.`page_no`='$page_no'"));
+					$report_time=mysqli_fetch_array(mysqli_query($link, "SELECT DISTINCT a.`time`,a.`date` FROM `widalresult` a, `pathology_report_print` b WHERE a.`patient_id`=b.`patient_id` AND (a.`opd_id`=b.`opd_id` OR a.`ipd_id`=b.`opd_id`) AND a.`batch_no`=b.`batch_no` AND b.`patient_id`='$uhid' AND b.`opd_id`='$bill_id' AND b.`batch_no`='$batch_no' AND b.`doc_id`='$doc_id' AND b.`page_no`='$page_no' AND b.`status`=0"));
 				}
 			}
 			
@@ -1879,14 +1884,14 @@ foreach($doctors AS $doctor)
 			$data_entry_users=array();
 			$data_checked_users=array();
 			
-			//~ $report_entry_qry=mysqli_query($link, "SELECT DISTINCT a.`tech`, a.`main_tech` FROM `testresults` a, `pathology_report_print` b WHERE a.`patient_id`=b.`patient_id` AND (a.`opd_id`=b.`opd_id` OR a.`ipd_id`=b.`opd_id`) AND a.`batch_no`=b.`batch_no` AND a.`testid`=b.`testid` AND b.`patient_id`='$uhid' AND b.`opd_id`='$bill_id' AND b.`batch_no`='$batch_no' AND b.`doc_id`='$doc_id' AND b.`page_no`='$page_no'");
+			//~ $report_entry_qry=mysqli_query($link, "SELECT DISTINCT a.`tech`, a.`main_tech` FROM `testresults` a, `pathology_report_print` b WHERE a.`patient_id`=b.`patient_id` AND (a.`opd_id`=b.`opd_id` OR a.`ipd_id`=b.`opd_id`) AND a.`batch_no`=b.`batch_no` AND a.`testid`=b.`testid` AND b.`patient_id`='$uhid' AND b.`opd_id`='$bill_id' AND b.`batch_no`='$batch_no' AND b.`doc_id`='$doc_id' AND b.`page_no`='$page_no' AND b.`status`=0");
 			//~ while($report_entry=mysqli_fetch_array($report_entry_qry))
 			//~ {
 				//~ $data_entry_users[]=$report_entry["tech"];
 				//~ $data_checked_users[]=$report_entry["main_tech"];
 			//~ }
 			
-			//~ $report_entry_qry=mysqli_query($link, "SELECT DISTINCT a.`user`, a.`main_tech` FROM `patient_test_summary` a, `pathology_report_print` b WHERE a.`patient_id`=b.`patient_id` AND (a.`opd_id`=b.`opd_id` OR a.`ipd_id`=b.`opd_id`) AND a.`batch_no`=b.`batch_no` AND a.`testid`=b.`testid` AND b.`patient_id`='$uhid' AND b.`opd_id`='$bill_id' AND b.`batch_no`='$batch_no' AND b.`doc_id`='$doc_id' AND b.`page_no`='$page_no'");
+			//~ $report_entry_qry=mysqli_query($link, "SELECT DISTINCT a.`user`, a.`main_tech` FROM `patient_test_summary` a, `pathology_report_print` b WHERE a.`patient_id`=b.`patient_id` AND (a.`opd_id`=b.`opd_id` OR a.`ipd_id`=b.`opd_id`) AND a.`batch_no`=b.`batch_no` AND a.`testid`=b.`testid` AND b.`patient_id`='$uhid' AND b.`opd_id`='$bill_id' AND b.`batch_no`='$batch_no' AND b.`doc_id`='$doc_id' AND b.`page_no`='$page_no' AND b.`status`=0");
 			//~ while($report_entry=mysqli_fetch_array($report_entry_qry))
 			//~ {
 				//~ $data_entry_users[]=$report_entry["user"];
@@ -1913,7 +1918,7 @@ foreach($doctors AS $doctor)
 				//~ $data_checked_names.=$tech_info["name"].",";
 			//~ }
 			
-			$page_param_chk=mysqli_fetch_array(mysqli_query($link, "SELECT COUNT(*) AS `param_num`, `result_table` FROM `pathology_report_print` WHERE `patient_id`='$uhid' AND `opd_id`='$bill_id' AND `batch_no`='$batch_no' AND `testid` IN($testall) AND `doc_id`='$doc_id' AND `page_no`='$page_no' AND `user`='$c_user' AND `ip_addr`='$ip_addr' ORDER BY `slno` ASC"));
+			$page_param_chk=mysqli_fetch_array(mysqli_query($link, "SELECT COUNT(*) AS `param_num`, `result_table` FROM `pathology_report_print` WHERE `patient_id`='$uhid' AND `opd_id`='$bill_id' AND `batch_no`='$batch_no' AND `testid` IN($testall) AND `doc_id`='$doc_id' AND `page_no`='$page_no' AND `user`='$c_user' AND `ip_addr`='$ip_addr' AND `status`=0 ORDER BY `slno` ASC"));
 		?>
 		<?php
 			$br=0;
