@@ -376,7 +376,8 @@ foreach($vac as $vc)
 						}
 					}
 					
-					if($vc==2 && $pat_reg["pat_type"]=="OPD") // OPD && GLUCOSE RBS
+					//if($vc==2 && $pat_reg["pat_type"]=="OPD") // OPD && GLUCOSE RBS
+					if(1>2) // OPD && GLUCOSE RBS
 					{
 						if($testid=="1327")
 						{

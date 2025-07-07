@@ -69,7 +69,8 @@ foreach($vac as $vc)
 			$tst_ar.=$t["testid"].",";
 		}
 		
-		if($vc==2 && $dt_tm["pat_type"]=="OPD") // OPD && GLUCOSE RBS
+		//if($vc==2 && $dt_tm["pat_type"]=="OPD") // OPD && GLUCOSE RBS
+		if(1>2) // OPD && GLUCOSE RBS
 		{
 			// 
 			$tid=mysqli_query($link,"select distinct testid from patient_test_details where patient_id='$pid' and opd_id='$opd' and ipd_id='$ipd' and batch_no='$batch_no' and testid=1327");
