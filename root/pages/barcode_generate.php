@@ -186,31 +186,33 @@ $mnt=intval($date_str[1]-1);
 
 $bar_id=$dis_year[2].$dis_year[3].$alp[$mnt].$dis_date;
 
+$pat_reg["sample_serial"]=str_replace(" ","",$pat_reg["sample_serial"]);
+
 if($pat_reg["type"]==1)
 {
 	//$bar_id=$bar_id."N".$pat_reg["pat_type"][0].$pat_reg["pat_type"][1].$pat_reg["sample_serial"];
 	
-	$bar_id=$bar_id."OP".trim($pat_reg["sample_serial"]);
+	$bar_id=$bar_id."OP".$pat_reg["sample_serial"];
 }
 else if($pat_reg["type"]==2)
 {
-	$bar_id=$bar_id."IP".trim($pat_reg["sample_serial"]);
+	$bar_id=$bar_id."IP".$pat_reg["sample_serial"];
 }
 else if($pat_reg["type"]==3)
 {
 	//$bar_id=$bar_id."IP".$pat_reg["sample_serial"];
 	
-	$bar_id=$bar_id."N".$pat_reg["pat_type"][0].$pat_reg["pat_type"][1].trim($pat_reg["sample_serial"]);
+	$bar_id=$bar_id."N".$pat_reg["pat_type"][0].$pat_reg["pat_type"][1].$pat_reg["sample_serial"];
 }
 else if($pat_reg["type"]==4)
 {
-	$bar_id=$bar_id."EC".trim($pat_reg["sample_serial"]);
+	$bar_id=$bar_id."EC".$pat_reg["sample_serial"];
 }
 else if($pat_reg["type"]==5)
 {
 	//$bar_id=$bar_id."NE".$pat_reg["sample_serial"];
 	
-	$bar_id=$bar_id."NE".$pat_reg["pat_type"][0].$pat_reg["pat_type"][1].trim($pat_reg["sample_serial"]);
+	$bar_id=$bar_id."NE".$pat_reg["pat_type"][0].$pat_reg["pat_type"][1].$pat_reg["sample_serial"];
 }
 
 // Barcode End
