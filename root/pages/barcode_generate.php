@@ -375,6 +375,35 @@ foreach($vac as $vc)
 							}
 						}
 					}
+					
+					if($vc==2 && $pat_reg["pat_type"]=="OPD") // OPD && GLUCOSE RBS
+					{
+						if($testid=="1327")
+						{
+							$param_qry=mysqli_query($link, "SELECT `TestId`, `ParamaterId`, `sample`, `vaccu` FROM `Testparameter` WHERE `TestId`='$testid' ORDER BY `sequence` ASC");
+							while($param_info=mysqli_fetch_array($param_qry))
+							{
+								$paramid=$param_info["ParamaterId"];
+								
+								$chk=mysqli_fetch_array(mysqli_query($link,"select count(*) as tot from test_sample_result where patient_id='$pid' and opd_id='$opd' and ipd_id='$ipd' and batch_no='$batch_no' and testid='$testid' and paramid='$paramid' and iso_no='$iso_no'"));
+								
+								if($chk["tot"]==0)
+								{
+									//mysqli_query($link,"insert into test_sample_result(`patient_id`, `opd_id`, `ipd_id`, `batch_no`, `barcode_id`, `vaccus`, `sample_id`, `equip_id`, `testid`, `paramid`, `iso_no`, `result`, `time`, `date`, `user`) VALUES ('$pid','$opd','$ipd','$batch_no','$barcode_id','$vc','$sampleid','0','$testid','$paramid','$iso_no','','$time','$date','$user')");
+									mysqli_query($link,"INSERT INTO `test_sample_result`(`patient_id`, `opd_id`, `ipd_id`, `batch_no`, `barcode_id`, `vaccus`, `sample_id`, `equip_id`, `testid`, `paramid`, `iso_no`, `result`, `time`, `date`, `user`, `equip_name`, `update_timestamp`) VALUES ('$pid','$opd','$ipd','$batch_no','$barcode_id','$vc','$sampleid','0','$testid','$paramid','$iso_no','','$time','$date','$user','','$update_timestamp')");
+								}
+								else
+								{
+									$chk_v=mysqli_fetch_array(mysqli_query($link,"select * from test_sample_result where patient_id='$pid' and opd_id='$opd' and ipd_id='$ipd' and batch_no='$batch_no' and testid='$testid' and paramid='$paramid' and iso_no='$iso_no' and vaccus!='$vc'"));
+									
+									if($chk_v["testid"] && $chk_v["result"]=="")
+									{
+										mysqli_query($link,"update test_sample_result set barcode_id='$barcode_id',vaccus='$vc' where patient_id='$pid' and opd_id='$opd' and ipd_id='$ipd' and batch_no='$batch_no' and testid='$testid' and paramid='$paramid'");
+									}
+								}
+							}
+						}
+					}
 				}
 			}
 			
