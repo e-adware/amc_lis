@@ -53,6 +53,54 @@ if($flagEntry)
 			</tr>
 		</thead>
 <?php
+		// hemolysis
+		$hemRes="";
+		$Hemo=mysqli_fetch_array(mysqli_query($link, "SELECT `result` FROM `testresults` WHERE `patient_id`='$patient_id' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid` IN(SELECT `testid` FROM `testmaster` WHERE `type_id`='$dept_id') AND `paramid`='639' AND `iso_no`='$iso_no'"));
+		if($Hemo)
+		{
+			$hemRes=$Hemo['result'];
+		}
+		else
+		{
+			$Hemo=mysqli_fetch_array(mysqli_query($link, "SELECT `result` FROM `test_sample_result` WHERE `patient_id`='$patient_id' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid` IN(SELECT `testid` FROM `testmaster` WHERE `type_id`='$dept_id') AND `paramid`='639' AND `iso_no`=''"));
+			$hemRes=$Hemo['result'];
+		}
+		$ictRes="";
+		$Icte=mysqli_fetch_array(mysqli_query($link, "SELECT `result` FROM `testresults` WHERE `patient_id`='$patient_id' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid` IN(SELECT `testid` FROM `testmaster` WHERE `type_id`='$dept_id') AND `paramid`='640' AND `iso_no`='$iso_no'"));
+		if($Icte)
+		{
+			$ictRes=$Icte['result'];
+		}
+		else
+		{
+			$Icte=mysqli_fetch_array(mysqli_query($link, "SELECT `result` FROM `test_sample_result` WHERE `patient_id`='$patient_id' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid` IN(SELECT `testid` FROM `testmaster` WHERE `type_id`='$dept_id') AND `paramid`='640' AND `iso_no`=''"));
+			$ictRes=$Icte['result'];
+		}
+		$turbRes="";
+		$Turb=mysqli_fetch_array(mysqli_query($link, "SELECT `result` FROM `testresults` WHERE `patient_id`='$patient_id' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid` IN(SELECT `testid` FROM `testmaster` WHERE `type_id`='$dept_id') AND `paramid`='641' AND `iso_no`='$iso_no'"));
+		if($Turb)
+		{
+			$turbRes=$Turb['result'];
+		}
+		else
+		{
+			$Turb=mysqli_fetch_array(mysqli_query($link, "SELECT `result` FROM `test_sample_result` WHERE `patient_id`='$patient_id' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid` IN(SELECT `testid` FROM `testmaster` WHERE `type_id`='$dept_id') AND `paramid`='641' AND `iso_no`=''"));
+			$turbRes=$Turb['result'];
+		}
+		
+		//if($hemRes!="" || $ictRes!="" || $turbRes!="")
+		if(1==1)
+		{
+?>
+			<tr>
+				<td colspan="8"style="background:#EAEAEA;">
+					<div class="noPrintPar"><i class="icon-circle icon-large hemolysis"></i> &nbsp;HEMOLYSIS : <b><i><?php echo $hemRes;?></i></b></div>
+					<div class="noPrintPar"><i class="icon-circle icon-large icterus"></i> &nbsp;ICTERUS : <b><i><?php echo $ictRes;?></i></b></div>
+					<div class="noPrintPar"><i class="icon-circle icon-large turbidity"></i> &nbsp;TURBIDITY : <b><i><?php echo $turbRes;?></i></b></div>
+				</td>
+			</tr>
+<?php
+		}
 $i=1;
 $slno=0;
 while($test_info=mysqli_fetch_array($test_qry))
@@ -921,48 +969,6 @@ while($test_info=mysqli_fetch_array($test_qry))
 					$i++;
 				}
 			}
-			$hemRes="";
-			$Hemo=mysqli_fetch_array(mysqli_query($link, "SELECT `result` FROM `testresults` WHERE `patient_id`='$patient_id' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `paramid`='639' AND `iso_no`='$iso_no'"));
-			if($Hemo)
-			{
-				$hemRes=$Hemo['result'];
-			}
-			else
-			{
-				$Hemo=mysqli_fetch_array(mysqli_query($link, "SELECT `result` FROM `test_sample_result` WHERE `patient_id`='$patient_id' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `paramid`='639' AND `iso_no`=''"));
-				$hemRes=$Hemo['result'];
-			}
-			$ictRes="";
-			$Icte=mysqli_fetch_array(mysqli_query($link, "SELECT `result` FROM `testresults` WHERE `patient_id`='$patient_id' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `paramid`='640' AND `iso_no`='$iso_no'"));
-			if($Icte)
-			{
-				$ictRes=$Icte['result'];
-			}
-			else
-			{
-				$Icte=mysqli_fetch_array(mysqli_query($link, "SELECT `result` FROM `test_sample_result` WHERE `patient_id`='$patient_id' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `paramid`='640' AND `iso_no`=''"));
-				$ictRes=$Icte['result'];
-			}
-			$turbRes="";
-			$Turb=mysqli_fetch_array(mysqli_query($link, "SELECT `result` FROM `testresults` WHERE `patient_id`='$patient_id' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `paramid`='641' AND `iso_no`='$iso_no'"));
-			if($Turb)
-			{
-				$turbRes=$Turb['result'];
-			}
-			else
-			{
-				$Turb=mysqli_fetch_array(mysqli_query($link, "SELECT `result` FROM `test_sample_result` WHERE `patient_id`='$patient_id' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `paramid`='641' AND `iso_no`=''"));
-				$turbRes=$Turb['result'];
-			}
-			?>
-			<tr>
-				<td colspan="8"style="background:#EAEAEA;">
-					<div class="noPrintPar"><i class="icon-circle icon-large hemolysis"></i> &nbsp;HEMOLYSIS : <b><i><?php echo $hemRes;?></i></b></div>
-					<div class="noPrintPar"><i class="icon-circle icon-large icterus"></i> &nbsp;ICTERUS : <b><i><?php echo $ictRes;?></i></b></div>
-					<div class="noPrintPar"><i class="icon-circle icon-large turbidity"></i> &nbsp;TURBIDITY : <b><i><?php echo $turbRes;?></i></b></div>
-				</td>
-			</tr>
-			<?php
 		}
 	}
 	// Check Summary
