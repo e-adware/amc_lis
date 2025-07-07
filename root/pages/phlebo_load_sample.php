@@ -98,7 +98,7 @@ while($tst=mysqli_fetch_array($test))
 	}
 	else
 	{
-		if($dt_tm["type"]==1 && $tst["testid"]==1327) // OPD && GLUCOSE RBS
+		if($dt_tm["pat_type"]=="OPD" && $tst["testid"]==1327) // OPD && GLUCOSE RBS
 		{
 			$vcc[]=2;
 		}else
@@ -198,7 +198,7 @@ foreach($vcc2 as $vc)
 					echo $tname["testname"]."</label></div>";
 				}
 				
-				if($vc==2 && $dt_tm["type"]==1) // OPD && GLUCOSE RBS
+				if($vc==2 && $dt_tm["pat_type"]=="OPD") // OPD && GLUCOSE RBS
 				{
 					$tid=mysqli_query($link,"select distinct testid from patient_test_details where patient_id='$pid' and opd_id='$opd' and ipd_id='$ipd' and batch_no='$batch_no' and testid=1327");
 					
