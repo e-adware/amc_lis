@@ -49,7 +49,7 @@ if($flagEntry)
 				<th style="width: 110px;">Validate</th>
 				<th style="width: 100px;"></th>
 				<th style="width: 9%;">Result Status</th>
-				<th style="width: 100px;text-align:center;">Note</th>
+				<th style="width: 140px;text-align:center;">Note</th>
 			</tr>
 		</thead>
 <?php
@@ -123,7 +123,7 @@ while($test_info=mysqli_fetch_array($test_qry))
 	$test_note_disable="";
 	if($test_result_num==0)
 	{
-		$test_note_disable="disabled";
+		//$test_note_disable="disabled";
 	}else
 	{
 		$dispay_template_summary++;
@@ -499,6 +499,8 @@ while($test_info=mysqli_fetch_array($test_qry))
 					$dlc_check_str="SELECT `slno`,`opd_id`,`ipd_id`,`batch_no`,`result`,`range_status`,`range_id` FROM `testresults` WHERE `patient_id`='$patient_id' AND `paramid`='$paramid' AND `slno`<'$test_result[slno]' ORDER BY `slno` DESC";
 					
 					$dontPrint_param_btn_display++;
+					
+					$paramSampleStatus_disable = "";
 				}else
 				{
 					$test_sample_result=mysqli_fetch_array(mysqli_query($link, "SELECT `result`,`equip_name` FROM `test_sample_result` WHERE `patient_id`='$patient_id' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `paramid`='$paramid' AND `iso_no`=''"));
@@ -555,6 +557,8 @@ while($test_info=mysqli_fetch_array($test_qry))
 					}
 					
 					$dlc_check_str="SELECT `slno`,`opd_id`,`ipd_id`,`batch_no`,`result`,`range_status`,`range_id` FROM `testresults` WHERE `patient_id`='$patient_id' AND `paramid`='$paramid' ORDER BY `slno` DESC";
+					
+					$paramSampleStatus_disable = "";
 				}
 				$dlc_check_qry=mysqli_query($link, $dlc_check_str);
 				$dlc_check_num=mysqli_num_rows($dlc_check_qry);
@@ -601,13 +605,26 @@ while($test_info=mysqli_fetch_array($test_qry))
 					$repeat_btn_show="";
 				}
 				
+				//  Param Sample Status
+				$paramSampleStatus_btn_name="Add Sample Status";
+				$TestParamSampleStatus=mysqli_fetch_array(mysqli_query($link, "SELECT * FROM `testresults_sample_stat` WHERE `patient_id`='$patient_id' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `paramid`='$paramid'"));
+				if($TestParamSampleStatus)
+				{
+					$paramSampleStatus_btn_name="Update Sample Status";
+				}
+				
 				$dontPrint_param_btn_data="<div style='display: inline;'>";
-				if($dontPrint_param_btn_display>0)
+				if($dontPrint_param_btn_display>=0)
 				{
 					$result_hide_chk="";
 					if($result_hide==1)
 					{
 						$result_hide_chk="checked";
+					}
+					
+					if($TestParamSampleStatus["print_result"]==1 && !$test_result)
+					{
+						$result_hide_chk = "checked";
 					}
 					
 					$dontPrint_param_btn_data.=" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <label id='dontPrint_param_label".$testid."tst".$paramid."' style='display: inline;'> <input type='checkbox' $result_hide_chk id='dontPrint_param".$testid."tst".$paramid."' onclick=\"dontPrint_param_save('$patient_id','$opd_id','$ipd_id','$batch_no','$testid','$paramid','0','$param_info[Name]','$dept_id')\" $doc_approve_disabled> Don't Print </label>";
@@ -960,6 +977,7 @@ while($test_info=mysqli_fetch_array($test_qry))
 				<?php
 					}
 				?>
+						<button class="btn btn-search btn-mini paramSampleStatus_btn" onclick="paramSampleStatus('<?php echo $testid; ?>','<?php echo $paramid; ?>')" <?php echo $paramSampleStatus_disable; ?>><i class="icon-info-sign"></i> <?php echo $paramSampleStatus_btn_name; ?></button>
 					</td>
 			<?php
 				}
@@ -1142,6 +1160,7 @@ while($test_info=mysqli_fetch_array($test_qry))
 			}
 		?>
 			</td>
+			<td></td>
 			<td></td>
 			<td></td>
 		</tr>

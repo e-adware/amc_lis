@@ -32,3 +32,8 @@ ALTER TABLE `uhid_and_opdid` ADD INDEX(`sample_serial`);
 ALTER TABLE `phlebo_sample` ADD `barcode_id` CHAR(100) NULL DEFAULT NULL AFTER `test_serial`; 
 
 
+==================================================================================================
+
+TRUNCATE TABLE `testresults_sample_stat`;
+ALTER TABLE `testresults_sample_stat` CHANGE `print_result` `print_result` TINYINT NOT NULL DEFAULT '0' COMMENT '0=yes,1=no'; 
+

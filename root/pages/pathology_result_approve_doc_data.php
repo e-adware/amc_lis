@@ -1819,6 +1819,82 @@ if ($type == "load_pat_dept_tests") {
 						}, 1000);
 					})
 			}
+			
+			// Test Param Sample Status Start
+			function paramSampleStatus(testid,paramid)
+			{
+				$("#loader").show();
+				$.post("pages/pathology_result_approve_tech_ajax.php",
+				{
+					type:"paramSampleStatus",
+					patient_id:$("#patient_id").val(),
+					opd_id:$("#opd_id").val(),
+					ipd_id:$("#ipd_id").val(),
+					batch_no:$("#batch_no").val(),
+					dept_id:$("#sel_dept_id").val(),
+					testid:testid,
+					paramid:paramid,
+				},
+				function(data,status)
+				{
+					$("#loader").hide();
+					$("#load_data_note").html(data);
+					$("#btn_modal_note").click();
+					
+					setTimeout(function(){
+						$("#test_note_val").focus();
+					},1000);
+				})
+			}
+			function paramSampleStatusSave(testid,paramid)
+			{
+				if($("#sampleStatus_sample_status").val()=="")
+				{
+					$("#sampleStatus_sample_status").focus();
+					return false;
+				}
+				
+				$("#loader").show();
+				$.post("pages/pathology_result_approve_tech_ajax.php",
+				{
+					type:"paramSampleStatusSave",
+					patient_id:$("#patient_id").val(),
+					opd_id:$("#opd_id").val(),
+					ipd_id:$("#ipd_id").val(),
+					batch_no:$("#batch_no").val(),
+					dept_id:$("#sel_dept_id").val(),
+					testid:testid,
+					paramid:paramid,
+					sample_status:$("#sampleStatus_sample_status").val(),
+					print_result:$("#sampleStatus_print_result").val(),
+					sample_note:$("#sampleStatus_sample_note").val(),
+				},
+				function(data,status)
+				{
+					$("#loader").hide();
+					var res=JSON.parse(data);
+					
+					if(res["error"]==3)
+					{
+						$("#sampleStatus_print_result").focus();
+					}else
+					{
+						$("#btn_modal_note").click();
+						if(res["error"]==0)
+						{
+							alertmsg(res["message"], 1);
+						}else
+						{
+							alertmsg(res["message"], 0);
+						}
+					}
+					setTimeout(function(){
+						$("#loader").hide();
+						load_pat_dept_tests_refresh($("#sel_dept_id").val());
+					},1000);
+				})
+			}
+			// Test Param Sample Status End
 
 			function print_preview(view, dept_id, barcode_id) {
 				var uhid = $("#patient_id").val();

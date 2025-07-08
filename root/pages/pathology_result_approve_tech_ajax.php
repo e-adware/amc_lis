@@ -1336,7 +1336,134 @@ if ($type == "check_normal_range") {
 	}
 }
 
+// Test Param Sample Status Start
+if ($type == "paramSampleStatus")
+{
+	$patient_id = $_POST["patient_id"];
+	$opd_id = $_POST["opd_id"];
+	$ipd_id = $_POST["ipd_id"];
+	$batch_no = $_POST["batch_no"];
+	$dept_id = $_POST["dept_id"];
+	$testid = $_POST["testid"];
+	$paramid = $_POST["paramid"];
 
+	//$test_info = mysqli_fetch_array(mysqli_query($link, "SELECT `testname` FROM `testmaster` WHERE `testid`='$testid'"));
+	$param_info = mysqli_fetch_array(mysqli_query($link, "SELECT `Name` FROM `Parameter_old` WHERE `ID`='$paramid'"));
+
+	$btn_name = "Save";
+	$param_sample_stat = mysqli_fetch_array(mysqli_query($link, "SELECT `sample_status`, `sample_note`, `print_result` FROM `testresults_sample_stat` WHERE `patient_id`='$patient_id' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `paramid`='$paramid'"));
+	
+	if ($param_sample_stat)
+	{
+		$btn_name = "Update";
+	}
+	?>
+	<div>
+		<table class="table table-condensed table-bordered">
+			<tr>
+				<th colspan="2" style="text-align:center;">
+					Enter Sample Status for : <?php echo strtoupper($param_info["Name"]); ?>
+				</th>
+			</tr>
+			<tr>
+				<th style="width:100px;">Select Status</th>
+				<td>
+					<select id="sampleStatus_sample_status">
+						<option value="">Select</option>
+				<?php
+					$qry=mysqli_query($link, "SELECT `status_name` FROM `sample_status` WHERE `status_name`!='' ORDER BY `status_name` ASC");
+					while($data=mysqli_fetch_assoc($qry))
+					{
+						$sel="";
+						if($data["status_name"]==$param_sample_stat["sample_status"]){ $sel="selected"; }
+						
+						echo "<option value='{$data["status_name"]}' $sel>{$data["status_name"]}</option>";
+					}
+				?>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<th>Print Result</th>
+				<td>
+					<select id="sampleStatus_print_result">
+						<option value="0" <?php if($param_sample_stat["print_result"]=="0"){ echo "selected"; } ?>>Yes</option>
+						<option value="1" <?php if($param_sample_stat["print_result"]=="1"){ echo "selected"; } ?>>No</option>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<th>Note</th>
+				<td>
+					<textarea id="sampleStatus_sample_note" style="height: 100px;width: 99%;resize: none;"><?php echo $param_sample_stat["sample_note"]; ?></textarea>
+				</td>
+			</tr>
+			<tr>
+				<th colspan="2" style="text-align:center;">
+					<button class="btn btn-save" onclick="paramSampleStatusSave('<?php echo $testid; ?>','<?php echo $paramid; ?>')"><i class="icon-save"></i> <?php echo $btn_name; ?></button>
+					<button class="btn btn-close" data-dismiss="modal"><i class="icon-off"></i> Close</button>
+				</td>
+			</tr>
+		</table>
+	</div>
+	<?php
+}
+
+if ($type == "paramSampleStatusSave")
+{
+	$patient_id = $_POST["patient_id"];
+	$opd_id = $_POST["opd_id"];
+	$ipd_id = $_POST["ipd_id"];
+	$batch_no = $_POST["batch_no"];
+	$dept_id = $_POST["dept_id"];
+	$testid = $_POST["testid"];
+	$paramid = $_POST["paramid"];
+	
+	$sample_status	 = mysqli_real_escape_string($link, $_POST["sample_status"]);
+	$print_result 	 = mysqli_real_escape_string($link, $_POST["print_result"]);
+	$sample_note	 = mysqli_real_escape_string($link, $_POST["sample_note"]);
+	
+	$param_info = mysqli_fetch_array(mysqli_query($link, "SELECT `vaccu` FROM `Parameter_old` WHERE `ID`='$paramid'"));
+	
+	$param_sample_stat = mysqli_fetch_array(mysqli_query($link, "SELECT `sample_status`, `sample_note`, `print_result` FROM `testresults_sample_stat` WHERE `patient_id`='$patient_id' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `paramid`='$paramid'"));
+
+	if($sample_status)
+	{
+		if ($param_sample_stat)
+		{
+			if (mysqli_query($link, "UPDATE `testresults_sample_stat` SET `vac_id`='$param_info[vaccu]',`testid`='$testid',`paramid`='$paramid',`sample_status`='$sample_status',`sample_note`='$sample_note',`print_result`='$print_result' WHERE `patient_id`='$patient_id' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `paramid`='$paramid'"))
+			{
+				mysqli_query($link, "UPDATE `testresults` SET `result_hide`='$print_result' WHERE `patient_id`='$patient_id' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `paramid`='$paramid'");
+				
+				$return["error"] = 0;
+				$return["message"] = "Updated";
+			} else {
+				$return["error"] = 1;
+				$return["message"] = "Failed, try again later(1)";
+			}
+		} else {
+			if (mysqli_query($link, "INSERT INTO `testresults_sample_stat`(`patient_id`, `opd_id`, `ipd_id`, `batch_no`, `vac_id`, `testid`, `paramid`, `sample_status`, `sample_note`, `print_result`, `user`, `time`, `date`) VALUES ('$patient_id','$opd_id','$ipd_id','$batch_no','$param_info[vaccu]','$testid','$paramid','$sample_status','$sample_note','$print_result','$c_user','$time','$date')"))
+			{
+				mysqli_query($link, "UPDATE `testresults` SET `result_hide`='$print_result' WHERE `patient_id`='$patient_id' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `paramid`='$paramid'");
+				
+				$return["error"] = 0;
+				$return["message"] = "Saved";
+			} else {
+				$return["error"] = 2;
+				$return["message"] = "Failed, try again later(2)";
+			}
+		}
+	}else
+	{
+		$return["error"] = 3;
+		$return["message"] = "Nothing to save";
+	}
+	
+	//$return["print_result"] = $print_result;
+	
+	echo json_encode($return);
+}
+// Test Param Sample Status End
 
 mysqli_close($link);
 ?>

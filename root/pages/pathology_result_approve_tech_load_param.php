@@ -131,7 +131,7 @@ if($flagEntry)
 			}
 			$test_note_disable = "";
 			if ($test_result_num == 0) {
-				$test_note_disable = "disabled";
+				//$test_note_disable = "disabled";
 			} else {
 				$dispay_template_summary++;
 			}
@@ -502,6 +502,8 @@ if($flagEntry)
 							$result_text_style = "";
 
 							$repeat_param_btn_display = 0;
+							
+							$paramSampleStatus_disable = "disabled";
 
 							$instrument_name = "";
 							$data_entry_name = "";
@@ -544,8 +546,18 @@ if($flagEntry)
 								$dlc_check_str = "SELECT `slno`,`opd_id`,`ipd_id`,`batch_no`,`result`,`range_status`,`range_id` FROM `testresults` WHERE `patient_id`='$patient_id' AND `paramid`='$paramid' AND `slno`<'$test_result[slno]' ORDER BY `slno` DESC";
 
 								$repeat_param_btn_display++;
+								
+								$paramSampleStatus_disable = "";
 							} else {
 								$test_sample_result = mysqli_fetch_array(mysqli_query($link, "SELECT `result`,`equip_name` FROM `test_sample_result` WHERE `patient_id`='$patient_id' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `paramid`='$paramid' AND `iso_no`=''"));
+								
+								if ($test_sample_result["result"]=="No Result")
+								{
+									$test_sample_result["result"]="";
+									
+									mysqli_query($link, "UPDATE `test_sample_result` SET `result`='' WHERE `patient_id`='$patient_id' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `paramid`='$paramid' AND `result`='No Result'");
+								}
+								
 								if ($test_sample_result["result"])
 								{
 									$result = $test_sample_result["result"];
@@ -576,6 +588,8 @@ if($flagEntry)
 									$result = $param_fix_result["result"];
 								}
 								$dlc_check_str = "SELECT `slno`,`opd_id`,`ipd_id`,`batch_no`,`result`,`range_status`,`range_id` FROM `testresults` WHERE `patient_id`='$patient_id' AND `paramid`='$paramid' ORDER BY `slno` DESC";
+								
+								$paramSampleStatus_disable = "";
 							}
 
 							//$result=htmlspecialchars($result);
@@ -622,21 +636,34 @@ if($flagEntry)
 
 							// Repeat Start
 							$repeat_check = mysqli_fetch_array(mysqli_query($link, "SELECT * FROM `pathology_repeat_param_details` WHERE `patient_id`='$patient_id' and `opd_id`='$opd_id' and `ipd_id`='$ipd_id' and `batch_no`='$batch_no' and testid='$testid' and paramid='$paramid' ORDER BY `repeat_id` DESC LIMIT 1"));
-
+							
+							$result_hide_chk = "";
+							
+							//  Param Sample Status
+							$paramSampleStatus_btn_name="Add Sample Status";
+							$TestParamSampleStatus=mysqli_fetch_array(mysqli_query($link, "SELECT * FROM `testresults_sample_stat` WHERE `patient_id`='$patient_id' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `paramid`='$paramid'"));
+							if($TestParamSampleStatus)
+							{
+								$paramSampleStatus_btn_name="Update Sample Status";
+							}
+							if($TestParamSampleStatus["print_result"]==1 && !$test_result)
+							{
+								$result_hide_chk = "checked";
+							}
+							
+							if ($result_hide == 1) {
+								$result_hide_chk = "checked";
+							}
+							
 							$repeat_param_btn_data = "<div style='display: inline;'>";
 							if ($repeat_param_btn_display > 0) {
 								$repeat_param_btn_data .= " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <label id='repeat_param_label" . $testid . "tst" . $paramid . "' style='display: inline;'> <input type='checkbox' id='repeat_param" . $testid . "tst" . $paramid . "' onclick=\"repeat_param_save('$patient_id','$opd_id','$ipd_id','$batch_no','$testid','$paramid','0','$param_info[Name]','$dept_id')\" $doc_approve_disabled> Repeat </label>";
-
-								$result_hide_chk = "";
-								if ($result_hide == 1) {
-									$result_hide_chk = "checked";
-								}
-
+								
 								$repeat_param_btn_data .= " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <label id='dontPrint_param_label" . $testid . "tst" . $paramid . "' style='display: inline;'> <input type='checkbox' $result_hide_chk id='dontPrint_param" . $testid . "tst" . $paramid . "' onclick=\"dontPrint_param_save('$patient_id','$opd_id','$ipd_id','$batch_no','$testid','$paramid','0','$param_info[Name]','$dept_id')\" $doc_approve_disabled> Don't Print </label>";
 							} else {
-								$repeat_param_btn_data .= " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+								$repeat_param_btn_data .= " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <label id='dontPrint_param_label" . $testid . "tst" . $paramid . "' style='display: inline;'> <input type='checkbox' $result_hide_chk id='dontPrint_param" . $testid . "tst" . $paramid . "' onclick=\"dontPrint_param_save('$patient_id','$opd_id','$ipd_id','$batch_no','$testid','$paramid','0','$param_info[Name]','$dept_id')\" $doc_approve_disabled> Don't Print </label>";
 							}
-
+							
 							if ($repeat_check) {
 								$repeat_param_btn_data .= " &nbsp;&nbsp;&nbsp;&nbsp; <a class='btn btn-link btn-mini' id='repeat_param_view_btn" . $testid . "tst" . $paramid . "' onclick=\"repeat_param_view('$patient_id','$opd_id','$ipd_id','$batch_no','$testid','$paramid','0')\" style='$repeat_btn_show'>View Repeat(s)</a>";
 							} else {
@@ -1021,11 +1048,12 @@ if($flagEntry)
 										<?php
 										if ($test_param_num == 1) {
 											?>
-											<button class="btn btn-edit btn-mini test_note_btn" onclick="test_note('<?php echo $testid; ?>')" <?php echo $test_note_disable; ?> 							<?php echo $doc_approve_disabled; ?>><i class="icon-comment-alt"></i>
+											<button class="btn btn-edit btn-mini test_note_btn" onclick="test_note('<?php echo $testid; ?>')" <?php echo $test_note_disable; ?> <?php echo $doc_approve_disabled; ?>><i class="icon-comment-alt"></i>
 												<?php echo $test_note_btn; ?></button>
 											<?php
 										}
 										?>
+										<button class="btn btn-search btn-mini paramSampleStatus_btn" onclick="paramSampleStatus('<?php echo $testid; ?>','<?php echo $paramid; ?>')" <?php echo $paramSampleStatus_disable; ?>><i class="icon-info-sign"></i> <?php echo $paramSampleStatus_btn_name; ?></button>
 									</td>
 									<?php
 								}
