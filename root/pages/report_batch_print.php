@@ -28,7 +28,7 @@ $c_user = $_SESSION['emp_id'];
 							<option value="ipd_id">IPD</option>
 						</select>
 
-						<select id="search_dept_id" name="search_dept_id" onchange="load_dep_test()" class="span2">
+						<select id="search_dept_id" name="search_dept_id" onchange="not_printedload_dep_test()" class="span2">
 							<option value="0">--All(DEP)--</option>
 							<?php
 							//$dep=mysqli_query($link,"select distinct type_id from testmaster where category_id='1' order by type_id");
@@ -154,6 +154,11 @@ $c_user = $_SESSION['emp_id'];
 			</tr>
 		</table>
 	</div>
+	<select id="print_status" onchange="print_status(this.value)">
+		<option value="0">All</option>
+		<option value="1">Not Printed</option>
+		<option value="2">Printed</option>
+	</select>
 	<div id="pat_list" class="ScrollStyleY">
 
 	</div>
@@ -265,7 +270,7 @@ $c_user = $_SESSION['emp_id'];
 				var list_start = $("#list_start").val().trim();
 				list_start = parseInt(list_start) + 50;
 				$("#list_start").val(list_start);
-				load_pat_ser(3);
+				//load_pat_ser(3);
 			}
 		});
 	});
@@ -293,7 +298,26 @@ $c_user = $_SESSION['emp_id'];
 		//~ }
 		//~ }, 1000);
 	}
-
+	
+	function print_status(val)
+	{
+		if(val==0)
+		{
+			$(".not_printed").show();
+			$(".printed").show();
+		}
+		if(val==1)
+		{
+			$(".not_printed").show();
+			$(".printed").hide();
+		}
+		if(val==2)
+		{
+			$(".not_printed").hide();
+			$(".printed").show();
+		}
+	}
+	
 	function auto_refresh() {
 		$("#auto_refresh_div").html("Refreshing...");
 		load_pat_ser(4);

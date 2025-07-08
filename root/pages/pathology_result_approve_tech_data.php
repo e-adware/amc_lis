@@ -554,7 +554,8 @@ if ($type == "load_pat_list_multi_print") {
 
 	$test_str .= " GROUP BY a.`patient_id`, a.`opd_id`, a.`ipd_id`, a.`batch_no`";
 
-	$test_str .= " ORDER BY a.`slno` DESC LIMIT " . $list_start;
+	//$test_str .= " ORDER BY a.`slno` DESC LIMIT " . $list_start;
+	$test_str .= " ORDER BY a.`slno` DESC ";
 
 	$test_str;
 
@@ -614,7 +615,7 @@ if ($type == "load_pat_list_multi_print") {
 				$age = $pat_info["age"] . " " . $pat_info["age_type"];
 			}
 
-			$printClass = "";
+			$printClass = "not_printed";
 			$printChk = mysqli_fetch_array(mysqli_query($link, "SELECT `slno` FROM `testreport_print` WHERE `patient_id`='$patient_id' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no'"));
 			if ($printChk) {
 				$printClass = "printed";
