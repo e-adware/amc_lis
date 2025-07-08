@@ -4,22 +4,22 @@ include("../../includes/connection.php");
 include("../../includes/global.function.php");
 //include("pathology_normal_range_new.php");
 
-$top_line_break=2;
-$doc_in_a_line=5;
-$max_line_in_a_page=30;
-$single_page_test_param_num=25;
-$div_height="height: 800px;";
-$method_max_characters=18;
+$top_line_break = 2;
+$doc_in_a_line = 5;
+$max_line_in_a_page = 30;
+$single_page_test_param_num = 25;
+$div_height = "height: 790px;";
+$method_max_characters = 18;
 
-$single_page_param_result_type_ids="7,27"; // Pad,
-$dlc_param_ids="125,208,210,863,207"; // DLC
+$single_page_param_result_type_ids = "7,27"; // Pad,
+$dlc_param_ids = "125,208,210,863,207"; // DLC
 //$dlc_param_ids_dontPrint="975,127,128,129"; // DLC
 
-$nabl_logo_size="width: 80px;height: 80px;";
+$nabl_logo_size = "width: 80px;height: 80px;";
 
-$only_result_testid=""; // seperated by , // Test Like Urine RE
+$only_result_testid = ""; // seperated by , // Test Like Urine RE
 
-$nabl_star_symbol="";
+$nabl_star_symbol = "";
 
 $date=date("Y-m-d");
 $time=date("H:i:s");
@@ -222,488 +222,407 @@ $doctors=array_unique($doctors);
 //echo sizeof($doctors);
 
 //$page=1;
-foreach($doctors AS $doctor)
-{
-	if($doctor>=0)
-	{
+foreach ($doctors as $doctor) {
+	if ($doctor >= 0) {
 		//break;
-		$test_serial=0;
-		$profile_serial=0;
-		$line_no=0;
-		
-		$nabl_test_num=0;
-		$non_nabl_test_num=0;
-		
-		$dist_dept_qry=mysqli_query($link, "SELECT DISTINCT `type_id` FROM `testmaster` WHERE `testid` IN($testall) AND `category_id`=1 ORDER BY `type_name` ASC");
-		while($dist_dept=mysqli_fetch_array($dist_dept_qry))
-		{
-			$type_id=$dist_dept["type_id"];
-			
+		$test_serial = 0;
+		$profile_serial = 0;
+		$line_no = 0;
+
+		$nabl_test_num = 0;
+		$non_nabl_test_num = 0;
+
+		$dist_dept_qry = mysqli_query($link, "SELECT DISTINCT `type_id` FROM `testmaster` WHERE `testid` IN($testall) AND `category_id`=1 ORDER BY `type_name` ASC");
+		while ($dist_dept = mysqli_fetch_array($dist_dept_qry)) {
+			$type_id = $dist_dept["type_id"];
+
 			//$test_dept_qry=mysqli_query($link, "SELECT `testid`,`testname` FROM `testmaster` WHERE `testid` IN($testall) AND `category_id`=1 AND `type_id`='$type_id' AND `testid` IN(SELECT DISTINCT a.`TestId` FROM `Testparameter` a, `nabl_test_param` b WHERE a.`ParamaterId`=b.`paramid`) ORDER BY `testid` ASC");
-			
-			$nabl_val=1;
-			$test_dept_qry=mysqli_query($link, "SELECT a.`testid`,a.`testname`,a.`type_id` FROM `testmaster` a, `pathology_report_print_sequence` b WHERE a.`testid`=b.`testid` AND a.`testid` IN($testall) AND a.`category_id`=1  AND a.`type_id`='$type_id' AND a.`testid` IN(SELECT DISTINCT a.`TestId` FROM `Testparameter` a, `nabl_test_param` b WHERE a.`ParamaterId`=b.`paramid`) ORDER BY b.`slno` ASC");
-			$test_dept_num=mysqli_num_rows($test_dept_qry);
-			if($test_dept_num>0)
-			{
-				if($non_nabl_test_num>0)
-				{
+
+			$nabl_val = 1;
+			$test_dept_qry = mysqli_query($link, "SELECT a.`testid`,a.`testname`,a.`type_id` FROM `testmaster` a, `pathology_report_print_sequence` b WHERE a.`testid`=b.`testid` AND a.`testid` IN($testall) AND a.`category_id`=1  AND a.`type_id`='$type_id' AND a.`testid` IN(SELECT DISTINCT a.`TestId` FROM `Testparameter` a, `nabl_test_param` b WHERE a.`ParamaterId`=b.`paramid` AND a.`ParamaterId` NOT IN(639,640,641)) ORDER BY b.`slno` ASC");
+			$test_dept_num = mysqli_num_rows($test_dept_qry);
+			if ($test_dept_num > 0) {
+				if ($non_nabl_test_num > 0) {
 					$page++;
-					$line_no=0;
+					$line_no = 0;
 				}
 			}
-			while($test_dept=mysqli_fetch_array($test_dept_qry))
-			{
+			while ($test_dept = mysqli_fetch_array($test_dept_qry)) {
 				$nabl_test_num++;
-				$non_nabl_test_num=0;
-				
-				$testid=$test_dept["testid"];
-				
-				$culture=0;
-				
-				if (strpos($test_dept['testname'],'culture') !== false) 
-				{
-					$culture=1;
+				$non_nabl_test_num = 0;
+
+				$testid = $test_dept["testid"];
+
+				$culture = 0;
+
+				if (strpos($test_dept['testname'], 'culture') !== false) {
+					$culture = 1;
 				}
-				
-				if (strpos($test_dept['testname'],'CULTURE') !== false) 
-				{
-					$culture=1;
+
+				if (strpos($test_dept['testname'], 'CULTURE') !== false) {
+					$culture = 1;
 				}
-				
-				if (strpos($test_dept['testname'],'Culture') !== false) 
-				{
-					$culture=1;
+
+				if (strpos($test_dept['testname'], 'Culture') !== false) {
+					$culture = 1;
 				}
-				
-				if($culture==1)
-				{
+
+				if ($culture == 1) {
 					//$test_page[]=$testid;
-					
-					$test_result_num=mysqli_num_rows(mysqli_query($link,"SELECT * FROM `testresults` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `doc`='$doctor'"));
-					if($test_result_num>0)
-					{
-						if($test_serial>0 || $profile_serial>0)
-						{
+
+					$test_result_num = mysqli_num_rows(mysqli_query($link, "SELECT * FROM `testresults` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `doc`='$doctor'"));
+					if ($test_result_num > 0) {
+						if ($test_serial > 0 || $profile_serial > 0) {
 							$page++;
-							
-							$test_serial=0;
-							$profile_serial=0;
+
+							$test_serial = 0;
+							$profile_serial = 0;
 						}
-						$line_no=0;
+						$line_no = 0;
 						//mysqli_query($link, "INSERT INTO `pathology_report_print`(`patient_id`, `opd_id`, `batch_no`, `type_id`, `testid`, `param_id`, `part`, `tech_id`, `doc_id`, `page_no`, `result_table`, `user`, `ip_addr`, `nabl`) VALUES ('$uhid','$bill_id','$batch_no','$type_id','$testid','0','0','0','$doctor','$page','5','$c_user','$ip_addr','$nabl_val')");
-						
+
 						//$page++;
-						
-						if($iso_no==0)
-						{
-							$iso_qry=mysqli_query($link,"SELECT DISTINCT `iso_no` FROM `testresults` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `doc`='$doctor'");
+
+						if ($iso_no == 0) {
+							$iso_qry = mysqli_query($link, "SELECT DISTINCT `iso_no` FROM `testresults` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `doc`='$doctor'");
+						} else {
+							$iso_qry = mysqli_query($link, "SELECT DISTINCT `iso_no` FROM `testresults` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `iso_no`='$iso_no' AND `doc`='$doctor'");
 						}
-						else
-						{
-							$iso_qry=mysqli_query($link,"SELECT DISTINCT `iso_no` FROM `testresults` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `iso_no`='$iso_no' AND `doc`='$doctor'");
-						}
-						
-						while($iso_info=mysqli_fetch_array($iso_qry))
-						{
+
+						while ($iso_info = mysqli_fetch_array($iso_qry)) {
 							mysqli_query($link, "INSERT INTO `pathology_report_print`(`patient_id`, `opd_id`, `batch_no`, `type_id`, `testid`, `param_id`, `part`, `tech_id`, `doc_id`, `page_no`, `result_table`, `user`, `ip_addr`, `nabl`) VALUES ('$uhid','$bill_id','$batch_no','$type_id','$testid','0','$iso_info[iso_no]','0','$doctor','$page','5','$c_user','$ip_addr','$nabl_val')");
-							
+
 							$page++;
 						}
-					}else
-					{
-						$test_serial=0;
-						$profile_serial=0;
-						$line_no=0;
-						
-						$test_sum_qry=mysqli_query($link,"SELECT * FROM `patient_test_summary` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `doc`='$doctor'");
-						
-						$test_sum=mysqli_fetch_array($test_sum_qry);
-						$summary_text=$test_sum["summary"];
-						
-						if(strpos($summary_text, $page_breaker) !== false)
-						{
-							$part=1;
-							$summary_texts=explode($page_breaker,$summary_text);
-							foreach($summary_texts AS $summary_parts)
-							{
-								if($summary_parts)
-								{
+					} else {
+						$test_serial = 0;
+						$profile_serial = 0;
+						$line_no = 0;
+
+						$test_sum_qry = mysqli_query($link, "SELECT * FROM `patient_test_summary` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `doc`='$doctor'");
+
+						$test_sum = mysqli_fetch_array($test_sum_qry);
+						$summary_text = $test_sum["summary"];
+
+						if (strpos($summary_text, $page_breaker) !== false) {
+							$part = 1;
+							$summary_texts = explode($page_breaker, $summary_text);
+							foreach ($summary_texts as $summary_parts) {
+								if ($summary_parts) {
 									mysqli_query($link, "INSERT INTO `pathology_report_print`(`patient_id`, `opd_id`, `batch_no`, `type_id`, `testid`, `param_id`, `part`, `tech_id`, `doc_id`, `page_no`, `result_table`, `user`, `ip_addr`, `nabl`) VALUES ('$uhid','$bill_id','$batch_no','$type_id','$testid','0','$part','0','$doctor','$page','3','$c_user','$ip_addr','$nabl_val')");
-									
+
 									$part++;
 									$page++;
 								}
 							}
-						}
-						else if($summary_text)
-						{
+						} else if ($summary_text) {
 							mysqli_query($link, "INSERT INTO `pathology_report_print`(`patient_id`, `opd_id`, `batch_no`, `type_id`, `testid`, `param_id`, `part`, `tech_id`, `doc_id`, `page_no`, `result_table`, `user`, `ip_addr`, `nabl`) VALUES ('$uhid','$bill_id','$batch_no','$type_id','$testid','0','0','0','$doctor','$page','3','$c_user','$ip_addr','$nabl_val')");
-							
+
 							$page++;
 						}
 					}
-				}
-				else
-				{
-					$test_result_num=mysqli_num_rows(mysqli_query($link,"SELECT * FROM `testresults` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `doc`='$doctor'"));
-					
-					$test_sum_qry=mysqli_query($link,"SELECT * FROM `patient_test_summary` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `doc`='$doctor'");
-					
-					$test_sum_num=mysqli_num_rows($test_sum_qry);
-					
+				} else {
+					$test_result_num = mysqli_num_rows(mysqli_query($link, "SELECT * FROM `testresults` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `doc`='$doctor'"));
+
+					$test_sum_qry = mysqli_query($link, "SELECT * FROM `patient_test_summary` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `doc`='$doctor'");
+
+					$test_sum_num = mysqli_num_rows($test_sum_qry);
+
 					//$test_sum_num_tst=mysqli_num_rows(mysqli_query($link,"SELECT * FROM `test_summary` WHERE `testid`='$testid'"));
-					$test_sum_num_tst=0;
-					
-					$test_note=mysqli_fetch_array(mysqli_query($link,"SELECT `note` FROM `testresults_note` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `doc`>0"));
-					
+					$test_sum_num_tst = 0;
+
+					//$test_note=mysqli_fetch_array(mysqli_query($link,"SELECT `note` FROM `testresults_note` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `doc`>0"));
+					$test_note["note"] = "";
+
 					// Single Page Param Check
-					$single_page_param_result_num=mysqli_num_rows(mysqli_query($link,"SELECT a.`slno` FROM `testresults` a, `Parameter_old` b WHERE a.`paramid`=b.`ID` AND a.`patient_id`='$uhid' AND a.`opd_id`='$opd_id' AND a.`ipd_id`='$ipd_id' AND a.`batch_no`='$batch_no' AND a.`testid`='$testid' AND a.`doc`='$doctor' AND b.`ResultType` IN($single_page_param_result_type_ids)"));
-					
-					if(($test_result_num>0 && $test_sum_num>0) || ($test_result_num>0 && $test_sum_num_tst>0) || ($test_result_num>0 && $test_note["note"]!="") || $single_page_param_result_num>0)
-					{
+					$single_page_param_result_num = mysqli_num_rows(mysqli_query($link, "SELECT a.`slno` FROM `testresults` a, `Parameter_old` b WHERE a.`paramid`=b.`ID` AND a.`patient_id`='$uhid' AND a.`opd_id`='$opd_id' AND a.`ipd_id`='$ipd_id' AND a.`batch_no`='$batch_no' AND a.`testid`='$testid' AND a.`doc`='$doctor' AND b.`ResultType` IN($single_page_param_result_type_ids)"));
+
+					if (($test_result_num > 0 && $test_sum_num > 0) || ($test_result_num > 0 && $test_sum_num_tst > 0) || ($test_result_num > 0 && $test_note["note"] != "") || $single_page_param_result_num > 0) {
 						//$test_page[]=$testid;
-						
-						if($test_serial>0 || $profile_serial>0)
-						{
+
+						if ($test_serial > 0 || $profile_serial > 0) {
 							$page++;
-							
-							$test_serial=0;
-							$profile_serial=0;
+
+							$test_serial = 0;
+							$profile_serial = 0;
 						}
-						$line_no=0;
+						$line_no = 0;
 						//mysqli_query($link, "INSERT INTO `pathology_report_print`(`patient_id`, `opd_id`, `batch_no`, `type_id`, `testid`, `param_id`, `part`, `tech_id`, `doc_id`, `page_no`, `result_table`, `user`, `ip_addr`, `nabl`) VALUES ('$uhid','$bill_id','$batch_no','$type_id','$testid','0','0','0','$doctor','$page','2','$c_user','$ip_addr','$nabl_val')");
-						
+
 						//$page++;
-						
-						$test_param_qry=mysqli_query($link, "SELECT `ParamaterId` FROM `Testparameter` WHERE `TestId`='$testid' ORDER BY `sequence` ASC");
-						while($test_param=mysqli_fetch_array($test_param_qry))
-						{
-							$paramid=$test_param["ParamaterId"];
-							
-							$test_result=mysqli_fetch_array(mysqli_query($link,"SELECT `result`,`range_id` FROM `testresults` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `paramid`='$paramid' AND `doc`='$doctor'"));
-							
-							$param_info=mysqli_fetch_array(mysqli_query($link, "SELECT `ResultType` FROM `Parameter_old` WHERE `ID`='$paramid'"));
-							
-							if($param_info["ResultType"]==0 || $param_info["ResultType"]==5)
-							{
-								$test_result=1;
+
+						$test_param_qry = mysqli_query($link, "SELECT `ParamaterId` FROM `Testparameter` WHERE `TestId`='$testid' AND `ParamaterId` NOT IN(639,640,641) ORDER BY `sequence` ASC");
+						while ($test_param = mysqli_fetch_array($test_param_qry)) {
+							$paramid = $test_param["ParamaterId"];
+
+							$test_result = mysqli_fetch_array(mysqli_query($link, "SELECT `result`,`range_id` FROM `testresults` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `paramid`='$paramid' AND `doc`='$doctor'"));
+
+							$param_info = mysqli_fetch_array(mysqli_query($link, "SELECT `ResultType` FROM `Parameter_old` WHERE `ID`='$paramid'"));
+
+							if ($param_info["ResultType"] == 0 || $param_info["ResultType"] == 5) {
+								$test_result = 1;
 							}
-							
-							if($test_result)
-							{
-								$range=mysqli_fetch_array(mysqli_query($link,"SELECT `normal_range` FROM `parameter_normal_check` WHERE `slno`='$test_result[range_id]'"));
-								$normal_range_line=substr_count($range["normal_range"], "\n")+1;
+
+							if ($test_result) {
+								$range = mysqli_fetch_array(mysqli_query($link, "SELECT `normal_range` FROM `parameter_normal_check` WHERE `slno`='$test_result[range_id]'"));
+								$normal_range_line = substr_count($range["normal_range"], "\n") + 1;
 								//echo $normal_range_line." = ".$range["normal_range"];
-								if($normal_range_line<=0)
-								{
-									$normal_range_line=1;
+								if ($normal_range_line <= 0) {
+									$normal_range_line = 1;
 								}
-								
-								if($param_info["ResultType"]==7) // Pad
+
+								if ($param_info["ResultType"] == 7) // Pad
 								{
 									$page++;
-									$line_no=0;
-									
-									$summary_text=$test_result["result"];
-									
-									if(strpos($summary_text, $page_breaker) !== false)
-									{
-										$part=1;
-										$summary_texts=explode($page_breaker,$summary_text);
-										foreach($summary_texts AS $summary_parts)
-										{
-											if($summary_parts)
-											{
+									$line_no = 0;
+
+									$summary_text = $test_result["result"];
+
+									if (strpos($summary_text, $page_breaker) !== false) {
+										$part = 1;
+										$summary_texts = explode($page_breaker, $summary_text);
+										foreach ($summary_texts as $summary_parts) {
+											if ($summary_parts) {
 												mysqli_query($link, "INSERT INTO `pathology_report_print`(`patient_id`, `opd_id`, `batch_no`, `type_id`, `testid`, `param_id`, `part`, `tech_id`, `doc_id`, `page_no`, `result_table`, `user`, `ip_addr`, `nabl`) VALUES ('$uhid','$bill_id','$batch_no','$type_id','$testid','$paramid','$part','0','$doctor','$page','2','$c_user','$ip_addr','$nabl_val')");
-												
+
 												$part++;
 												$page++;
 											}
 										}
-									}
-									else if($summary_text)
-									{
+									} else if ($summary_text) {
 										mysqli_query($link, "INSERT INTO `pathology_report_print`(`patient_id`, `opd_id`, `batch_no`, `type_id`, `testid`, `param_id`, `part`, `tech_id`, `doc_id`, `page_no`, `result_table`, `user`, `ip_addr`, `nabl`) VALUES ('$uhid','$bill_id','$batch_no','$type_id','$testid','$paramid','0','0','$doctor','$page','2','$c_user','$ip_addr','$nabl_val')");
-										
+
 										$page++;
 									}
-								}
-								else
-								{
-									$result_line=substr_count($test_result["result"], "\n")+1;
-									
-									if($result_line>$normal_range_line)
-									{
-										$normal_range_line=$result_line;
+								} else {
+									$result_line = substr_count($test_result["result"], "\n") + 1;
+
+									if ($result_line > $normal_range_line) {
+										$normal_range_line = $result_line;
 									}
-									
-									$line_no+=$normal_range_line;
-									
-									if($line_no>$max_line_in_a_page)
-									{
-										$line_no=0;
+
+									$line_no += $normal_range_line;
+
+									if ($line_no > $max_line_in_a_page) {
+										$line_no = 0;
 										$page++;
 									}
-									
+
 									mysqli_query($link, "INSERT INTO `pathology_report_print`(`patient_id`, `opd_id`, `batch_no`, `type_id`, `testid`, `param_id`, `part`, `tech_id`, `doc_id`, `page_no`, `result_table`, `user`, `ip_addr`, `nabl`) VALUES ('$uhid','$bill_id','$batch_no','$type_id','$testid','$paramid','0','0','$doctor','$page','2','$c_user','$ip_addr','$nabl_val')");
 								}
-								
-								$test_serial=1;
-								$profile_serial=1;
-								
-								if($page>=100)
-								{
+
+								$test_serial = 1;
+								$profile_serial = 1;
+
+								if ($page >= 100) {
 									break;
 								}
 							}
 						}
-					}
-					else if($test_sum_num>0 && $testid!=1227)
-					{
+					} else if ($test_sum_num > 0 && $testid != 1227) {
 						//$test_page[]=$testid;
-						
-						if($test_serial>0 || $profile_serial>0)
-						{
+
+						if ($test_serial > 0 || $profile_serial > 0) {
 							$page++;
-							
-							$test_serial=0;
-							$profile_serial=0;
+
+							$test_serial = 0;
+							$profile_serial = 0;
 						}
-						$line_no=0;
-						
-						$test_sum=mysqli_fetch_array($test_sum_qry);
-						$summary_text=$test_sum["summary"];
-						
-						if(strpos($summary_text, $page_breaker) !== false)
-						{
-							$part=1;
-							$summary_texts=explode($page_breaker,$summary_text);
-							foreach($summary_texts AS $summary_parts)
-							{
-								if($summary_parts)
-								{
+						$line_no = 0;
+
+						$test_sum = mysqli_fetch_array($test_sum_qry);
+						$summary_text = $test_sum["summary"];
+
+						if (strpos($summary_text, $page_breaker) !== false) {
+							$part = 1;
+							$summary_texts = explode($page_breaker, $summary_text);
+							foreach ($summary_texts as $summary_parts) {
+								if ($summary_parts) {
 									mysqli_query($link, "INSERT INTO `pathology_report_print`(`patient_id`, `opd_id`, `batch_no`, `type_id`, `testid`, `param_id`, `part`, `tech_id`, `doc_id`, `page_no`, `result_table`, `user`, `ip_addr`, `nabl`) VALUES ('$uhid','$bill_id','$batch_no','$type_id','$testid','0','$part','0','$doctor','$page','3','$c_user','$ip_addr','$nabl_val')");
-									
+
 									$part++;
 									$page++;
 								}
 							}
-						}
-						else if($summary_text)
-						{
+						} else if ($summary_text) {
 							mysqli_query($link, "INSERT INTO `pathology_report_print`(`patient_id`, `opd_id`, `batch_no`, `type_id`, `testid`, `param_id`, `part`, `tech_id`, `doc_id`, `page_no`, `result_table`, `user`, `ip_addr`, `nabl`) VALUES ('$uhid','$bill_id','$batch_no','$type_id','$testid','0','0','0','$doctor','$page','3','$c_user','$ip_addr','$nabl_val')");
-							
+
 							$page++;
 						}
-					}
-					else
-					{
-						if($testid==1227)
-						{
-							$widal_num=mysqli_num_rows(mysqli_query($link,"SELECT * FROM `widalresult` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `doc`='$doctor' limit 1"));
-							if($widal_num>0)
-							{
+					} else {
+						if ($testid == 1227) {
+							$widal_num = mysqli_num_rows(mysqli_query($link, "SELECT * FROM `widalresult` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `doc`='$doctor' limit 1"));
+							if ($widal_num > 0) {
 								//$test_page[]=$testid;
-								
-								if($test_serial>0 || $profile_serial>0)
-								{
+
+								if ($test_serial > 0 || $profile_serial > 0) {
 									$page++;
-									
-									$test_serial=0;
-									$profile_serial=0;
+
+									$test_serial = 0;
+									$profile_serial = 0;
 								}
-								$line_no=0;
+								$line_no = 0;
 								mysqli_query($link, "INSERT INTO `pathology_report_print`(`patient_id`, `opd_id`, `batch_no`, `type_id`, `testid`, `param_id`, `part`, `tech_id`, `doc_id`, `page_no`, `result_table`, `user`, `ip_addr`, `nabl`) VALUES ('$uhid','$bill_id','$batch_no','$type_id','$testid','0','0','0','$doctor','$page','4','$c_user','$ip_addr','$nabl_val')");
-								
+
 								$page++;
 							}
-						}
-						else
-						{
+						} else {
 							//$test_result_qry=mysqli_query($link, "SELECT `paramid`,`range_id` FROM `testresults` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `doc`='$doctor' ORDER BY `sequence` ASC");
-							
-							$test_result_qry=mysqli_query($link, "SELECT a.`paramid`,a.`range_id` FROM `testresults` a, `Testparameter` b WHERE a.`patient_id`='$uhid' AND a.`opd_id`='$opd_id' AND a.`ipd_id`='$ipd_id' AND a.`batch_no`='$batch_no' AND a.`testid`='$testid' AND a.`doc`='$doctor' AND a.`testid`=b.`TestId` AND a.`paramid`=b.`ParamaterId` ORDER BY a.`sequence` ASC");
-							
-							$test_result_num=mysqli_num_rows($test_result_qry);
-							if($test_result_num>=$single_page_test_param_num) // Single Page Test
+
+							$test_result_qry = mysqli_query($link, "SELECT a.`paramid`,a.`range_id` FROM `testresults` a, `Testparameter` b WHERE a.`patient_id`='$uhid' AND a.`opd_id`='$opd_id' AND a.`ipd_id`='$ipd_id' AND a.`batch_no`='$batch_no' AND a.`testid`='$testid' AND a.`doc`='$doctor' AND a.`testid`=b.`TestId` AND a.`paramid`=b.`ParamaterId` ORDER BY a.`sequence` ASC");
+
+							$test_result_num = mysqli_num_rows($test_result_qry);
+							if ($test_result_num >= $single_page_test_param_num) // Single Page Test
 							{
 								$page++;
-								$line_no=0;
-								if($test_serial>0 || $profile_serial>0)
-								{
-									$test_serial=0;
-									$profile_serial=0;
+								$line_no = 0;
+								if ($test_serial > 0 || $profile_serial > 0) {
+									$test_serial = 0;
+									$profile_serial = 0;
 								}
-								
+
 								//mysqli_query($link, "INSERT INTO `pathology_report_print`(`patient_id`, `opd_id`, `batch_no`, `type_id`, `testid`, `param_id`, `part`, `tech_id`, `doc_id`, `page_no`, `result_table`, `user`, `ip_addr`, `nabl`) VALUES ('$uhid','$bill_id','$batch_no','$type_id','$testid','0','0','0','$doctor','$page','1','$c_user','$ip_addr','$nabl_val')");
-								
-								$line_no=0;
-								
-								$non_nabl_params=array();
-								
-								$test_param_qry=mysqli_query($link, "SELECT `ParamaterId` FROM `Testparameter` WHERE `TestId`='$testid' ORDER BY `sequence` ASC");
-								while($test_param=mysqli_fetch_array($test_param_qry))
-								{
-									$paramid=$test_param["ParamaterId"];
-									
-									$test_result=mysqli_fetch_array(mysqli_query($link,"SELECT `result`,`range_id` FROM `testresults` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `paramid`='$paramid' AND `doc`='$doctor'"));
-									
-									$param_info=mysqli_fetch_array(mysqli_query($link, "SELECT `ResultType` FROM `Parameter_old` WHERE `ID`='$paramid'"));
-									
-									if($param_info["ResultType"]==0 || $param_info["ResultType"]==5)
-									{
-										$test_result=1;
+
+								$line_no = 0;
+
+								$non_nabl_params = array();
+
+								$test_param_qry = mysqli_query($link, "SELECT `ParamaterId` FROM `Testparameter` WHERE `TestId`='$testid' AND `ParamaterId` NOT IN(639,640,641) ORDER BY `sequence` ASC");
+								while ($test_param = mysqli_fetch_array($test_param_qry)) {
+									$paramid = $test_param["ParamaterId"];
+
+									$test_result = mysqli_fetch_array(mysqli_query($link, "SELECT `result`,`range_id` FROM `testresults` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `paramid`='$paramid' AND `doc`='$doctor'"));
+
+									$param_info = mysqli_fetch_array(mysqli_query($link, "SELECT `ResultType` FROM `Parameter_old` WHERE `ID`='$paramid'"));
+
+									if ($param_info["ResultType"] == 0 || $param_info["ResultType"] == 5) {
+										$test_result = 1;
 									}
-									
-									if($test_result)
-									{
-										$nabl_chk=mysqli_fetch_array(mysqli_query($link,"SELECT * FROM `nabl_test_param` WHERE `paramid`='$paramid'"));
-										if($nabl_chk)
-										{
-											$range=mysqli_fetch_array(mysqli_query($link,"SELECT `normal_range` FROM `parameter_normal_check` WHERE `slno`='$test_result[range_id]'"));
-											$normal_range_line=substr_count($range["normal_range"], "\n")+1;
+
+									if ($test_result) {
+										$nabl_chk = mysqli_fetch_array(mysqli_query($link, "SELECT * FROM `nabl_test_param` WHERE `paramid`='$paramid'"));
+										if ($nabl_chk) {
+											$range = mysqli_fetch_array(mysqli_query($link, "SELECT `normal_range` FROM `parameter_normal_check` WHERE `slno`='$test_result[range_id]'"));
+											$normal_range_line = substr_count($range["normal_range"], "\n") + 1;
 											//echo $normal_range_line." = ".$range["normal_range"];
-											if($normal_range_line<=0)
-											{
-												$normal_range_line=1;
+											if ($normal_range_line <= 0) {
+												$normal_range_line = 1;
 											}
-											
-											$result_line=substr_count($test_result["result"], "\n")+1;
-											
-											if($result_line>$normal_range_line)
-											{
-												$normal_range_line=$result_line;
+
+											$result_line = substr_count($test_result["result"], "\n") + 1;
+
+											if ($result_line > $normal_range_line) {
+												$normal_range_line = $result_line;
 											}
-											
-											$line_no+=$normal_range_line;
-											
-											if($line_no>$max_line_in_a_page)
-											{
-												$line_no=$normal_range_line;
+
+											$line_no += $normal_range_line;
+
+											if ($line_no > $max_line_in_a_page) {
+												$line_no = $normal_range_line;
 												$page++;
 											}
-											
+
 											mysqli_query($link, "INSERT INTO `pathology_report_print`(`patient_id`, `opd_id`, `batch_no`, `type_id`, `testid`, `param_id`, `part`, `tech_id`, `doc_id`, `page_no`, `result_table`, `user`, `ip_addr`, `nabl`) VALUES ('$uhid','$bill_id','$batch_no','$type_id','$testid','$paramid','0','0','$doctor','$page','1','$c_user','$ip_addr','$nabl_val')");
-											
-											$test_serial=1;
-											$profile_serial=1;
-											
-											if($page>=100)
-											{
+
+											$test_serial = 1;
+											$profile_serial = 1;
+
+											if ($page >= 100) {
 												break;
 											}
-										}
-										else
-										{
-											$non_nabl_params[]=$paramid;
+										} else {
+											$non_nabl_params[] = $paramid;
 										}
 									}
 								}
-								$non_nabl_params=array_unique($non_nabl_params);
-								$non_nabl_paramids=implode(",",$non_nabl_params);
-								
+								$non_nabl_params = array_unique($non_nabl_params);
+								$non_nabl_paramids = implode(",", $non_nabl_params);
+
 								$page++;
-								$line_no=0;
-								
-								$test_param_qry=mysqli_query($link, "SELECT `ParamaterId` FROM `Testparameter` WHERE `TestId`='$testid' AND `ParamaterId` IN($non_nabl_paramids) ORDER BY `sequence` ASC");
-								while($test_param=mysqli_fetch_array($test_param_qry))
-								{
-									$paramid=$test_param["ParamaterId"];
-									
-									$test_result=mysqli_fetch_array(mysqli_query($link,"SELECT `result`,`range_id` FROM `testresults` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `paramid`='$paramid' AND `doc`='$doctor'"));
-									
-									$param_info=mysqli_fetch_array(mysqli_query($link, "SELECT `ResultType` FROM `Parameter_old` WHERE `ID`='$paramid'"));
-									
-									if($param_info["ResultType"]==0 || $param_info["ResultType"]==5)
-									{
-										$test_result=1;
+								$line_no = 0;
+
+								$test_param_qry = mysqli_query($link, "SELECT `ParamaterId` FROM `Testparameter` WHERE `TestId`='$testid' AND `ParamaterId` IN($non_nabl_paramids) AND `ParamaterId` NOT IN(639,640,641) ORDER BY `sequence` ASC");
+								while ($test_param = mysqli_fetch_array($test_param_qry)) {
+									$paramid = $test_param["ParamaterId"];
+
+									$test_result = mysqli_fetch_array(mysqli_query($link, "SELECT `result`,`range_id` FROM `testresults` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `paramid`='$paramid' AND `doc`='$doctor'"));
+
+									$param_info = mysqli_fetch_array(mysqli_query($link, "SELECT `ResultType` FROM `Parameter_old` WHERE `ID`='$paramid'"));
+
+									if ($param_info["ResultType"] == 0 || $param_info["ResultType"] == 5) {
+										$test_result = 1;
 									}
-									
-									if($test_result)
-									{
-										$range=mysqli_fetch_array(mysqli_query($link,"SELECT `normal_range` FROM `parameter_normal_check` WHERE `slno`='$test_result[range_id]'"));
-										$normal_range_line=substr_count($range["normal_range"], "\n")+1;
+
+									if ($test_result) {
+										$range = mysqli_fetch_array(mysqli_query($link, "SELECT `normal_range` FROM `parameter_normal_check` WHERE `slno`='$test_result[range_id]'"));
+										$normal_range_line = substr_count($range["normal_range"], "\n") + 1;
 										//echo $normal_range_line." = ".$range["normal_range"];
-										if($normal_range_line<=0)
-										{
-											$normal_range_line=1;
+										if ($normal_range_line <= 0) {
+											$normal_range_line = 1;
 										}
-										
-										$result_line=substr_count($test_result["result"], "\n")+1;
-										
-										if($result_line>$normal_range_line)
-										{
-											$normal_range_line=$result_line;
+
+										$result_line = substr_count($test_result["result"], "\n") + 1;
+
+										if ($result_line > $normal_range_line) {
+											$normal_range_line = $result_line;
 										}
-										
-										$line_no+=$normal_range_line;
-										
-										if($line_no>$max_line_in_a_page)
-										{
-											$line_no=$normal_range_line;
+
+										$line_no += $normal_range_line;
+
+										if ($line_no > $max_line_in_a_page) {
+											$line_no = $normal_range_line;
 											$page++;
 										}
-										
+
 										mysqli_query($link, "INSERT INTO `pathology_report_print`(`patient_id`, `opd_id`, `batch_no`, `type_id`, `testid`, `param_id`, `part`, `tech_id`, `doc_id`, `page_no`, `result_table`, `user`, `ip_addr`, `nabl`) VALUES ('$uhid','$bill_id','$batch_no','$type_id','$testid','$paramid','0','0','$doctor','$page','1','$c_user','$ip_addr','0')");
-										
-										$test_serial=1;
-										$profile_serial=1;
-										
-										if($page>=100)
-										{
+
+										$test_serial = 1;
+										$profile_serial = 1;
+
+										if ($page >= 100) {
 											break;
 										}
 									}
 								}
-							}
-							else if($test_result_num>0 && $test_result_num<$single_page_test_param_num)
-							{
-								if($profile_serial>0)
-								{
+							} else if ($test_result_num > 0 && $test_result_num < $single_page_test_param_num) {
+								if ($profile_serial > 0) {
 									$page++;
-									$profile_serial=0;
-									$line_no=0;
+									$profile_serial = 0;
+									$line_no = 0;
 								}
-								
-								$test_param_qry=mysqli_query($link, "SELECT `ParamaterId` FROM `Testparameter` WHERE `TestId`='$testid' ORDER BY `sequence` ASC");
-								while($test_param=mysqli_fetch_array($test_param_qry))
-								{
-									$paramid=$test_param["ParamaterId"];
-									
-									$test_result=mysqli_fetch_array(mysqli_query($link,"SELECT `range_id` FROM `testresults` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `paramid`='$paramid' AND `doc`='$doctor'"));
-									
-									$param_info=mysqli_fetch_array(mysqli_query($link, "SELECT `ResultType` FROM `Parameter_old` WHERE `ID`='$paramid'"));
-									
-									if($param_info["ResultType"]==0 || $param_info["ResultType"]==5)
-									{
-										$test_result=1;
+
+								$test_param_qry = mysqli_query($link, "SELECT `ParamaterId` FROM `Testparameter` WHERE `TestId`='$testid' AND `ParamaterId` NOT IN(639,640,641) ORDER BY `sequence` ASC");
+								while ($test_param = mysqli_fetch_array($test_param_qry)) {
+									$paramid = $test_param["ParamaterId"];
+
+									$test_result = mysqli_fetch_array(mysqli_query($link, "SELECT `range_id` FROM `testresults` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `paramid`='$paramid' AND `doc`='$doctor'"));
+
+									$param_info = mysqli_fetch_array(mysqli_query($link, "SELECT `ResultType` FROM `Parameter_old` WHERE `ID`='$paramid'"));
+
+									if ($param_info["ResultType"] == 0 || $param_info["ResultType"] == 5) {
+										$test_result = 1;
 									}
-									
-									if($test_result)
-									{
-										$range=mysqli_fetch_array(mysqli_query($link,"SELECT `normal_range` FROM `parameter_normal_check` WHERE `slno`='$test_result[range_id]'"));
-										$normal_range_line=substr_count($range["normal_range"], "\n")+1;
+
+									if ($test_result) {
+										$range = mysqli_fetch_array(mysqli_query($link, "SELECT `normal_range` FROM `parameter_normal_check` WHERE `slno`='$test_result[range_id]'"));
+										$normal_range_line = substr_count($range["normal_range"], "\n") + 1;
 										//echo $normal_range_line." = ".$range["normal_range"];
-										if($normal_range_line<=0)
-										{
-											$normal_range_line=1;
+										if ($normal_range_line <= 0) {
+											$normal_range_line = 1;
 										}
-										
-										$line_no+=$normal_range_line;
-										
-										if($line_no>$max_line_in_a_page)
-										{
-											$line_no=$normal_range_line;
+
+										$line_no += $normal_range_line;
+
+										if ($line_no > $max_line_in_a_page) {
+											$line_no = $normal_range_line;
 											$page++;
 										}
-										
+
 										mysqli_query($link, "INSERT INTO `pathology_report_print`(`patient_id`, `opd_id`, `batch_no`, `type_id`, `testid`, `param_id`, `part`, `tech_id`, `doc_id`, `page_no`, `result_table`, `user`, `ip_addr`, `nabl`) VALUES ('$uhid','$bill_id','$batch_no','$type_id','$testid','$paramid','$line_no','0','$doctor','$page','1','$c_user','$ip_addr','$nabl_val')");
-										
-										$test_serial=1;
-										
-										if($page>=100)
-										{
+
+										$test_serial = 1;
+
+										if ($page >= 100) {
 											break;
 										}
 									}
@@ -715,471 +634,397 @@ foreach($doctors AS $doctor)
 			}
 			//$page++; // Non NABL
 			//$line_no=0;
-			
+
 			//$test_dept_qry=mysqli_query($link, "SELECT `testid`,`testname` FROM `testmaster` WHERE `testid` IN($testall) AND `category_id`=1 AND `type_id`='$type_id' AND `testid` NOT IN(SELECT DISTINCT a.`TestId` FROM `Testparameter` a, `nabl_test_param` b WHERE a.`ParamaterId`=b.`paramid`) ORDER BY `testid` ASC");
-			
-			$nabl_val=0;
-			$test_dept_qry=mysqli_query($link, "SELECT a.`testid`,a.`testname`,a.`type_id` FROM `testmaster` a, `pathology_report_print_sequence` b WHERE a.`testid`=b.`testid` AND a.`testid` IN($testall) AND a.`category_id`=1  AND a.`type_id`='$type_id' AND a.`testid` NOT IN(SELECT DISTINCT a.`TestId` FROM `Testparameter` a, `nabl_test_param` b WHERE a.`ParamaterId`=b.`paramid`) ORDER BY b.`slno` ASC");
-			$test_dept_num=mysqli_num_rows($test_dept_qry);
-			if($test_dept_num>0)
-			{
-				if($nabl_test_num>0)
-				{
+
+			$nabl_val = 0;
+			$test_dept_qry = mysqli_query($link, "SELECT a.`testid`,a.`testname`,a.`type_id` FROM `testmaster` a, `pathology_report_print_sequence` b WHERE a.`testid`=b.`testid` AND a.`testid` IN($testall) AND a.`category_id`=1  AND a.`type_id`='$type_id' AND a.`testid` NOT IN(SELECT DISTINCT a.`TestId` FROM `Testparameter` a, `nabl_test_param` b WHERE a.`ParamaterId`=b.`paramid`) ORDER BY b.`slno` ASC");
+			$test_dept_num = mysqli_num_rows($test_dept_qry);
+			if ($test_dept_num > 0) {
+				if ($nabl_test_num > 0) {
 					$page++;
-					$line_no=0;
+					$line_no = 0;
 				}
 			}
-			while($test_dept=mysqli_fetch_array($test_dept_qry))
-			{
+			while ($test_dept = mysqli_fetch_array($test_dept_qry)) {
 				$non_nabl_test_num++;
-				$nabl_test_num=0;
-				
-				$testid=$test_dept["testid"];
-				
-				$culture=0;
-				
-				if (strpos($test_dept['testname'],'culture') !== false) 
-				{
-					$culture=1;
+				$nabl_test_num = 0;
+
+				$testid = $test_dept["testid"];
+
+				$culture = 0;
+
+				if (strpos($test_dept['testname'], 'culture') !== false) {
+					$culture = 1;
 				}
-				
-				if (strpos($test_dept['testname'],'CULTURE') !== false) 
-				{
-					$culture=1;
+
+				if (strpos($test_dept['testname'], 'CULTURE') !== false) {
+					$culture = 1;
 				}
-				
-				if (strpos($test_dept['testname'],'Culture') !== false) 
-				{
-					$culture=1;
+
+				if (strpos($test_dept['testname'], 'Culture') !== false) {
+					$culture = 1;
 				}
-				
-				if($culture==1)
-				{
+
+				if ($culture == 1) {
 					//$test_page[]=$testid;
-					
-					$test_result_num=mysqli_num_rows(mysqli_query($link,"SELECT * FROM `testresults` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `doc`='$doctor'"));
-					if($test_result_num>0)
-					{
-						if($test_serial>0 || $profile_serial>0)
-						{
+
+					$test_result_num = mysqli_num_rows(mysqli_query($link, "SELECT * FROM `testresults` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `doc`='$doctor'"));
+					if ($test_result_num > 0) {
+						if ($test_serial > 0 || $profile_serial > 0) {
 							$page++;
-							
-							$test_serial=0;
-							$profile_serial=0;
+
+							$test_serial = 0;
+							$profile_serial = 0;
 						}
-						$line_no=0;
+						$line_no = 0;
 						//mysqli_query($link, "INSERT INTO `pathology_report_print`(`patient_id`, `opd_id`, `batch_no`, `type_id`, `testid`, `param_id`, `part`, `tech_id`, `doc_id`, `page_no`, `result_table`, `user`, `ip_addr`, `nabl`) VALUES ('$uhid','$bill_id','$batch_no','$type_id','$testid','0','0','0','$doctor','$page','5','$c_user','$ip_addr','$nabl_val')");
-						
+
 						//$page++;
-						
-						if($iso_no==0)
-						{
-							$iso_qry=mysqli_query($link,"SELECT DISTINCT `iso_no` FROM `testresults` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `doc`='$doctor' ORDER BY `iso_no` ASC");
+
+						if ($iso_no == 0) {
+							$iso_qry = mysqli_query($link, "SELECT DISTINCT `iso_no` FROM `testresults` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `doc`='$doctor' ORDER BY `iso_no` ASC");
+						} else {
+							$iso_qry = mysqli_query($link, "SELECT DISTINCT `iso_no` FROM `testresults` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `iso_no`='$iso_no' AND `doc`='$doctor'");
 						}
-						else
-						{
-							$iso_qry=mysqli_query($link,"SELECT DISTINCT `iso_no` FROM `testresults` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `iso_no`='$iso_no' AND `doc`='$doctor'");
-						}
-						while($iso_info=mysqli_fetch_array($iso_qry))
-						{
+						while ($iso_info = mysqli_fetch_array($iso_qry)) {
 							mysqli_query($link, "INSERT INTO `pathology_report_print`(`patient_id`, `opd_id`, `batch_no`, `type_id`, `testid`, `param_id`, `part`, `tech_id`, `doc_id`, `page_no`, `result_table`, `user`, `ip_addr`, `nabl`) VALUES ('$uhid','$bill_id','$batch_no','$type_id','$testid','0','$iso_info[iso_no]','0','$doctor','$page','5','$c_user','$ip_addr','$nabl_val')");
-							
+
 							$page++;
 						}
-					}else
-					{
-						$test_serial=0;
-						$profile_serial=0;
-						$line_no=0;
-						
-						$test_sum_qry=mysqli_query($link,"SELECT * FROM `patient_test_summary` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `doc`='$doctor'");
-						
-						$test_sum=mysqli_fetch_array($test_sum_qry);
-						$summary_text=$test_sum["summary"];
-						
-						if(strpos($summary_text, $page_breaker) !== false)
-						{
-							$part=1;
-							$summary_texts=explode($page_breaker,$summary_text);
-							foreach($summary_texts AS $summary_parts)
-							{
-								if($summary_parts)
-								{
+					} else {
+						$test_serial = 0;
+						$profile_serial = 0;
+						$line_no = 0;
+
+						$test_sum_qry = mysqli_query($link, "SELECT * FROM `patient_test_summary` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `doc`='$doctor'");
+
+						$test_sum = mysqli_fetch_array($test_sum_qry);
+						$summary_text = $test_sum["summary"];
+
+						if (strpos($summary_text, $page_breaker) !== false) {
+							$part = 1;
+							$summary_texts = explode($page_breaker, $summary_text);
+							foreach ($summary_texts as $summary_parts) {
+								if ($summary_parts) {
 									mysqli_query($link, "INSERT INTO `pathology_report_print`(`patient_id`, `opd_id`, `batch_no`, `type_id`, `testid`, `param_id`, `part`, `tech_id`, `doc_id`, `page_no`, `result_table`, `user`, `ip_addr`, `nabl`) VALUES ('$uhid','$bill_id','$batch_no','$type_id','$testid','0','$part','0','$doctor','$page','3','$c_user','$ip_addr','$nabl_val')");
-									
+
 									$part++;
 									$page++;
 								}
 							}
-						}
-						else if($summary_text)
-						{
+						} else if ($summary_text) {
 							mysqli_query($link, "INSERT INTO `pathology_report_print`(`patient_id`, `opd_id`, `batch_no`, `type_id`, `testid`, `param_id`, `part`, `tech_id`, `doc_id`, `page_no`, `result_table`, `user`, `ip_addr`, `nabl`) VALUES ('$uhid','$bill_id','$batch_no','$type_id','$testid','0','0','0','$doctor','$page','3','$c_user','$ip_addr','$nabl_val')");
-							
+
 							$page++;
 						}
 					}
-				}
-				else
-				{
-					$test_result_num=mysqli_num_rows(mysqli_query($link,"SELECT * FROM `testresults` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid'"));// AND `doc`='$doctor'
-					
-					$test_sum_qry=mysqli_query($link,"SELECT * FROM `patient_test_summary` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid'");// AND `doc`='$doctor'
-					
-					$test_sum_num=mysqli_num_rows($test_sum_qry);
-					
+				} else {
+					$test_result_num = mysqli_num_rows(mysqli_query($link, "SELECT * FROM `testresults` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid'"));// AND `doc`='$doctor'
+
+					$test_sum_qry = mysqli_query($link, "SELECT * FROM `patient_test_summary` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid'");// AND `doc`='$doctor'
+
+					$test_sum_num = mysqli_num_rows($test_sum_qry);
+
 					//$test_sum_num_tst=mysqli_num_rows(mysqli_query($link,"SELECT * FROM `test_summary` WHERE `testid`='$testid'"));
-					$test_sum_num_tst=0;
-					
-					$test_note=mysqli_fetch_array(mysqli_query($link,"SELECT `note` FROM `testresults_note` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `doc`>0 "));
-					
+					$test_sum_num_tst = 0;
+
+					//$test_note=mysqli_fetch_array(mysqli_query($link,"SELECT `note` FROM `testresults_note` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `doc`>0 "));
+					$test_note["note"] = "";
+
 					// Single Page Param Check
-					$single_page_param_result_num=mysqli_num_rows(mysqli_query($link,"SELECT a.`slno` FROM `testresults` a, `Parameter_old` b WHERE a.`paramid`=b.`ID` AND a.`patient_id`='$uhid' AND a.`opd_id`='$opd_id' AND a.`ipd_id`='$ipd_id' AND a.`batch_no`='$batch_no' AND a.`testid`='$testid' AND b.`ResultType` IN(7)"));// AND a.`doc`='$doctor'
-					
-					$single_page_other_param_result_num=mysqli_num_rows(mysqli_query($link,"SELECT a.`slno` FROM `testresults` a, `Parameter_old` b WHERE a.`paramid`=b.`ID` AND a.`patient_id`='$uhid' AND a.`opd_id`='$opd_id' AND a.`ipd_id`='$ipd_id' AND a.`batch_no`='$batch_no' AND a.`testid`='$testid' AND b.`ResultType` NOT IN(7)"));// AND a.`doc`='$doctor'
-					
-					if($single_page_param_result_num>0 && $single_page_other_param_result_num==0) // Only Pad
+					$single_page_param_result_num = mysqli_num_rows(mysqli_query($link, "SELECT a.`slno` FROM `testresults` a, `Parameter_old` b WHERE a.`paramid`=b.`ID` AND a.`patient_id`='$uhid' AND a.`opd_id`='$opd_id' AND a.`ipd_id`='$ipd_id' AND a.`batch_no`='$batch_no' AND a.`testid`='$testid' AND b.`ResultType` IN(7)"));// AND a.`doc`='$doctor'
+
+					$single_page_other_param_result_num = mysqli_num_rows(mysqli_query($link, "SELECT a.`slno` FROM `testresults` a, `Parameter_old` b WHERE a.`paramid`=b.`ID` AND a.`patient_id`='$uhid' AND a.`opd_id`='$opd_id' AND a.`ipd_id`='$ipd_id' AND a.`batch_no`='$batch_no' AND a.`testid`='$testid' AND b.`ResultType` NOT IN(7)"));// AND a.`doc`='$doctor'
+
+					if ($single_page_param_result_num > 0 && $single_page_other_param_result_num == 0) // Only Pad
 					{
-						if($test_serial>0 || $profile_serial>0)
-						{
+						if ($test_serial > 0 || $profile_serial > 0) {
 							$page++;
-							
-							$test_serial=0;
-							$profile_serial=0;
+
+							$test_serial = 0;
+							$profile_serial = 0;
 						}
-						$line_no=0;
-						
-						$test_param_qry=mysqli_query($link, "SELECT `ParamaterId`,`status` FROM `Testparameter` WHERE `TestId`='$testid' ORDER BY `sequence` ASC");
-						while($test_param=mysqli_fetch_array($test_param_qry))
-						{
-							$paramid=$test_param["ParamaterId"];
-							$print_status=$test_param["status"];
-							
-							$test_result=mysqli_fetch_array(mysqli_query($link,"SELECT `result` FROM `testresults` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `paramid`='$paramid'"));// AND `doc`='$doctor'
-							
-							$summary_text=$test_result["result"];
-							
-							if(strpos($summary_text, $page_breaker) !== false)
-							{
-								$part=1;
-								$summary_texts=explode($page_breaker,$summary_text);
-								foreach($summary_texts AS $summary_parts)
-								{
-									if($summary_parts)
-									{
+						$line_no = 0;
+
+						$test_param_qry = mysqli_query($link, "SELECT `ParamaterId`,`status` FROM `Testparameter` WHERE `TestId`='$testid' AND `ParamaterId` NOT IN(639,640,641) ORDER BY `sequence` ASC");
+						while ($test_param = mysqli_fetch_array($test_param_qry)) {
+							$paramid = $test_param["ParamaterId"];
+							$print_status = $test_param["status"];
+
+							$test_result = mysqli_fetch_array(mysqli_query($link, "SELECT `result`,`result_hide` FROM `testresults` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `paramid`='$paramid'"));// AND `doc`='$doctor'
+
+							$summary_text = $test_result["result"];
+							$print_status = $test_result["result_hide"];
+
+							if (strpos($summary_text, $page_breaker) !== false) {
+								$part = 1;
+								$summary_texts = explode($page_breaker, $summary_text);
+								foreach ($summary_texts as $summary_parts) {
+									if ($summary_parts) {
 										mysqli_query($link, "INSERT INTO `pathology_report_print`(`patient_id`, `opd_id`, `batch_no`, `type_id`, `testid`, `param_id`, `part`, `tech_id`, `doc_id`, `page_no`, `result_table`, `user`, `ip_addr`, `nabl`, `status`) VALUES ('$uhid','$bill_id','$batch_no','$type_id','$testid','$paramid','$part','0','$doctor','$page','7','$c_user','$ip_addr','$nabl_val','$print_status')");
-										
+
 										$part++;
 										$page++;
 									}
 								}
-							}
-							else
-							{
+							} else {
 								mysqli_query($link, "INSERT INTO `pathology_report_print`(`patient_id`, `opd_id`, `batch_no`, `type_id`, `testid`, `param_id`, `part`, `tech_id`, `doc_id`, `page_no`, `result_table`, `user`, `ip_addr`, `nabl`, `status`) VALUES ('$uhid','$bill_id','$batch_no','$type_id','$testid','$paramid','0','0','$doctor','$page','7','$c_user','$ip_addr','$nabl_val','$print_status')");
-								
+
 								$page++;
 							}
 						}
 						$profile_serial++;
-					}
-					else if(($test_result_num>0 && $test_sum_num>0) || ($test_result_num>0 && $test_sum_num_tst>0) || ($test_result_num>0 && $test_note["note"]!="") || $single_page_param_result_num>0)
-					{
+					} else if (($test_result_num > 0 && $test_sum_num > 0) || ($test_result_num > 0 && $test_sum_num_tst > 0) || ($test_result_num > 0 && $test_note["note"] != "") || $single_page_param_result_num > 0) {
 						//$test_page[]=$testid;
-						
-						if($test_serial>0 || $profile_serial>0)
-						{
+
+						if ($test_serial > 0 || $profile_serial > 0) {
 							$page++;
-							
-							$test_serial=0;
-							$profile_serial=0;
+
+							$test_serial = 0;
+							$profile_serial = 0;
 						}
-						$line_no=0;
-						
-						$result_table=1;
-						$dlc_test_param_num=mysqli_num_rows(mysqli_query($link, "SELECT `ParamaterId` FROM `Testparameter` WHERE `TestId`='$testid' AND `ParamaterId` IN(125,989)"));
-						if($dlc_test_param_num>0)
-						{
-							//~ $result_table=6;
-							//~ $profile_serial++;
+						$line_no = 0;
+
+						$result_table = 1;
+						$dlc_test_param_num = mysqli_num_rows(mysqli_query($link, "SELECT `ParamaterId` FROM `Testparameter` WHERE `TestId`='$testid' AND `ParamaterId` IN(125,989)"));
+						if ($dlc_test_param_num > 0) {
+							$result_table = 6;
+							$profile_serial++;
 						}
-						
-						$test_param_qry=mysqli_query($link, "SELECT `ParamaterId`,`status` FROM `Testparameter` WHERE `TestId`='$testid' ORDER BY `sequence` ASC");
-						while($test_param=mysqli_fetch_array($test_param_qry))
-						{
-							$paramid=$test_param["ParamaterId"];
-							$print_status=$test_param["status"];
-							
-							$test_result=mysqli_fetch_array(mysqli_query($link,"SELECT `result`,`range_id` FROM `testresults` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `paramid`='$paramid'"));// AND `doc`='$doctor'
-							
-							$param_info=mysqli_fetch_array(mysqli_query($link, "SELECT `ResultType` FROM `Parameter_old` WHERE `ID`='$paramid'"));
-							
-							if($param_info["ResultType"]==0 || $param_info["ResultType"]==5)
-							{
-								$test_result=1;
+
+						$test_param_qry = mysqli_query($link, "SELECT `ParamaterId`,`status` FROM `Testparameter` WHERE `TestId`='$testid' AND `ParamaterId` NOT IN(639,640,641) ORDER BY `sequence` ASC");
+						while ($test_param = mysqli_fetch_array($test_param_qry)) {
+							$paramid = $test_param["ParamaterId"];
+							$print_status = $test_param["status"];
+
+							$test_result = mysqli_fetch_array(mysqli_query($link, "SELECT `result`,`range_id`,`result_hide` FROM `testresults` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `paramid`='$paramid'"));// AND `doc`='$doctor'
+							$print_status = $test_result["result_hide"];
+
+							$param_info = mysqli_fetch_array(mysqli_query($link, "SELECT `ResultType` FROM `Parameter_old` WHERE `ID`='$paramid'"));
+
+							if ($param_info["ResultType"] == 0 || $param_info["ResultType"] == 5) {
+								$test_result = 1;
 							}
-							
-							if($test_result)
-							{
-								$range=mysqli_fetch_array(mysqli_query($link,"SELECT `normal_range` FROM `parameter_normal_check` WHERE `slno`='$test_result[range_id]'"));
-								$normal_range_line=substr_count($range["normal_range"], "\n")+1;
+
+							if ($test_result) {
+								$range = mysqli_fetch_array(mysqli_query($link, "SELECT `normal_range` FROM `parameter_normal_check` WHERE `slno`='$test_result[range_id]'"));
+								$normal_range_line = substr_count($range["normal_range"], "\n") + 1;
 								//echo $normal_range_line." = ".$range["normal_range"];
-								if($normal_range_line<=0)
-								{
-									$normal_range_line=1;
+								if ($normal_range_line <= 0) {
+									$normal_range_line = 1;
 								}
-								
-								if($param_info["ResultType"]==7) // Pad
+
+								if ($param_info["ResultType"] == 7) // Pad
 								{
 									$page++;
-									$line_no=0;
-									
-									$summary_text=$test_result["result"];
-									
-									if(strpos($summary_text, $page_breaker) !== false)
-									{
-										$part=1;
-										$summary_texts=explode($page_breaker,$summary_text);
-										foreach($summary_texts AS $summary_parts)
-										{
-											if($summary_parts)
-											{
+									$line_no = 0;
+
+									$summary_text = $test_result["result"];
+
+									if (strpos($summary_text, $page_breaker) !== false) {
+										$part = 1;
+										$summary_texts = explode($page_breaker, $summary_text);
+										foreach ($summary_texts as $summary_parts) {
+											if ($summary_parts) {
 												mysqli_query($link, "INSERT INTO `pathology_report_print`(`patient_id`, `opd_id`, `batch_no`, `type_id`, `testid`, `param_id`, `part`, `tech_id`, `doc_id`, `page_no`, `result_table`, `user`, `ip_addr`, `nabl`, `status`) VALUES ('$uhid','$bill_id','$batch_no','$type_id','$testid','$paramid','$part','0','$doctor','$page','$result_table','$c_user','$ip_addr','$nabl_val','$print_status')"); //2
-												
+
 												$part++;
 												$page++;
 											}
 										}
-									}
-									else if($summary_text)
-									{
+									} else if ($summary_text) {
 										mysqli_query($link, "INSERT INTO `pathology_report_print`(`patient_id`, `opd_id`, `batch_no`, `type_id`, `testid`, `param_id`, `part`, `tech_id`, `doc_id`, `page_no`, `result_table`, `user`, `ip_addr`, `nabl`, `status`) VALUES ('$uhid','$bill_id','$batch_no','$type_id','$testid','$paramid','0','0','$doctor','$page','$result_table','$c_user','$ip_addr','$nabl_val','$print_status')"); //2
-										
+
 										$page++;
 									}
-								}
-								else
-								{
-									$result_line=substr_count($test_result["result"], "\n")+1;
-									
-									if($result_line>$normal_range_line)
-									{
-										$normal_range_line=$result_line;
+								} else {
+									$result_line = substr_count($test_result["result"], "\n") + 1;
+
+									if ($result_line > $normal_range_line) {
+										$normal_range_line = $result_line;
 									}
-									
-									$line_no+=$normal_range_line;
-									
-									if($line_no>$max_line_in_a_page)
-									{
-										$line_no=0;
+
+									$line_no += $normal_range_line;
+
+									if ($line_no > $max_line_in_a_page) {
+										$line_no = 0;
 										$page++;
 									}
-									
+
 									mysqli_query($link, "INSERT INTO `pathology_report_print`(`patient_id`, `opd_id`, `batch_no`, `type_id`, `testid`, `param_id`, `part`, `tech_id`, `doc_id`, `page_no`, `result_table`, `user`, `ip_addr`, `nabl`, `status`) VALUES ('$uhid','$bill_id','$batch_no','$type_id','$testid','$paramid','0','0','$doctor','$page','$result_table','$c_user','$ip_addr','$nabl_val','$print_status')"); //2
 								}
-								
-								$test_serial=1;
-								$profile_serial=1;
-								
-								if($page>=100)
-								{
+
+								$test_serial = 1;
+								$profile_serial = 1;
+
+								if ($page >= 100) {
 									break;
 								}
 							}
 						}
-					}
-					else if($test_sum_num>0 && $testid!=1227)
-					{
+					} else if ($test_sum_num > 0 && $testid != 1227) {
 						//$test_page[]=$testid;
-						
-						if($test_serial>0 || $profile_serial>0)
-						{
+
+						if ($test_serial > 0 || $profile_serial > 0) {
 							$page++;
-							
-							$test_serial=0;
-							$profile_serial=0;
+
+							$test_serial = 0;
+							$profile_serial = 0;
 						}
-						$line_no=0;
-						
-						$test_sum=mysqli_fetch_array($test_sum_qry);
-						$summary_text=$test_sum["summary"];
-						
-						if(strpos($summary_text, $page_breaker) !== false)
-						{
-							$part=1;
-							$summary_texts=explode($page_breaker,$summary_text);
-							foreach($summary_texts AS $summary_parts)
-							{
-								if($summary_parts)
-								{
+						$line_no = 0;
+
+						$test_sum = mysqli_fetch_array($test_sum_qry);
+						$summary_text = $test_sum["summary"];
+
+						if (strpos($summary_text, $page_breaker) !== false) {
+							$part = 1;
+							$summary_texts = explode($page_breaker, $summary_text);
+							foreach ($summary_texts as $summary_parts) {
+								if ($summary_parts) {
 									mysqli_query($link, "INSERT INTO `pathology_report_print`(`patient_id`, `opd_id`, `batch_no`, `type_id`, `testid`, `param_id`, `part`, `tech_id`, `doc_id`, `page_no`, `result_table`, `user`, `ip_addr`, `nabl`) VALUES ('$uhid','$bill_id','$batch_no','$type_id','$testid','0','$part','0','$doctor','$page','3','$c_user','$ip_addr','$nabl_val')");
-									
+
 									$part++;
 									$page++;
 								}
 							}
-						}
-						else if($summary_text)
-						{
+						} else if ($summary_text) {
 							mysqli_query($link, "INSERT INTO `pathology_report_print`(`patient_id`, `opd_id`, `batch_no`, `type_id`, `testid`, `param_id`, `part`, `tech_id`, `doc_id`, `page_no`, `result_table`, `user`, `ip_addr`, `nabl`) VALUES ('$uhid','$bill_id','$batch_no','$type_id','$testid','0','0','0','$doctor','$page','3','$c_user','$ip_addr','$nabl_val')");
-							
+
 							$page++;
 						}
-					}
-					else
-					{
-						if($testid==1227)
-						{
-							$widal_num=mysqli_num_rows(mysqli_query($link,"SELECT * FROM `widalresult` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' limit 1"));// AND `doc`='$doctor'
-							if($widal_num>0)
-							{
+					} else {
+						if ($testid == 1227) {
+							$widal_num = mysqli_num_rows(mysqli_query($link, "SELECT * FROM `widalresult` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' limit 1"));// AND `doc`='$doctor'
+							if ($widal_num > 0) {
 								//$test_page[]=$testid;
-								
-								if($test_serial>0 || $profile_serial>0)
-								{
+
+								if ($test_serial > 0 || $profile_serial > 0) {
 									$page++;
-									
-									$test_serial=0;
-									$profile_serial=0;
+
+									$test_serial = 0;
+									$profile_serial = 0;
 								}
-								$line_no=0;
+								$line_no = 0;
 								mysqli_query($link, "INSERT INTO `pathology_report_print`(`patient_id`, `opd_id`, `batch_no`, `type_id`, `testid`, `param_id`, `part`, `tech_id`, `doc_id`, `page_no`, `result_table`, `user`, `ip_addr`, `nabl`) VALUES ('$uhid','$bill_id','$batch_no','$type_id','$testid','0','0','0','$doctor','$page','4','$c_user','$ip_addr','$nabl_val')");
-								
+
 								$page++;
 							}
-						}
-						else
-						{
-							$test_result_qry=mysqli_query($link, "SELECT a.`paramid`,a.`range_id` FROM `testresults` a, `Testparameter` b WHERE a.`patient_id`='$uhid' AND a.`opd_id`='$opd_id' AND a.`ipd_id`='$ipd_id' AND a.`batch_no`='$batch_no' AND a.`testid`='$testid' AND a.`testid`=b.`TestId` AND a.`paramid`=b.`ParamaterId` ORDER BY a.`sequence` ASC");// AND a.`doc`='$doctor'
-							
-							$test_result_num=mysqli_num_rows($test_result_qry);
-							if($test_result_num>=$single_page_test_param_num) // Single Page Test
+						} else {
+							$test_result_qry = mysqli_query($link, "SELECT a.`paramid`,a.`range_id` FROM `testresults` a, `Testparameter` b WHERE a.`patient_id`='$uhid' AND a.`opd_id`='$opd_id' AND a.`ipd_id`='$ipd_id' AND a.`batch_no`='$batch_no' AND a.`testid`='$testid' AND a.`testid`=b.`TestId` AND a.`paramid`=b.`ParamaterId` AND b.`ParamaterId` NOT IN(639,640,641) ORDER BY a.`sequence` ASC");// AND a.`doc`='$doctor'
+
+							$test_result_num = mysqli_num_rows($test_result_qry);
+							if ($test_result_num >= $single_page_test_param_num) // Single Page Test
 							{
 								$page++;
-								$line_no=0;
-								if($test_serial>0 || $profile_serial>0)
-								{
-									$test_serial=0;
-									$profile_serial=0;
+								$line_no = 0;
+								if ($test_serial > 0 || $profile_serial > 0) {
+									$test_serial = 0;
+									$profile_serial = 0;
 								}
-								
-								$line_no=0;
-								
-								$result_table=1;
-								$dlc_test_param_num=mysqli_num_rows(mysqli_query($link, "SELECT `ParamaterId` FROM `Testparameter` WHERE `TestId`='$testid' AND `ParamaterId` IN(125,989)"));
-								if($dlc_test_param_num>0)
-								{
-									//~ $result_table=6;
-									//~ $profile_serial++;
+
+								$line_no = 0;
+
+								$result_table = 1;
+								$dlc_test_param_num = mysqli_num_rows(mysqli_query($link, "SELECT `ParamaterId` FROM `Testparameter` WHERE `TestId`='$testid' AND `ParamaterId` IN(125,989) AND `ParamaterId` NOT IN(639,640,641)"));
+								if ($dlc_test_param_num > 0) {
+									$result_table = 6;
+									$profile_serial++;
 								}
-								
-								$test_param_qry=mysqli_query($link, "SELECT `ParamaterId`,`status` FROM `Testparameter` WHERE `TestId`='$testid' ORDER BY `sequence` ASC");
-								while($test_param=mysqli_fetch_array($test_param_qry))
-								{
-									$paramid=$test_param["ParamaterId"];
-									$print_status=$test_param["status"];
-									
-									$test_result=mysqli_fetch_array(mysqli_query($link,"SELECT `result`,`range_id` FROM `testresults` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `paramid`='$paramid'"));// AND `doc`='$doctor'
-									
-									$param_info=mysqli_fetch_array(mysqli_query($link, "SELECT `ResultType` FROM `Parameter_old` WHERE `ID`='$paramid'"));
-									
-									if($param_info["ResultType"]==0 || $param_info["ResultType"]==5)
-									{
-										$test_result=1;
+
+								$test_param_qry = mysqli_query($link, "SELECT `ParamaterId`,`status` FROM `Testparameter` WHERE `TestId`='$testid' AND `ParamaterId` NOT IN(639,640,641) ORDER BY `sequence` ASC");
+								while ($test_param = mysqli_fetch_array($test_param_qry)) {
+									$paramid = $test_param["ParamaterId"];
+									$print_status = $test_param["status"];
+
+									$test_result = mysqli_fetch_array(mysqli_query($link, "SELECT `result`,`range_id`,`result_hide` FROM `testresults` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `paramid`='$paramid'"));// AND `doc`='$doctor'
+									$print_status = $test_result["result_hide"];
+
+									$param_info = mysqli_fetch_array(mysqli_query($link, "SELECT `ResultType` FROM `Parameter_old` WHERE `ID`='$paramid'"));
+
+									if ($param_info["ResultType"] == 0 || $param_info["ResultType"] == 5) {
+										$test_result = 1;
 									}
-									
-									if($test_result)
-									{
-										$range=mysqli_fetch_array(mysqli_query($link,"SELECT `normal_range` FROM `parameter_normal_check` WHERE `slno`='$test_result[range_id]'"));
-										$normal_range_line=substr_count($range["normal_range"], "\n")+1;
+
+									if ($test_result) {
+										$range = mysqli_fetch_array(mysqli_query($link, "SELECT `normal_range` FROM `parameter_normal_check` WHERE `slno`='$test_result[range_id]'"));
+										$normal_range_line = substr_count($range["normal_range"], "\n") + 1;
 										//echo $normal_range_line." = ".$range["normal_range"];
-										if($normal_range_line<=0)
-										{
-											$normal_range_line=1;
+										if ($normal_range_line <= 0) {
+											$normal_range_line = 1;
 										}
-										
-										$result_line=substr_count($test_result["result"], "\n")+1;
-										
-										if($result_line>$normal_range_line)
-										{
-											$normal_range_line=$result_line;
+
+										$result_line = substr_count($test_result["result"], "\n") + 1;
+
+										if ($result_line > $normal_range_line) {
+											$normal_range_line = $result_line;
 										}
-										
-										$line_no+=$normal_range_line;
-										
-										if($line_no>$max_line_in_a_page)
-										{
-											$line_no=$normal_range_line;
+
+										$line_no += $normal_range_line;
+
+										if ($line_no > $max_line_in_a_page) {
+											$line_no = $normal_range_line;
 											$page++;
 										}
-										
+
 										mysqli_query($link, "INSERT INTO `pathology_report_print`(`patient_id`, `opd_id`, `batch_no`, `type_id`, `testid`, `param_id`, `part`, `tech_id`, `doc_id`, `page_no`, `result_table`, `user`, `ip_addr`, `nabl`, `status`) VALUES ('$uhid','$bill_id','$batch_no','$type_id','$testid','$paramid','0','0','$doctor','$page','$result_table','$c_user','$ip_addr','$nabl_val','$print_status')");
-										
-										$test_serial=1;
-										$profile_serial=1;
-										
-										if($page>=100)
-										{
+
+										$test_serial = 1;
+										$profile_serial = 1;
+
+										if ($page >= 100) {
 											break;
 										}
 									}
 								}
-							}
-							else if($test_result_num>0 && $test_result_num<$single_page_test_param_num)
-							{
-								if($profile_serial>0)
-								{
+							} else if ($test_result_num > 0 && $test_result_num < $single_page_test_param_num) {
+								if ($profile_serial > 0) {
 									$page++;
-									$profile_serial=0;
-									$line_no=0;
+									$profile_serial = 0;
+									$line_no = 0;
 								}
-								
-								$result_table=1;
-								$dlc_test_param_num=mysqli_num_rows(mysqli_query($link, "SELECT `ParamaterId`,`status` FROM `Testparameter` WHERE `TestId`='$testid' AND `ParamaterId` IN(125,989)"));
-								if($dlc_test_param_num>0)
-								{
-									//~ $result_table=6;
-									//~ $profile_serial++;
+
+								$result_table = 1;
+								$dlc_test_param_num = mysqli_num_rows(mysqli_query($link, "SELECT `ParamaterId`,`status` FROM `Testparameter` WHERE `TestId`='$testid' AND `ParamaterId` IN(125,989) AND `ParamaterId` NOT IN(639,640,641)"));
+								if ($dlc_test_param_num > 0) {
+									$result_table = 6;
+									$profile_serial++;
 								}
-								$test_param_qry=mysqli_query($link, "SELECT `ParamaterId`,`status` FROM `Testparameter` WHERE `TestId`='$testid' ORDER BY `sequence` ASC");
-								while($test_param=mysqli_fetch_array($test_param_qry))
-								{
-									$paramid=$test_param["ParamaterId"];
-									$print_status=$test_param["status"];
-									
-									$test_result=mysqli_fetch_array(mysqli_query($link,"SELECT `range_id` FROM `testresults` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `paramid`='$paramid'"));// AND `doc`='$doctor'
-									
-									$param_info=mysqli_fetch_array(mysqli_query($link, "SELECT `ResultType` FROM `Parameter_old` WHERE `ID`='$paramid'"));
-									
-									if($param_info["ResultType"]==0 || $param_info["ResultType"]==5)
-									{
-										$test_result=1;
+								$test_param_qry = mysqli_query($link, "SELECT `ParamaterId`,`status` FROM `Testparameter` WHERE `TestId`='$testid' AND `ParamaterId` NOT IN(639,640,641) ORDER BY `sequence` ASC");
+								while ($test_param = mysqli_fetch_array($test_param_qry)) {
+									$paramid = $test_param["ParamaterId"];
+									$print_status = $test_param["status"];
+
+									$test_result = mysqli_fetch_array(mysqli_query($link, "SELECT `range_id`,`result_hide` FROM `testresults` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `paramid`='$paramid'"));// AND `doc`='$doctor'
+
+									$print_status = $test_result["result_hide"];
+
+									$param_info = mysqli_fetch_array(mysqli_query($link, "SELECT `ResultType` FROM `Parameter_old` WHERE `ID`='$paramid'"));
+
+									if ($param_info["ResultType"] == 0 || $param_info["ResultType"] == 5) {
+										$test_result = 1;
 									}
-									
-									if($test_result)
-									{
-										$range=mysqli_fetch_array(mysqli_query($link,"SELECT `normal_range` FROM `parameter_normal_check` WHERE `slno`='$test_result[range_id]'"));
-										$normal_range_line=substr_count($range["normal_range"], "\n")+1;
+
+									if ($test_result) {
+										$range = mysqli_fetch_array(mysqli_query($link, "SELECT `normal_range` FROM `parameter_normal_check` WHERE `slno`='$test_result[range_id]'"));
+										$normal_range_line = substr_count($range["normal_range"], "\n") + 1;
 										//echo $normal_range_line." = ".$range["normal_range"];
-										if($normal_range_line<=0)
-										{
-											$normal_range_line=1;
+										if ($normal_range_line <= 0) {
+											$normal_range_line = 1;
 										}
-										
-										$line_no+=$normal_range_line;
-										
-										if($line_no>$max_line_in_a_page)
-										{
-											$line_no=$normal_range_line;
+
+										$line_no += $normal_range_line;
+
+										if ($line_no > $max_line_in_a_page) {
+											$line_no = $normal_range_line;
 											$page++;
 										}
-										
+
 										mysqli_query($link, "INSERT INTO `pathology_report_print`(`patient_id`, `opd_id`, `batch_no`, `type_id`, `testid`, `param_id`, `part`, `tech_id`, `doc_id`, `page_no`, `result_table`, `user`, `ip_addr`, `nabl`, `status`) VALUES ('$uhid','$bill_id','$batch_no','$type_id','$testid','$paramid','$line_no','0','$doctor','$page','$result_table','$c_user','$ip_addr','$nabl_val','$print_status')");
-										
-										$test_serial=1;
-										
-										if($page>=100)
-										{
+
+										$test_serial = 1;
+
+										if ($page >= 100) {
 											break;
 										}
 									}
@@ -1190,10 +1035,10 @@ foreach($doctors AS $doctor)
 				}
 			}
 			$page++; // Department change
-			$line_no=0;
+			$line_no = 0;
 		}
 		$page++; // doctor change
-		$line_no=0;
+		$line_no = 0;
 	}
 }
 ?>
@@ -1249,507 +1094,452 @@ foreach($doctors AS $doctor)
 <?php
 	$nabl_true=0;
 	
-	$total_pages=mysqli_num_rows(mysqli_query($link, "SELECT DISTINCT `page_no` FROM `pathology_report_print` WHERE `patient_id`='$uhid' AND `opd_id`='$bill_id' AND `batch_no`='$batch_no' AND `testid` IN($testall) AND `user`='$c_user' AND `ip_addr`='$ip_addr'"));
-	
+	$total_pages = mysqli_num_rows(mysqli_query($link, "SELECT DISTINCT `page_no` FROM `pathology_report_print` WHERE `patient_id`='$uhid' AND `opd_id`='$bill_id' AND `batch_no`='$batch_no' AND `testid` IN($testall) AND `user`='$c_user' AND `ip_addr`='$ip_addr' AND `status`=0"));
+
 	// Test Result and summary
 	
-	$result_table="1,2";
-	
-	$report_doc_qry=mysqli_query($link, "SELECT DISTINCT `doc_id` FROM `pathology_report_print` WHERE `patient_id`='$uhid' AND `opd_id`='$bill_id' AND `batch_no`='$batch_no' AND `testid` IN($testall) AND `user`='$c_user' AND `ip_addr`='$ip_addr' AND `result_table` IN($result_table) ORDER BY `slno` ASC");
-	
-	$pages=1;
-	while($report_doc=mysqli_fetch_array($report_doc_qry))
-	{
-		$doc_id=$report_doc["doc_id"];
-		
-		$report_page_qry=mysqli_query($link, "SELECT DISTINCT `page_no` FROM `pathology_report_print` WHERE `patient_id`='$uhid' AND `opd_id`='$bill_id' AND `batch_no`='$batch_no' AND `testid` IN($testall) AND `doc_id`='$doc_id' AND `user`='$c_user' AND `ip_addr`='$ip_addr' AND `result_table` IN($result_table) ORDER BY `slno` ASC");
-		$report_page_num=mysqli_num_rows($report_page_qry);
-		while($report_page=mysqli_fetch_array($report_page_qry))
-		{
+	$result_table = "1,2";
+
+	$report_doc_qry = mysqli_query($link, "SELECT DISTINCT `doc_id` FROM `pathology_report_print` WHERE `patient_id`='$uhid' AND `opd_id`='$bill_id' AND `batch_no`='$batch_no' AND `testid` IN($testall) AND `user`='$c_user' AND `ip_addr`='$ip_addr' AND `result_table` IN($result_table) AND `status`=0 ORDER BY `slno` ASC");
+
+	$page = 1;
+	while ($report_doc = mysqli_fetch_array($report_doc_qry)) {
+		$doc_id = $report_doc["doc_id"];
+
+		$report_page_qry = mysqli_query($link, "SELECT DISTINCT `page_no` FROM `pathology_report_print` WHERE `patient_id`='$uhid' AND `opd_id`='$bill_id' AND `batch_no`='$batch_no' AND `testid` IN($testall) AND `doc_id`='$doc_id' AND `user`='$c_user' AND `ip_addr`='$ip_addr' AND `result_table` IN($result_table) AND `status`=0 ORDER BY `slno` ASC");
+		$report_page_num = mysqli_num_rows($report_page_qry);
+		while ($report_page = mysqli_fetch_array($report_page_qry)) {
 			$report_page_num--;
-			$page_no=$report_page["page_no"];
-			
-			$only_result_testid_num=mysqli_num_rows(mysqli_query($link, "SELECT DISTINCT `page_no` FROM `pathology_report_print` WHERE `patient_id`='$uhid' AND `opd_id`='$bill_id' AND `batch_no`='$batch_no' AND `testid` IN($only_result_testid) AND `doc_id`='$doc_id' AND `user`='$c_user' AND `ip_addr`='$ip_addr' AND `result_table` IN($result_table) AND `page_no`='$page_no' ORDER BY `slno` ASC"));
-			
-			$dept_info=mysqli_fetch_array(mysqli_query($link, "SELECT `id`,`name` FROM `test_department` WHERE `id` IN(SELECT `type_id` FROM `pathology_report_print` WHERE `patient_id`='$uhid' AND `opd_id`='$bill_id' AND `batch_no`='$batch_no' AND `page_no`='$page_no')"));
-			$type_id=$dept_info["type_id"];
-			
-			if($pages>1)
-			{
+			$page_no = $report_page["page_no"];
+
+			$only_result_testid_num = mysqli_num_rows(mysqli_query($link, "SELECT DISTINCT `page_no` FROM `pathology_report_print` WHERE `patient_id`='$uhid' AND `opd_id`='$bill_id' AND `batch_no`='$batch_no' AND `testid` IN($only_result_testid) AND `doc_id`='$doc_id' AND `user`='$c_user' AND `ip_addr`='$ip_addr' AND `result_table` IN($result_table) AND `page_no`='$page_no' AND `status`=0 ORDER BY `slno` ASC"));
+
+			$dept_info = mysqli_fetch_array(mysqli_query($link, "SELECT `id`,`name` FROM `test_department` WHERE `id` IN(SELECT `type_id` FROM `pathology_report_print` WHERE `patient_id`='$uhid' AND `opd_id`='$bill_id' AND `batch_no`='$batch_no' AND `page_no`='$page_no' AND `status`=0)"));
+			$type_id = $dept_info["type_id"];
+
+			if ($page > 1) {
 				echo '<div class="pagebreak"></div>';
 			}
-			
-			$sample_names_array=array();
-			//$sample_qry=mysqli_query($link, "SELECT DISTINCT a.`sampleid` FROM `phlebo_sample` a, `pathology_report_print` b WHERE a.`patient_id`=b.`patient_id` AND (a.`opd_id`=b.`opd_id` OR a.`ipd_id`=b.`opd_id`) AND a.`batch_no`=b.`batch_no` AND a.`testid`=b.`testid` AND b.`patient_id`='$uhid' AND b.`opd_id`='$bill_id' AND b.`batch_no`='$batch_no' AND b.`doc_id`='$doc_id' AND b.`page_no`='$page_no'");
-			
-			//$sample_qry=mysqli_query($link, "SELECT DISTINCT a.`SampleId` FROM `TestSample` a, `pathology_report_print` b WHERE a.`TestId`=b.`testid` AND b.`patient_id`='$uhid' AND b.`opd_id`='$bill_id' AND b.`batch_no`='$batch_no' AND b.`doc_id`='$doc_id' AND b.`page_no`='$page_no'");
-			
-			$sample_qry=mysqli_query($link, "SELECT DISTINCT a.`sample` FROM `Testparameter` a, `pathology_report_print` b WHERE a.`ParamaterId`=b.`param_id` AND a.`TestId`=b.`testid` AND b.`patient_id`='$uhid' AND b.`opd_id`='$bill_id' AND b.`batch_no`='$batch_no' AND b.`doc_id`='$doc_id' AND b.`page_no`='$page_no'");
-			
-			while($samples=mysqli_fetch_array($sample_qry))
-			{
-				$sample_info=mysqli_fetch_array(mysqli_query($link, "SELECT `Name` FROM `Sample` WHERE `ID`='$samples[sample]'"));
-				if($sample_info)
-				{
-					$sample_names_array[]=$sample_info["Name"];
+
+			$sample_names_array = array();
+			//$sample_qry=mysqli_query($link, "SELECT DISTINCT a.`sampleid` FROM `phlebo_sample` a, `pathology_report_print` b WHERE a.`patient_id`=b.`patient_id` AND (a.`opd_id`=b.`opd_id` OR a.`ipd_id`=b.`opd_id`) AND a.`batch_no`=b.`batch_no` AND a.`testid`=b.`testid` AND b.`patient_id`='$uhid' AND b.`opd_id`='$bill_id' AND b.`batch_no`='$batch_no' AND b.`doc_id`='$doc_id' AND b.`page_no`='$page_no' AND b.`status`=0");
+	
+			//$sample_qry=mysqli_query($link, "SELECT DISTINCT a.`SampleId` FROM `TestSample` a, `pathology_report_print` b WHERE a.`TestId`=b.`testid` AND b.`patient_id`='$uhid' AND b.`opd_id`='$bill_id' AND b.`batch_no`='$batch_no' AND b.`doc_id`='$doc_id' AND b.`page_no`='$page_no' AND b.`status`=0");
+	
+			$sample_qry = mysqli_query($link, "SELECT DISTINCT a.`sample` FROM `Testparameter` a, `pathology_report_print` b WHERE a.`ParamaterId`=b.`param_id` AND a.`TestId`=b.`testid` AND b.`patient_id`='$uhid' AND b.`opd_id`='$bill_id' AND b.`batch_no`='$batch_no' AND b.`doc_id`='$doc_id' AND b.`page_no`='$page_no' AND b.`status`=0");
+
+			while ($samples = mysqli_fetch_array($sample_qry)) {
+				$sample_info = mysqli_fetch_array(mysqli_query($link, "SELECT `Name` FROM `Sample` WHERE `ID`='$samples[sample]'"));
+				if ($sample_info) {
+					$sample_names_array[] = $sample_info["Name"];
 				}
 			}
-			if($sample_names=="")
-			{
-				$sample_qry=mysqli_query($link, "SELECT DISTINCT a.`SampleId` FROM `TestSample` a, `pathology_report_print` b WHERE a.`TestId`=b.`testid` AND b.`patient_id`='$uhid' AND b.`opd_id`='$bill_id' AND b.`batch_no`='$batch_no' AND b.`doc_id`='$doc_id' AND b.`page_no`='$page_no'");
-				while($samples=mysqli_fetch_array($sample_qry))
-				{
-					$sample_info=mysqli_fetch_array(mysqli_query($link, "SELECT `Name` FROM `Sample` WHERE `ID`='$samples[SampleId]'"));
-					if($sample_info)
-					{
-						$sample_names_array[]=$sample_info["Name"];
+			if (sizeof($sample_names_array) == 0) {
+				$sample_qry = mysqli_query($link, "SELECT DISTINCT a.`SampleId` FROM `TestSample` a, `pathology_report_print` b WHERE a.`TestId`=b.`testid` AND b.`patient_id`='$uhid' AND b.`opd_id`='$bill_id' AND b.`batch_no`='$batch_no' AND b.`doc_id`='$doc_id' AND b.`page_no`='$page_no' AND b.`status`=0");
+				while ($samples = mysqli_fetch_array($sample_qry)) {
+					$sample_info = mysqli_fetch_array(mysqli_query($link, "SELECT `Name` FROM `Sample` WHERE `ID`='$samples[SampleId]'"));
+					if ($sample_info) {
+						$sample_names_array[] = $sample_info["Name"];
 					}
 				}
 			}
-			$sample_names_array=array_unique($sample_names_array);
-			$sample_names=implode(",",$sample_names_array);
-			
+			$sample_names_array = array_unique($sample_names_array);
+			$sample_names = implode(",", $sample_names_array);
+
 			// Sample Collection Time
-			$sample_collection=mysqli_fetch_array(mysqli_query($link, "SELECT DISTINCT a.`time`,a.`date` FROM `phlebo_sample` a, `pathology_report_print` b WHERE a.`patient_id`=b.`patient_id` AND (a.`opd_id`=b.`opd_id` OR a.`ipd_id`=b.`opd_id`) AND a.`batch_no`=b.`batch_no` AND a.`testid`=b.`testid` AND b.`patient_id`='$uhid' AND b.`opd_id`='$bill_id' AND b.`batch_no`='$batch_no' AND b.`doc_id`='$doc_id' AND b.`page_no`='$page_no'"));
-			if($sample_collection)
-			{
-				$sample_collection_date=$sample_collection["date"];
-				$sample_collection_time=$sample_collection["time"];
+			$sample_collection = mysqli_fetch_array(mysqli_query($link, "SELECT DISTINCT a.`time`,a.`date` FROM `phlebo_sample` a, `pathology_report_print` b WHERE a.`patient_id`=b.`patient_id` AND (a.`opd_id`=b.`opd_id` OR a.`ipd_id`=b.`opd_id`) AND a.`batch_no`=b.`batch_no` AND a.`testid`=b.`testid` AND b.`patient_id`='$uhid' AND b.`opd_id`='$bill_id' AND b.`batch_no`='$batch_no' AND b.`doc_id`='$doc_id' AND b.`page_no`='$page_no' AND b.`status`=0"));
+			if ($sample_collection) {
+				$sample_collection_date = $sample_collection["date"];
+				$sample_collection_time = $sample_collection["time"];
+			} else {
+				$sample_collection_date = $pat_reg["date"];
+				$sample_collection_time = $pat_reg["time"];
 			}
-			else
-			{
-				$sample_collection_date=$pat_reg["date"];
-				$sample_collection_time=$pat_reg["time"];
-			}
-			
+
 			// Sample Receive Time
-			$sample_receive=mysqli_fetch_array(mysqli_query($link, "SELECT DISTINCT a.`time`,a.`date` FROM `lab_sample_receive` a, `pathology_report_print` b WHERE a.`patient_id`=b.`patient_id` AND (a.`opd_id`=b.`opd_id` OR a.`ipd_id`=b.`opd_id`) AND a.`batch_no`=b.`batch_no` AND a.`testid`=b.`testid` AND b.`patient_id`='$uhid' AND b.`opd_id`='$bill_id' AND b.`batch_no`='$batch_no' AND b.`doc_id`='$doc_id' AND b.`page_no`='$page_no'"));
-			if($sample_receive)
-			{
-				$sample_receive_date=$sample_receive["date"];
-				$sample_receive_time=$sample_receive["time"];
+			$sample_receive = mysqli_fetch_array(mysqli_query($link, "SELECT DISTINCT a.`time`,a.`date` FROM `lab_sample_receive` a, `pathology_report_print` b WHERE a.`patient_id`=b.`patient_id` AND (a.`opd_id`=b.`opd_id` OR a.`ipd_id`=b.`opd_id`) AND a.`batch_no`=b.`batch_no` AND a.`testid`=b.`testid` AND b.`patient_id`='$uhid' AND b.`opd_id`='$bill_id' AND b.`batch_no`='$batch_no' AND b.`doc_id`='$doc_id' AND b.`page_no`='$page_no' AND b.`status`=0"));
+			if ($sample_receive) {
+				$sample_receive_date = $sample_receive["date"];
+				$sample_receive_time = $sample_receive["time"];
+			} else if ($sample_collection) {
+				$sample_receive_date = $sample_collection["date"];
+				$sample_receive_time = $sample_collection["time"];
+			} else {
+				$sample_receive_date = $pat_reg["date"];
+				$sample_receive_time = $pat_reg["time"];
 			}
-			else if($sample_collection)
-			{
-				$sample_receive_date=$sample_collection["date"];
-				$sample_receive_time=$sample_collection["time"];
-			}
-			else
-			{
-				$sample_receive_date=$pat_reg["date"];
-				$sample_receive_time=$pat_reg["time"];
-			}
-			
+
 			// Reporting Time
-			$report_time=mysqli_fetch_array(mysqli_query($link, "SELECT DISTINCT a.`time`,a.`date` FROM `testresults` a, `pathology_report_print` b WHERE a.`patient_id`=b.`patient_id` AND (a.`opd_id`=b.`opd_id` OR a.`ipd_id`=b.`opd_id`) AND a.`batch_no`=b.`batch_no` AND a.`testid`=b.`testid` AND b.`patient_id`='$uhid' AND b.`opd_id`='$bill_id' AND b.`batch_no`='$batch_no' AND b.`doc_id`='$doc_id' AND b.`page_no`='$page_no'"));
-			if(!$report_time)
-			{
-				$report_time=mysqli_fetch_array(mysqli_query($link, "SELECT DISTINCT a.`time`,a.`date` FROM `patient_test_summary` a, `pathology_report_print` b WHERE a.`patient_id`=b.`patient_id` AND (a.`opd_id`=b.`opd_id` OR a.`ipd_id`=b.`opd_id`) AND a.`batch_no`=b.`batch_no` AND a.`testid`=b.`testid` AND b.`patient_id`='$uhid' AND b.`opd_id`='$bill_id' AND b.`batch_no`='$batch_no' AND b.`doc_id`='$doc_id' AND b.`page_no`='$page_no'"));
-				
-				if(!$report_time)
-				{
-					$report_time=mysqli_fetch_array(mysqli_query($link, "SELECT DISTINCT a.`time`,a.`date` FROM `widalresult` a, `pathology_report_print` b WHERE a.`patient_id`=b.`patient_id` AND (a.`opd_id`=b.`opd_id` OR a.`ipd_id`=b.`opd_id`) AND a.`batch_no`=b.`batch_no` AND b.`patient_id`='$uhid' AND b.`opd_id`='$bill_id' AND b.`batch_no`='$batch_no' AND b.`doc_id`='$doc_id' AND b.`page_no`='$page_no'"));
+			$report_time = mysqli_fetch_array(mysqli_query($link, "SELECT DISTINCT a.`time`,a.`date` FROM `testresults` a, `pathology_report_print` b WHERE a.`patient_id`=b.`patient_id` AND (a.`opd_id`=b.`opd_id` OR a.`ipd_id`=b.`opd_id`) AND a.`batch_no`=b.`batch_no` AND a.`testid`=b.`testid` AND b.`patient_id`='$uhid' AND b.`opd_id`='$bill_id' AND b.`batch_no`='$batch_no' AND b.`doc_id`='$doc_id' AND b.`page_no`='$page_no' AND b.`status`=0"));
+			if (!$report_time) {
+				$report_time = mysqli_fetch_array(mysqli_query($link, "SELECT DISTINCT a.`time`,a.`date` FROM `patient_test_summary` a, `pathology_report_print` b WHERE a.`patient_id`=b.`patient_id` AND (a.`opd_id`=b.`opd_id` OR a.`ipd_id`=b.`opd_id`) AND a.`batch_no`=b.`batch_no` AND a.`testid`=b.`testid` AND b.`patient_id`='$uhid' AND b.`opd_id`='$bill_id' AND b.`batch_no`='$batch_no' AND b.`doc_id`='$doc_id' AND b.`page_no`='$page_no' AND b.`status`=0"));
+
+				if (!$report_time) {
+					$report_time = mysqli_fetch_array(mysqli_query($link, "SELECT DISTINCT a.`time`,a.`date` FROM `widalresult` a, `pathology_report_print` b WHERE a.`patient_id`=b.`patient_id` AND (a.`opd_id`=b.`opd_id` OR a.`ipd_id`=b.`opd_id`) AND a.`batch_no`=b.`batch_no` AND b.`patient_id`='$uhid' AND b.`opd_id`='$bill_id' AND b.`batch_no`='$batch_no' AND b.`doc_id`='$doc_id' AND b.`page_no`='$page_no' AND b.`status`=0"));
 				}
 			}
-			
+
 			// Report entry and checked by
-			$data_entry_users=array();
-			$data_checked_users=array();
-			
-			//~ $report_entry_qry=mysqli_query($link, "SELECT DISTINCT a.`tech`, a.`main_tech` FROM `testresults` a, `pathology_report_print` b WHERE a.`patient_id`=b.`patient_id` AND (a.`opd_id`=b.`opd_id` OR a.`ipd_id`=b.`opd_id`) AND a.`batch_no`=b.`batch_no` AND a.`testid`=b.`testid` AND b.`patient_id`='$uhid' AND b.`opd_id`='$bill_id' AND b.`batch_no`='$batch_no' AND b.`doc_id`='$doc_id' AND b.`page_no`='$page_no'");
+			$data_entry_users = array();
+			$data_checked_users = array();
+
+			//~ $report_entry_qry=mysqli_query($link, "SELECT DISTINCT a.`tech`, a.`main_tech` FROM `testresults` a, `pathology_report_print` b WHERE a.`patient_id`=b.`patient_id` AND (a.`opd_id`=b.`opd_id` OR a.`ipd_id`=b.`opd_id`) AND a.`batch_no`=b.`batch_no` AND a.`testid`=b.`testid` AND b.`patient_id`='$uhid' AND b.`opd_id`='$bill_id' AND b.`batch_no`='$batch_no' AND b.`doc_id`='$doc_id' AND b.`page_no`='$page_no' AND b.`status`=0");
 			//~ while($report_entry=mysqli_fetch_array($report_entry_qry))
 			//~ {
-				//~ $data_entry_users[]=$report_entry["tech"];
-				//~ $data_checked_users[]=$report_entry["main_tech"];
+			//~ $data_entry_users[]=$report_entry["tech"];
+			//~ $data_checked_users[]=$report_entry["main_tech"];
 			//~ }
-			
-			//~ $report_entry_qry=mysqli_query($link, "SELECT DISTINCT a.`user`, a.`main_tech` FROM `patient_test_summary` a, `pathology_report_print` b WHERE a.`patient_id`=b.`patient_id` AND (a.`opd_id`=b.`opd_id` OR a.`ipd_id`=b.`opd_id`) AND a.`batch_no`=b.`batch_no` AND a.`testid`=b.`testid` AND b.`patient_id`='$uhid' AND b.`opd_id`='$bill_id' AND b.`batch_no`='$batch_no' AND b.`doc_id`='$doc_id' AND b.`page_no`='$page_no'");
+	
+			//~ $report_entry_qry=mysqli_query($link, "SELECT DISTINCT a.`user`, a.`main_tech` FROM `patient_test_summary` a, `pathology_report_print` b WHERE a.`patient_id`=b.`patient_id` AND (a.`opd_id`=b.`opd_id` OR a.`ipd_id`=b.`opd_id`) AND a.`batch_no`=b.`batch_no` AND a.`testid`=b.`testid` AND b.`patient_id`='$uhid' AND b.`opd_id`='$bill_id' AND b.`batch_no`='$batch_no' AND b.`doc_id`='$doc_id' AND b.`page_no`='$page_no' AND b.`status`=0");
 			//~ while($report_entry=mysqli_fetch_array($report_entry_qry))
 			//~ {
-				//~ $data_entry_users[]=$report_entry["user"];
-				//~ $data_checked_users[]=$report_entry["main_tech"];
+			//~ $data_entry_users[]=$report_entry["user"];
+			//~ $data_checked_users[]=$report_entry["main_tech"];
 			//~ }
-			
+	
 			//~ $data_entry_users=array_unique($data_entry_users);
 			//~ $data_entry_user_ids=implode(",",$data_entry_users);
-			
+	
 			//~ $data_entry_names="";
 			//~ $tech_info_qry=mysqli_query($link, "SELECT `name` FROM `employee` WHERE `emp_id` IN($data_entry_user_ids)");
 			//~ while($tech_info=mysqli_fetch_array($tech_info_qry))
 			//~ {
-				//~ $data_entry_names.=$tech_info["name"].",";
+			//~ $data_entry_names.=$tech_info["name"].",";
 			//~ }
-			
+	
 			//~ $data_checked_users=array_unique($data_checked_users);
 			//~ $data_checked_user_ids=implode(",",$data_checked_users);
-			
+	
 			//~ $data_checked_names="";
 			//~ $tech_info_qry=mysqli_query($link, "SELECT `name` FROM `employee` WHERE `emp_id` IN($data_checked_user_ids)");
 			//~ while($tech_info=mysqli_fetch_array($tech_info_qry))
 			//~ {
-				//~ $data_checked_names.=$tech_info["name"].",";
+			//~ $data_checked_names.=$tech_info["name"].",";
 			//~ }
-			
-			$page_param_chk=mysqli_fetch_array(mysqli_query($link, "SELECT COUNT(*) AS `param_num`, `result_table` FROM `pathology_report_print` WHERE `patient_id`='$uhid' AND `opd_id`='$bill_id' AND `batch_no`='$batch_no' AND `testid` IN($testall) AND `doc_id`='$doc_id' AND `page_no`='$page_no' AND `user`='$c_user' AND `ip_addr`='$ip_addr' ORDER BY `slno` ASC"));
-		?>
-		<?php
-			$br=0;
-			while($br<$top_line_break)
-			{
+	
+			$page_param_chk = mysqli_fetch_array(mysqli_query($link, "SELECT COUNT(*) AS `param_num`, `result_table` FROM `pathology_report_print` WHERE `patient_id`='$uhid' AND `opd_id`='$bill_id' AND `batch_no`='$batch_no' AND `testid` IN($testall) AND `doc_id`='$doc_id' AND `page_no`='$page_no' AND `user`='$c_user' AND `ip_addr`='$ip_addr' AND `status`=0 ORDER BY `slno` ASC"));
+			?>
+			<?php
+			$br = 0;
+			while ($br < $top_line_break) {
 				echo "<br>";
 				$br++;
 			}
-		?>
+			?>
 			<div class="container-fluid"> <!-- style="border: 2px solid #000;height: 1080px;" -->
 				<div class="row">
-				<?php
-				$sl=mysqli_fetch_array(mysqli_query($link,"SELECT `dept_serial` FROM `patient_test_details` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND`ipd_id`='$ipd_id' AND `batch_no`='$batch_no' LIMIT 0,1"));
+					<?php
+					$sl = mysqli_fetch_array(mysqli_query($link, "SELECT `dept_serial` FROM `patient_test_details` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND`ipd_id`='$ipd_id' AND `batch_no`='$batch_no' LIMIT 0,1"));
 					include("pathology_report_page_header.php");
 					include("pathology_report_header.php");
-				?>
+					?>
 				</div>
 				<div class="row report_div" style="<?php echo $div_height; ?>">
 					<table class="table table-condensed table-no-top-border report_table">
 						<tr class="report_header">
 							<th class="test_name" style="width: 35%;">TEST</th>
 							<th class="test_result" style="text-align:left;">RESULTS</th>
-					<?php
-						if($only_result_testid_num==0)
-						{
-					?>
-							<th class="test_unit">UNIT</th>
-							<th class="test_method">METHOD</th>
-							<th class="test_ref">NORMAL RANGE</th>
-					<?php
-						}
-					?>
-						</tr>
-				<?php
-					if($page_param_chk["result_table"]==1 && $page_param_chk["param_num"]<=5)
-					{
-				?>
-						<tr>
-							<td><br><br></td>
-						</tr>
-				<?php
-					}
-				?>
-				<?php
-					$report_test_qry=mysqli_query($link, "SELECT DISTINCT `testid` FROM `pathology_report_print` WHERE `patient_id`='$uhid' AND `opd_id`='$bill_id' AND `batch_no`='$batch_no' AND `testid` IN($testall) AND `doc_id`='$doc_id' AND `page_no`='$page_no' AND `user`='$c_user' AND `ip_addr`='$ip_addr' ORDER BY `slno` ASC");
-					while($report_test=mysqli_fetch_array($report_test_qry))
-					{
-						$testid=$report_test["testid"];
-						
-						// Record print
-						if($view==0)
-						{
-							mysqli_query($link, "INSERT INTO `testreport_print`(`patient_id`, `opd_id`, `ipd_id`, `batch_no`, `testid`, `date`, `time`, `user`) VALUES ('$uhid','$opd_id','$ipd_id','$batch_no','$testid','$date','$time','$c_user')");
-						}
-						
-						$test_info=mysqli_fetch_array(mysqli_query($link, "SELECT `testname` FROM `testmaster` WHERE `testid`='$testid'"));
-						
-						$testNameRes="";
-						if($testid=="2")
-						{
-							$checkResParIds="193,189,190,191";
-							$resParamCheck=mysqli_fetch_array(mysqli_query($link,"SELECT `slno` FROM `testresults` WHERE `testid`='$testid' AND `paramid` IN($checkResParIds) AND `result`!=''"));
-							if($resParamCheck)
-							{
-								//$testNameRes=" (LEUKEMIA)";
+							<?php
+							if ($only_result_testid_num == 0) {
+								?>
+								<th class="test_unit">UNIT</th>
+								<th class="test_method">METHOD</th>
+								<th class="test_ref">NORMAL RANGE</th>
+								<?php
 							}
-						}
-						$param_td_th="th";
-						$left_space="";
-						//$param_num=mysqli_num_rows(mysqli_query($link, "SELECT `ParamaterId` FROM `Testparameter` WHERE `TestId`='$testid'"));
-						$param_num=mysqli_num_rows(mysqli_query($link, "SELECT a.* FROM `testresults` a, `Testparameter` b WHERE a.`patient_id`='$uhid' AND a.`opd_id`='$opd_id' AND a.`ipd_id`='$ipd_id' AND a.`batch_no`='$batch_no' AND a.`testid`=b.`TestId` AND a.`paramid`=b.`ParamaterId` AND a.`testid`='$testid'"));// AND a.`doc`='$doc_id'
-						
-						if($param_num>1)
-						{
-							$param_td_th="td";
-							$left_space=" &nbsp;&nbsp;&nbsp;";
-				?>
-						<tr>
-							<th colspan="5" class="test_name no_top_border"><?php echo $test_info["testname"].$testNameRes; ?></th>
+							?>
 						</tr>
-				<?php
+						<?php
+						if ($page_param_chk["result_table"] == 1 && $page_param_chk["param_num"] <= 5) {
+							?>
+							<tr>
+								<td><br><br></td>
+							</tr>
+							<?php
 						}
-						
-						$report_qry=mysqli_query($link, "SELECT * FROM `pathology_report_print` WHERE `testid`='$testid' AND `param_id`>0 AND `doc_id`='$doc_id' AND `page_no`='$page_no' AND `user`='$c_user' AND `ip_addr`='$ip_addr' ORDER BY `slno` ASC");
-						$report_num=mysqli_num_rows($report_qry);
-						if($report_num>0)
-						{
-							while($report=mysqli_fetch_array($report_qry))
-							{
-								$param_info=mysqli_fetch_array(mysqli_query($link, "SELECT `ResultType`,`Name`,`UnitsID`,`sample`,`method` FROM `Parameter_old` WHERE `ID`='$report[param_id]'"));
-								
-								if($param_info["ResultType"]==5)
-								{
-									$left_space=" &nbsp;&nbsp;&nbsp;";
+						?>
+						<?php
+						$report_test_qry = mysqli_query($link, "SELECT DISTINCT `testid` FROM `pathology_report_print` WHERE `patient_id`='$uhid' AND `opd_id`='$bill_id' AND `batch_no`='$batch_no' AND `testid` IN($testall) AND `doc_id`='$doc_id' AND `page_no`='$page_no' AND `user`='$c_user' AND `ip_addr`='$ip_addr' AND `status`=0 ORDER BY `slno` ASC");
+						while ($report_test = mysqli_fetch_array($report_test_qry)) {
+							$testid = $report_test["testid"];
+
+							// Record print
+							if ($view == 0) {
+								mysqli_query($link, "INSERT INTO `testreport_print`(`patient_id`, `opd_id`, `ipd_id`, `batch_no`, `testid`, `date`, `time`, `user`) VALUES ('$uhid','$opd_id','$ipd_id','$batch_no','$testid','$date','$time','$c_user')");
+							}
+
+							$test_info = mysqli_fetch_array(mysqli_query($link, "SELECT `testname` FROM `testmaster` WHERE `testid`='$testid'"));
+
+							$testNameRes = "";
+							if ($testid == "2") {
+								$checkResParIds = "193,189,190,191";
+								$resParamCheck = mysqli_fetch_array(mysqli_query($link, "SELECT `slno` FROM `testresults` WHERE `testid`='$testid' AND `paramid` IN($checkResParIds) AND `result`!=''"));
+								if ($resParamCheck) {
+									//$testNameRes=" (LEUKEMIA)";
 								}
-								
-								if($param_info["ResultType"]!=0)
-								{
-									$test_result=mysqli_fetch_array(mysqli_query($link, "SELECT `result`,`range_status`,`range_id`,`result_hide` FROM `testresults` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `paramid`='$report[param_id]'"));// AND `doc`='$doc_id'
-									
-									if($test_result && $test_result["result_hide"]>=0)
-									{
-										$normal_range=mysqli_fetch_array(mysqli_query($link,"SELECT `normal_range` FROM `parameter_normal_check` WHERE `slno`='$test_result[range_id]'"));
-										
-										$unit_info=mysqli_fetch_array(mysqli_query($link,"SELECT `unit_name` FROM `Units` WHERE `ID`='$param_info[UnitsID]'"));
-										
-										$method=mysqli_fetch_array(mysqli_query($link,"SELECT `name` FROM `test_methods` WHERE `id`='$param_info[method]'"));
-										
-										$result_td_th="td";
-										if($test_result["range_status"]>0)
-										{
-											$result_td_th="th";
-										}
-										
-										$result_td_span="1";
-										$result_td_text_align="text-align:left;";
-										if($param_info["ResultType"]==3 || $param_info["ResultType"]==27) // 3=One Line text, 7=pad, 27=Multiline text
-										{
-											$result_td_span="4";
-											
-											$result_td_text_align="text-align:left;";
-										}
-										if($param_info["ResultType"]==7) // Pad
-										{
-											$pad_result=$test_result["result"];
-											
-											if($report["part"]>0)
-											{
-												$position=$report["part"]-1;
-												
-												$pad_result_texts=explode($page_breaker,$pad_result);
-												
-												$pad_result=$pad_result_texts[$position];
+							}
+							$param_td_th = "th";
+							$left_space = "";
+							//$param_num=mysqli_num_rows(mysqli_query($link, "SELECT `ParamaterId` FROM `Testparameter` WHERE `TestId`='$testid'"));
+							$param_num = mysqli_num_rows(mysqli_query($link, "SELECT a.* FROM `testresults` a, `Testparameter` b WHERE a.`patient_id`='$uhid' AND a.`opd_id`='$opd_id' AND a.`ipd_id`='$ipd_id' AND a.`batch_no`='$batch_no' AND a.`testid`=b.`TestId` AND a.`paramid`=b.`ParamaterId` AND a.`testid`='$testid' AND b.`ParamaterId` NOT IN(639,640,641)"));// AND a.`doc`='$doc_id'
+				
+							if ($param_num > 1) {
+								$param_td_th = "td";
+								$left_space = " &nbsp;&nbsp;&nbsp;";
+								?>
+								<tr>
+									<th colspan="5" class="test_name no_top_border"><?php echo $test_info["testname"] . $testNameRes; ?>
+									</th>
+								</tr>
+								<?php
+							}
+
+							$report_qry = mysqli_query($link, "SELECT * FROM `pathology_report_print` WHERE `testid`='$testid' AND `param_id`>0 AND `doc_id`='$doc_id' AND `page_no`='$page_no' AND `user`='$c_user' AND `ip_addr`='$ip_addr' AND `status`=0 ORDER BY `slno` ASC");
+							$report_num = mysqli_num_rows($report_qry);
+							if ($report_num > 0) {
+								while ($report = mysqli_fetch_array($report_qry)) {
+									$param_info = mysqli_fetch_array(mysqli_query($link, "SELECT `ResultType`,`Name`,`UnitsID`,`sample`,`method` FROM `Parameter_old` WHERE `ID`='$report[param_id]'"));
+
+									if ($param_info["ResultType"] == 5) {
+										$left_space = " &nbsp;&nbsp;&nbsp;";
+									}
+
+									if ($param_info["ResultType"] != 0) {
+										$test_result = mysqli_fetch_array(mysqli_query($link, "SELECT `result`,`range_status`,`range_id`,`result_hide` FROM `testresults` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `paramid`='$report[param_id]'"));// AND `doc`='$doc_id'
+				
+										if ($test_result && $test_result["result_hide"] == 0) {
+											$normal_range = mysqli_fetch_array(mysqli_query($link, "SELECT `normal_range` FROM `parameter_normal_check` WHERE `slno`='$test_result[range_id]'"));
+
+											$unit_info = mysqli_fetch_array(mysqli_query($link, "SELECT `unit_name` FROM `Units` WHERE `ID`='$param_info[UnitsID]'"));
+
+											$method = mysqli_fetch_array(mysqli_query($link, "SELECT `name` FROM `test_methods` WHERE `id`='$param_info[method]'"));
+
+											$result_td_th = "td";
+											if ($test_result["range_status"] > 0) {
+												$result_td_th = "th";
 											}
-											
-											echo "<tr><th colspan='5' class='test_name no_top_border'>".$nabl_star."<u>".$param_info["Name"]." :</u>"."</th></tr>";
-										}
-										else
-										{
-											$pad_result="";
-											// NABL
-											$nabl_star="";
-											$nabl_num=mysqli_num_rows(mysqli_query($link, "SELECT * FROM `nabl` WHERE `nabl`>0"));
-											if($nabl_num>0 && $report["nabl"]==1)
+
+											$result_td_span = "1";
+											$result_td_text_align = "text-align:left;";
+											if ($param_info["ResultType"] == 3 || $param_info["ResultType"] == 27) // 3=One Line text, 7=pad, 27=Multiline text
 											{
-												$nabl_star=$nabl_star_symbol;
-												$nabl_check_num=mysqli_num_rows(mysqli_query($link, "SELECT * FROM `nabl_test_param` WHERE `paramid`='$report[param_id]'"));
-												if($nabl_check_num>0)
-												{
+												$result_td_span = "4";
+
+												$result_td_text_align = "text-align:left;";
+											}
+											if ($param_info["ResultType"] == 7) // Pad
+											{
+												$pad_result = $test_result["result"];
+
+												if ($report["part"] > 0) {
+													$position = $report["part"] - 1;
+
+													$pad_result_texts = explode($page_breaker, $pad_result);
+
+													$pad_result = $pad_result_texts[$position];
+												}
+
+												echo "<tr><th colspan='5' class='test_name no_top_border'>" . $nabl_star . "<u>" . $param_info["Name"] . " :</u>" . "</th></tr>";
+											} else {
+												$pad_result = "";
+												// NABL
+												$nabl_star = "";
+												$nabl_num = mysqli_num_rows(mysqli_query($link, "SELECT * FROM `nabl` WHERE `nabl`>0"));
+												if ($nabl_num > 0 && $report["nabl"] == 1) {
+													$nabl_star = $nabl_star_symbol;
+													$nabl_check_num = mysqli_num_rows(mysqli_query($link, "SELECT * FROM `nabl_test_param` WHERE `paramid`='$report[param_id]'"));
+													if ($nabl_check_num > 0) {
+														$nabl_true++;
+														$nabl_star = "";
+													}
+												}
+
+												$test_result["result"] = str_replace("\\", "", $test_result["result"]);
+
+												if ($report["status"] == 1) {
+													$test_result["result"] = " &nbsp;&nbsp;&nbsp;&nbsp; ";
+												}
+												?>
+												<tr>
+													<<?php echo $param_td_th; ?> class="test_name
+														no_top_border"><?php echo $left_space . $nabl_star . $param_info["Name"]; ?></<?php echo $param_td_th; ?>>
+													<<?php echo $result_td_th; ?> class="test_result no_top_border"
+														colspan="<?php echo $result_td_span; ?>" style="<?php echo $result_td_text_align; ?>"><?php echo $test_result["result"]; ?></<?php echo $result_td_th; ?>>
+													<?php
+													if ($only_result_testid_num == 0) {
+														if ($result_td_span == 1) {
+															?>
+															<td class="test_unit no_top_border"><?php echo $unit_info["unit_name"]; ?></td>
+															<td class="test_method test_method_td no_top_border" style="font-size: 11px !important;">
+																<?php if ($method["name"]) {
+																	echo $method["name"] . "";
+																} ?>
+															</td>
+															<td class="test_ref no_top_border"><?php echo nl2br($normal_range["normal_range"]); ?></td>
+															<?php
+														}
+													}
+											}
+											?>
+											</tr>
+											<?php
+											if ($pad_result) {
+												echo "<tr><th colspan='5' class='test_result no_top_border'>" . $pad_result . "</th></tr>";
+											}
+										}
+									} else {
+										$left_space = " &nbsp;&nbsp;&nbsp;";
+										echo "<tr><th colspan='5' class='no_top_border'>$left_space$param_info[Name]</th></tr>";
+										$left_space .= " &nbsp;&nbsp;&nbsp;";
+									}
+								}
+
+								$more_report_test_num = mysqli_num_rows(mysqli_query($link, "SELECT `slno` FROM `pathology_report_print` WHERE `patient_id`='$uhid' AND `opd_id`='$bill_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `doc_id`='$doc_id' AND `page_no`>'$page_no' AND `user`='$c_user' AND `ip_addr`='$ip_addr' ORDER BY `slno` ASC"));
+								if ($more_report_test_num == 0) // Last Page
+								{
+									$test_summary_text = "";
+									$pat_test_summary = mysqli_fetch_array(mysqli_query($link, "SELECT `summary` FROM `patient_test_summary` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid'"));// AND `doc`='$doc_id'
+									if ($pat_test_summary) {
+										$test_summary_text = $pat_test_summary["summary"];
+									} else {
+										$test_summary = mysqli_fetch_array(mysqli_query($link, "SELECT `summary` FROM `test_summary` WHERE `testid`='$testid'"));
+										if ($test_summary) {
+											//$test_summary_text=$test_summary["summary"];
+										}
+									}
+									if ($test_summary_text) {
+										echo "<tr><td colspan='5' class='no_top_border'><br>$test_summary_text</td></tr>";
+									}
+
+									// Test Notes
+									//$pat_test_notes=mysqli_fetch_array(mysqli_query($link,"SELECT `note` FROM `testresults_note` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `doc`>0"));
+									$pat_test_notes = mysqli_fetch_array(mysqli_query($link, "SELECT `note` FROM `testresults_note` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' ORDER BY `doc` DESC LIMIT 1"));
+									if ($pat_test_notes["note"]) {
+										echo "<tr><td colspan='5' class='no_top_border'><br>&nbsp; &nbsp;<strong>Note:</strong> <span style='font-style: italic;'>$pat_test_notes[note]</span></td></tr>";
+									}
+								}
+							} else {
+								// Single Page report
+								$report_qry = mysqli_query($link, "SELECT * FROM `pathology_report_print` WHERE `testid`='$testid' AND `param_id`=0 AND `doc_id`='$doc_id' AND `page_no`='$page_no' AND `user`='$c_user' AND `ip_addr`='$ip_addr' ORDER BY `slno` ASC");
+								$report = mysqli_fetch_array($report_qry);
+
+								$param_td_th = "td";
+								//$left_space="";
+								$test_param_qry = mysqli_query($link, "SELECT `ParamaterId`,`status` FROM `Testparameter` WHERE `TestId`='$testid' AND `ParamaterId` NOT IN(639,640,641) ORDER BY `sequence` ASC");
+								//$test_param_qry=mysqli_query($link, "SELECT a.`ParamaterId` FROM `Testparameter` a, `testresults` b WHERE a.`ParamaterId`=b.`paramid` AND a.`TestId`=b.`testid` AND a.`TestId`='$testid' AND b.`patient_id`='$uhid' AND b.`opd_id`='$opd_id' AND b.`ipd_id`='$ipd_id' AND b.`batch_no`='$batch_no' AND b.`doc`='$doc_id' ORDER BY a.`sequence` ASC");
+								while ($test_param = mysqli_fetch_array($test_param_qry)) {
+									$param_info = mysqli_fetch_array(mysqli_query($link, "SELECT `ResultType`,`Name`,`UnitsID`,`sample`,`method` FROM `Parameter_old` WHERE `ID`='$test_param[ParamaterId]'"));
+
+									if ($param_info["ResultType"] == 5) {
+										$left_space = " &nbsp;&nbsp;&nbsp;";
+									}
+
+									if ($param_info["ResultType"] != 0) {
+										$test_result = mysqli_fetch_array(mysqli_query($link, "SELECT `result`,`range_status`,`range_id` FROM `testresults` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `paramid`='$test_param[ParamaterId]'"));// AND `doc`='$doc_id'
+				
+										if ($test_result && $test_result["result_hide"] == 0) {
+											$normal_range = mysqli_fetch_array(mysqli_query($link, "SELECT `normal_range` FROM `parameter_normal_check` WHERE `slno`='$test_result[range_id]'"));
+
+											$unit_info = mysqli_fetch_array(mysqli_query($link, "SELECT `unit_name` FROM `Units` WHERE `ID`='$param_info[UnitsID]'"));
+
+											$method = mysqli_fetch_array(mysqli_query($link, "SELECT `name` FROM `test_methods` WHERE `id`='$param_info[method]'"));
+
+											$result_td_th = "td";
+											if ($test_result["range_status"] > 0) {
+												$result_td_th = "th";
+											}
+
+											$result_td_span = "1";
+											$result_td_text_align = "text-align:center;";
+											if ($param_info["ResultType"] == 3 || $param_info["ResultType"] == 7 || $param_info["ResultType"] == 27) // 3=One Line text, 7=pad, 27=Multiline text
+											{
+												$result_td_span = "4";
+
+												$result_td_text_align = "text-align:left;";
+											}
+
+											// NABL
+											$nabl_star = "";
+											$nabl_num = mysqli_num_rows(mysqli_query($link, "SELECT * FROM `nabl` WHERE `nabl`>0"));
+											if ($nabl_num > 0 && $report["nabl"] == 1) {
+												$nabl_star = $nabl_star_symbol;
+												$nabl_check_num = mysqli_num_rows(mysqli_query($link, "SELECT * FROM `nabl_test_param` WHERE `paramid`='$test_param[param_id]'"));
+												if ($nabl_check_num > 0) {
 													$nabl_true++;
-													$nabl_star="";
+													$nabl_star = "";
 												}
 											}
-											
-											$test_result["result"]=str_replace("\\","",$test_result["result"]);
-											
-											if($report["status"]==1)
-											{
-												$test_result["result"]=" &nbsp;&nbsp;&nbsp;&nbsp; ";
+
+											$test_result["result"] = str_replace("\\", "", $test_result["result"]);
+
+											if ($test_param["status"] == 1) {
+												$test_result["result"] = " &nbsp;&nbsp;&nbsp;&nbsp; ";
 											}
-				?>
-						<tr>
-							<<?php echo $param_td_th; ?> class="test_name no_top_border"><?php echo $left_space.$nabl_star.$param_info["Name"]; ?></<?php echo $param_td_th; ?>>
-							<<?php echo $result_td_th; ?> class="test_result no_top_border" colspan="<?php echo $result_td_span; ?>" style="<?php echo $result_td_text_align; ?>"><?php echo $test_result["result"]; ?></<?php echo $result_td_th; ?>>
-							<?php
-										if($only_result_testid_num==0)
-										{
-											if($result_td_span==1)
-											{
-							?>
-							<td class="test_unit no_top_border"><?php echo $unit_info["unit_name"]; ?></td>
-							<td class="test_method test_method_td no_top_border" style="font-size: 11px !important;"><?php if($method["name"]){ echo $method["name"].""; } ?></td>
-							<td class="test_ref no_top_border"><?php echo nl2br($normal_range["normal_range"]); ?></td>
-							<?php
-											}
+											?>
+											<tr>
+												<<?php echo $param_td_th; ?> class="test_name
+													no_top_border"><?php echo $left_space . $nabl_star . $param_info["Name"]; ?></<?php echo $param_td_th; ?>>
+												<<?php echo $result_td_th; ?> class="test_result no_top_border"
+													colspan="<?php echo $result_td_span; ?>"
+													style="text-align:center;"><?php echo $test_result["result"]; ?></<?php echo $result_td_th; ?>>
+												<?php
+												if ($only_result_testid_num == 0) {
+													if ($result_td_span == 1) {
+														?>
+														<td class="test_unit no_top_border"><?php echo $unit_info["unit_name"]; ?></td>
+														<td class="test_method test_method_td no_top_border" style="font-size: 11px !important;">
+															<?php if ($method["name"]) {
+																echo $method["name"] . "";
+															} ?>
+														</td>
+														<td class="test_ref no_top_border"><?php echo nl2br($normal_range["normal_range"]); ?></td>
+														<?php
+													}
+												}
+												?>
+											</tr>
+											<?php
 										}
-									}
-							?>
-						</tr>
-				<?php
-										if($pad_result)
-										{
-											echo "<tr><th colspan='5' class='test_result no_top_border'>".$pad_result."</th></tr>";
-										}
+									} else {
+										$left_space = " &nbsp;&nbsp;&nbsp;";
+										echo "<tr><th colspan='5' class='no_top_border'>$left_space$param_info[Name]</th></tr>";
+										$left_space .= " &nbsp;&nbsp;&nbsp;";
 									}
 								}
-								else
-								{
-									$left_space=" &nbsp;&nbsp;&nbsp;";
-									echo "<tr><th colspan='5' class='no_top_border'>$left_space$param_info[Name]</th></tr>";
-									$left_space.=" &nbsp;&nbsp;&nbsp;";
-								}
-							}
-							
-							$more_report_test_num=mysqli_num_rows(mysqli_query($link, "SELECT `slno` FROM `pathology_report_print` WHERE `patient_id`='$uhid' AND `opd_id`='$bill_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `doc_id`='$doc_id' AND `page_no`>'$page_no' AND `user`='$c_user' AND `ip_addr`='$ip_addr' ORDER BY `slno` ASC"));
-							if($more_report_test_num==0) // Last Page
-							{
-								$test_summary_text="";
-								$pat_test_summary=mysqli_fetch_array(mysqli_query($link,"SELECT `summary` FROM `patient_test_summary` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid'"));// AND `doc`='$doc_id'
-								if($pat_test_summary)
-								{
-									$test_summary_text=$pat_test_summary["summary"];
-								}
-								else
-								{
-									$test_summary=mysqli_fetch_array(mysqli_query($link,"SELECT `summary` FROM `test_summary` WHERE `testid`='$testid'"));
-									if($test_summary)
-									{
+								$test_summary_text = "";
+								$pat_test_summary = mysqli_fetch_array(mysqli_query($link, "SELECT `summary` FROM `patient_test_summary` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid'"));// AND `doc`='$doc_id'
+								if ($pat_test_summary) {
+									$test_summary_text = $pat_test_summary["summary"];
+								} else {
+									$test_summary = mysqli_fetch_array(mysqli_query($link, "SELECT `summary` FROM `test_summary` WHERE `testid`='$testid'"));
+									if ($test_summary) {
 										//$test_summary_text=$test_summary["summary"];
 									}
 								}
-								if($test_summary_text)
-								{
+								if ($test_summary_text) {
 									echo "<tr><td colspan='5' class='no_top_border'><br>$test_summary_text</td></tr>";
 								}
-								
+
 								// Test Notes
 								//$pat_test_notes=mysqli_fetch_array(mysqli_query($link,"SELECT `note` FROM `testresults_note` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `doc`>0"));
-								$pat_test_notes=mysqli_fetch_array(mysqli_query($link,"SELECT `note` FROM `testresults_note` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' ORDER BY `doc` DESC LIMIT 1"));
-								if($pat_test_notes["note"])
-								{
-									echo "<tr><td colspan='5' class='no_top_border'><br>$pat_test_notes[note]</td></tr>";
+								$pat_test_notes = mysqli_fetch_array(mysqli_query($link, "SELECT `note` FROM `testresults_note` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' ORDER BY `doc` DESC LIMIT 1"));
+								if ($pat_test_notes["note"]) {
+									echo "<tr><td colspan='5' class='no_top_border'><br>&nbsp; &nbsp;<strong>Note:</strong> <span style='font-style: italic;'>$pat_test_notes[note]</span></td></tr>";
 								}
 							}
 						}
-						else
-						{
-							// Single Page report
-							$report_qry=mysqli_query($link, "SELECT * FROM `pathology_report_print` WHERE `testid`='$testid' AND `param_id`=0 AND `doc_id`='$doc_id' AND `page_no`='$page_no' AND `user`='$c_user' AND `ip_addr`='$ip_addr' ORDER BY `slno` ASC");
-							$report=mysqli_fetch_array($report_qry);
-							
-							$param_td_th="td";
-							//$left_space="";
-							$test_param_qry=mysqli_query($link, "SELECT `ParamaterId`,`status` FROM `Testparameter` WHERE `TestId`='$testid' ORDER BY `sequence` ASC");
-							//$test_param_qry=mysqli_query($link, "SELECT a.`ParamaterId` FROM `Testparameter` a, `testresults` b WHERE a.`ParamaterId`=b.`paramid` AND a.`TestId`=b.`testid` AND a.`TestId`='$testid' AND b.`patient_id`='$uhid' AND b.`opd_id`='$opd_id' AND b.`ipd_id`='$ipd_id' AND b.`batch_no`='$batch_no' AND b.`doc`='$doc_id' ORDER BY a.`sequence` ASC");
-							while($test_param=mysqli_fetch_array($test_param_qry))
-							{
-								$param_info=mysqli_fetch_array(mysqli_query($link, "SELECT `ResultType`,`Name`,`UnitsID`,`sample`,`method` FROM `Parameter_old` WHERE `ID`='$test_param[ParamaterId]'"));
-								
-								if($param_info["ResultType"]==5)
-								{
-									$left_space=" &nbsp;&nbsp;&nbsp;";
-								}
-								
-								if($param_info["ResultType"]!=0)
-								{
-									$test_result=mysqli_fetch_array(mysqli_query($link, "SELECT `result`,`range_status`,`range_id` FROM `testresults` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `paramid`='$test_param[ParamaterId]'"));// AND `doc`='$doc_id'
-									
-									if($test_result)
-									{
-										$normal_range=mysqli_fetch_array(mysqli_query($link,"SELECT `normal_range` FROM `parameter_normal_check` WHERE `slno`='$test_result[range_id]'"));
-										
-										$unit_info=mysqli_fetch_array(mysqli_query($link,"SELECT `unit_name` FROM `Units` WHERE `ID`='$param_info[UnitsID]'"));
-										
-										$method=mysqli_fetch_array(mysqli_query($link,"SELECT `name` FROM `test_methods` WHERE `id`='$param_info[method]'"));
-										
-										$result_td_th="td";
-										if($test_result["range_status"]>0)
-										{
-											$result_td_th="th";
-										}
-										
-										$result_td_span="1";
-										$result_td_text_align="text-align:center;";
-										if($param_info["ResultType"]==3 || $param_info["ResultType"]==7 || $param_info["ResultType"]==27) // 3=One Line text, 7=pad, 27=Multiline text
-										{
-											$result_td_span="4";
-											
-											$result_td_text_align="text-align:left;";
-										}
-										
-										// NABL
-										$nabl_star="";
-										$nabl_num=mysqli_num_rows(mysqli_query($link, "SELECT * FROM `nabl` WHERE `nabl`>0"));
-										if($nabl_num>0 && $report["nabl"]==1)
-										{
-											$nabl_star=$nabl_star_symbol;
-											$nabl_check_num=mysqli_num_rows(mysqli_query($link, "SELECT * FROM `nabl_test_param` WHERE `paramid`='$test_param[param_id]'"));
-											if($nabl_check_num>0)
-											{
-												$nabl_true++;
-												$nabl_star="";
-											}
-										}
-										
-										$test_result["result"]=str_replace("\\","",$test_result["result"]);
-										
-										if($test_param["status"]==1)
-										{
-											$test_result["result"]=" &nbsp;&nbsp;&nbsp;&nbsp; ";
-										}
-					?>
-							<tr>
-								<<?php echo $param_td_th; ?> class="test_name no_top_border"><?php echo $left_space.$nabl_star.$param_info["Name"]; ?></<?php echo $param_td_th; ?>>
-								<<?php echo $result_td_th; ?> class="test_result no_top_border" colspan="<?php echo $result_td_span; ?>" style="text-align:center;"><?php echo $test_result["result"]; ?></<?php echo $result_td_th; ?>>
-							<?php
-									if($only_result_testid_num==0)
-									{
-										if($result_td_span==1)
-										{
-							?>
-								<td class="test_unit no_top_border"><?php echo $unit_info["unit_name"]; ?></td>
-								<td class="test_method test_method_td no_top_border" style="font-size: 11px !important;"><?php if($method["name"]){ echo $method["name"].""; } ?></td>
-								<td class="test_ref no_top_border"><?php echo nl2br($normal_range["normal_range"]); ?></td>
-							<?php
-										}
-									}
-							?>
-							</tr>
-					<?php
-									}
-								}
-								else
-								{
-									$left_space=" &nbsp;&nbsp;&nbsp;";
-									echo "<tr><th colspan='5' class='no_top_border'>$left_space$param_info[Name]</th></tr>";
-									$left_space.=" &nbsp;&nbsp;&nbsp;";
-								}
-							}
-							$test_summary_text="";
-							$pat_test_summary=mysqli_fetch_array(mysqli_query($link,"SELECT `summary` FROM `patient_test_summary` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid'"));// AND `doc`='$doc_id'
-							if($pat_test_summary)
-							{
-								$test_summary_text=$pat_test_summary["summary"];
-							}
-							else
-							{
-								$test_summary=mysqli_fetch_array(mysqli_query($link,"SELECT `summary` FROM `test_summary` WHERE `testid`='$testid'"));
-								if($test_summary)
-								{
-									//$test_summary_text=$test_summary["summary"];
-								}
-							}
-							if($test_summary_text)
-							{
-								echo "<tr><td colspan='5' class='no_top_border'><br>$test_summary_text</td></tr>";
-							}
-							
-							// Test Notes
-							//$pat_test_notes=mysqli_fetch_array(mysqli_query($link,"SELECT `note` FROM `testresults_note` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `doc`>0"));
-							$pat_test_notes=mysqli_fetch_array(mysqli_query($link,"SELECT `note` FROM `testresults_note` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' ORDER BY `doc` DESC LIMIT 1"));
-							if($pat_test_notes["note"])
-							{
-								echo "<tr><td colspan='5' class='no_top_border'><br>$pat_test_notes[note]</td></tr>";
-							}
-						}
-					}
-				?>
+						?>
 					</table>
 				</div>
 				<?php
-					$test_result_users=mysqli_fetch_array(mysqli_query($link, "SELECT `doc`, `tech`, `main_tech` FROM `testresults` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' GROUP BY `doc`, `tech`, `main_tech`"));// AND `doc`='$doc_id'
-					$aprv_by=$test_result_users['doc'];
-					$entry_by=$test_result_users['tech'];
-					$analysis_by=$test_result_users['main_tech'];
-					include("pathology_report_footer.php");
+				$test_result_users = mysqli_fetch_array(mysqli_query($link, "SELECT `doc`, `tech`, `main_tech` FROM `testresults` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' GROUP BY `doc`, `tech`, `main_tech`"));// AND `doc`='$doc_id'
+				$aprv_by = $test_result_users['doc'];
+				$entry_by = $test_result_users['tech'];
+				$analysis_by = $test_result_users['main_tech'];
+				include("pathology_report_footer.php");
 				?>
 			</div>
-		<?php
+			<?php
 			$page++;
 		} // End page_no
 	} // End doc
