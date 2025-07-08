@@ -253,6 +253,8 @@ foreach($vac as $vc)
 		
 		if(!$_GET['sing'])
 		{
+			mysqli_query($link, "UPDATE `phlebo_sample` SET `barcode_id`='$barcode_id' WHERE `patient_id`='$pid' AND `opd_id`='$opd' AND `ipd_id`='$ipd' AND `batch_no`='$batch_no' AND `vaccu`='$vc'");
+			
 			//----Check Barcode---//
 			$chk_bar=mysqli_fetch_array(mysqli_query($link,"select count(*) as tot from test_sample_result where patient_id='$pid' and opd_id='$opd' and ipd_id='$ipd' and batch_no='$batch_no' and barcode_id='$barcode_id'"));
 			if($chk_bar["tot"]==0)

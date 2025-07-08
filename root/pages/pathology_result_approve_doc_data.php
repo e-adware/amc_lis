@@ -536,14 +536,30 @@ if ($type == "load_pat_dept_tests") {
 	}
 	$sample_receive_user = implode(",", $sample_receive_users);
 	$sl = mysqli_fetch_array(mysqli_query($link, "SELECT `dept_serial` FROM `patient_test_details` WHERE `patient_id`='$patient_id' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `dept_serial`!='' LIMIT 0,1"));
+	
+	$barcode_array=array();
+	$barcode_qry=mysqli_query($link, "SELECT DISTINCT a.`barcode_id` FROM `phlebo_sample` a, `testmaster` b WHERE a.`testid`=b.`testid` AND a.`patient_id`='$patient_id' AND a.`opd_id`='$opd_id' AND a.`ipd_id`='$ipd_id' AND a.`batch_no`='$batch_no' AND b.`type_id`='$sel_dept_id'");
+	while($barcode_data=mysqli_fetch_array($barcode_qry))
+	{
+		$barcode_array[]=$barcode_data["barcode_id"];
+	}
 
-	$barcodes = "";
-	$each_barcode_qry = mysqli_query($link, "SELECT DISTINCT a.`barcode_id` FROM `test_sample_result` a, `testmaster` c WHERE a.`testid`=c.`testid` AND a.`patient_id`='$patient_id' AND a.`opd_id`='$opd_id' AND a.`ipd_id`='$ipd_id' AND a.`batch_no`='$batch_no'");
-	while ($bCode = mysqli_fetch_array($each_barcode_qry)) {
-		if ($barcodes) {
-			$barcodes .= "," . $bCode['barcode_id'];
-		} else {
-			$barcodes = $bCode['barcode_id'];
+	$barcode_array=array_unique($barcode_array);
+	$barcode_ids=implode(", ",$barcode_array);
+
+	if($barcode_ids=="")
+	{
+		$each_barcode_qry=mysqli_query($link,"SELECT DISTINCT a.`barcode_id` FROM `test_sample_result` a, `testmaster` c WHERE a.`testid`=c.`testid` AND a.`patient_id`='$patient_id' AND a.`opd_id`='$opd_id' AND a.`ipd_id`='$ipd_id' AND a.`batch_no`='$batch_no' AND c.`type_id`='$sel_dept_id'");
+		while($bCode=mysqli_fetch_array($each_barcode_qry))
+		{
+			if($barcode_ids)
+			{
+				$barcode_ids.=", ".$bCode['barcode_id'];
+			}
+			else
+			{
+				$barcode_ids=$bCode['barcode_id'];
+			}
 		}
 	}
 	?>
@@ -552,6 +568,7 @@ if ($type == "load_pat_dept_tests") {
 			<table class="table table-condensed table-bordered" style="background-color: white;">
 				<tr>
 					<th>Hospital No.</th>
+					<th>Sample No.</th>
 					<th>Barcode No</th>
 					<!--<th>Cash Memo No</th>-->
 					<!--<th>Sl No</th>-->
@@ -574,9 +591,10 @@ if ($type == "load_pat_dept_tests") {
 				<tr>
 					<td><?php echo $pat_info['hosp_no']; ?></td>
 					<td>
-						<?php echo $barcodes; ?>
+						<?php echo $pat_reg['type_prefix'].$pat_reg['sample_serial']; ?>
 						<span style="float:right;"><?php echo $urgent_patient_img; ?></span>
 					</td>
+					<td><?php echo $barcode_ids; ?></td>
 					<!--<td><?php echo $pat_reg['cashMemoNo']; ?></td>-->
 					<!--<td><?php echo $sl['dept_serial']; ?></td>-->
 					<?php
