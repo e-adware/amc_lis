@@ -3449,7 +3449,8 @@ foreach($doctors AS $doctor)
 		$pat_slno++;
 	}
 }
-$doc_view_str="CCL-".strtoupper($dept_info["name"]);
+//$doc_view_str="CCL-".strtoupper($dept_info["name"]);
+$doc_view_str = "";
 echo "<div class='doc_view_div'>".$doc_view_str."</div>";
 ?>
 <style>
