@@ -63,15 +63,15 @@ if ($glob_patient_type == 0) {
 
 			<tr>
 				<td style="text-align:center;font-weight:bold">
-					<!--Cash Memo No.--><input type="text" id="bill_no" style="<?php echo $pat_typ; ?>" onkeyup="load_pat_event(event)" />
+					<!--Cash Memo No.--><input type="text" id="bill_no" style="<?php echo $pat_typ; ?>"
+						onkeyup="load_pat_event(event)" />
 					Sample Type<br>
 					<select id="type_prefix" class="span2" onchange="load_pat_event('')">
 						<option value="0">All</option>
 						<?php
 						//$type_qry = mysqli_query($link, "SELECT DISTINCT `type_prefix` FROM `uhid_and_opdid`");
 						$type_qry = mysqli_query($link, "SELECT `sample_prefix` FROM `sample_prefix_master` WHERE `status`=0");
-						while ($type = mysqli_fetch_array($type_qry))
-						{
+						while ($type = mysqli_fetch_array($type_qry)) {
 							$type_name = str_replace("/", "", $type['sample_prefix']);
 							echo "<option value='$type[sample_prefix]'>$type_name</option>";
 						}
@@ -83,7 +83,8 @@ if ($glob_patient_type == 0) {
 					Hospital No. <br /> <input type="text" id="uhid" onkeyup="load_pat_event(event)" />
 				</td>
 				<td style="text-align:center;font-weight:bold; display:none;<?php echo $bar_sty; ?>">
-					Barcode ID <br /> <input type="text" id="barcode_id" list="bar_list" onkeyup="load_pat_event(event)" />
+					Barcode ID <br /> <input type="text" id="barcode_id" list="bar_list"
+						onkeyup="load_pat_event(event)" />
 					<datalist id="bar_list">
 						<?php
 						$date = date('Y-m-d');

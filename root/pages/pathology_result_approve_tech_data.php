@@ -97,7 +97,7 @@ if ($type == "load_pat_list") {
 
 		if ($sample_type) {
 			$test_str .= " AND b.`type_prefix`='$sample_type'";
-			
+
 			if ($sample_serial != "") {
 				$test_str .= " AND b.`sample_serial`='$sample_serial'";
 			}
@@ -508,9 +508,11 @@ if ($type == "load_pat_list_multi_print") {
 	$patType = $_POST["patType"];
 	$flaggedPatient = $_POST["flaggedPatient"];
 	$list_start = $_POST["list_start"];
-	
+
 	$sample_type = $_POST['sample_type'];
 	$sample_serial = $_POST['sample_serial'];
+
+	$sel_doc = $_POST['sel_doc'];
 
 	$zz = 0;
 
@@ -520,15 +522,19 @@ if ($type == "load_pat_list_multi_print") {
 	if ($patType) {
 		$test_str .= " AND b.`receipt_no`='$patType'";
 	}
-	
+
 	if ($sample_type) {
 		$test_str .= " AND b.`type_prefix`='$sample_type'";
-		
+
 		if ($sample_serial != "") {
 			$test_str .= " AND b.`sample_serial`='$sample_serial'";
 		}
 	}
-	
+
+	if ($sel_doc) {
+		$test_str .= " AND a.doc = '$sel_doc'";
+	}
+
 	if ($uhid != "") {
 		$test_str .= " AND b.`patient_id`='$uhid'";
 
@@ -576,6 +582,7 @@ if ($type == "load_pat_list_multi_print") {
 				<th>Name</th>
 				<th>Date</th>
 				<th>Test</th>
+				<th>Approved By</th>
 				<th style="width: 15%;">
 					<label><input type="checkbox" id="chkall" onchange="select_all()" /> Select All</label>
 					<button type="button" class="btn btn-primary btn-mini" onclick="print_selected()">Print
@@ -586,6 +593,7 @@ if ($type == "load_pat_list_multi_print") {
 		<?php
 		$i = 1;
 		while ($test_det = mysqli_fetch_array($test_qry)) {
+			$appr_doc = mysqli_fetch_array(mysqli_query($link, "SELECT `name` FROM `lab_doctor` WHERE `id` = '$test_det[doc]'"));
 			$patient_id = $test_det["patient_id"];
 			$opd_id = $test_det["opd_id"];
 			$ipd_id = $test_det["ipd_id"];
@@ -648,6 +656,7 @@ if ($type == "load_pat_list_multi_print") {
 				<td><?php echo $pat_info['name']; ?></td>
 				<td><?php echo $pat_reg['date']; ?></td>
 				<td><?php echo $tstNames; ?></td>
+				<td><?= $appr_doc['name']; ?></td>
 				<td>
 					<label><input type="checkbox" class="checks" onchange="check_all_chks()"
 							value="<?php echo $patient_id . "@" . $test_det['opd_id']; ?>" /> Select</label>

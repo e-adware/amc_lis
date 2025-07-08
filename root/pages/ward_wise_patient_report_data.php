@@ -12,10 +12,10 @@ if ($type == 'load_data') {
     $ward = $_POST['ward'];
     $patient_id = $_POST['hospital_id'];
 
-    $qry = "SELECT a.`patient_id`, a.`opd_id`, a.`wardName`, a.`date`, a.`time`, b.`name`, b.`sex`, b.`dob` FROM `uhid_and_opdid` a, `patient_info` b, `patient_test_details` c, `testmaster` d WHERE a.`date` BETWEEN '$fdate' AND '$tdate' AND a.`patient_id` = b.`patient_id` AND a.`opd_id`= c.`opd_id` AND a.`patient_id` =  c.`patient_id` AND c.`testid` = d.`testid`";
+    $qry = "SELECT a.`patient_id`, a.`opd_id`, a.`ward`, a.`date`, a.`time`, b.`name`, b.`sex`, b.`dob`, e.ward_name FROM `uhid_and_opdid` a, `patient_info` b, `patient_test_details` c, `testmaster` d, `ward_master` e WHERE a.`date` BETWEEN '$fdate' AND '$tdate' AND a.`patient_id` = b.`patient_id` AND a.`opd_id`= c.`opd_id` AND a.`patient_id` =  c.`patient_id` AND c.`testid` = d.`testid` AND a.`ward` = e.`id`";
 
     if ($ward) {
-        $qry .= " AND a.`wardName` = '$ward'";
+        $qry .= " AND e.`id` = '$ward'";
     }
     if ($patient_id) {
         $qry .= " AND a.`patient_id` LIKE '$patient_id%'";
@@ -65,7 +65,7 @@ if ($type == 'load_data') {
                     <td><?= htmlspecialchars($ward_det['patient_id']); ?></td>
                     <td><?= htmlspecialchars($ward_det['name']); ?></td>
                     <td><?= age_calculator($ward_det['dob']) . " / " . sex_full($ward_det['sex']); ?></td>
-                    <td><?= htmlspecialchars($ward_det['wardName']); ?></td>
+                    <td><?= htmlspecialchars($ward_det['ward_name']); ?></td>
                     <td><?php
                     $tests_list = [];
                     while ($tests = mysqli_fetch_array($test_det_qry)) {
