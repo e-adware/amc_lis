@@ -418,6 +418,8 @@ if ($type == "load_pat_list") {
 									if ($tot_non_approved_chk > 0 || $lis_result_not_in_testresults["tot"] > 0) {
 										$cls = "btn btn-warning btn-mini";
 									}
+									
+									$btn_id=$tr_id."_".$type_id;
 
 									//~ $chk_canc=mysqli_num_rows(mysqli_query($link,"SELECT ptd.* FROM `patient_test_details` ptd JOIN `testmaster` tm ON ptd.testid = tm.testid WHERE ptd.patient_id = '$patient_id' AND ptd.opd_id = '$opd_id' AND ptd.ipd_id = '$ipd_id' AND ptd.batch_no = '$batch_no' AND tm.type_id = '$type_id'"));
 									//~ if($chk_canc==0)
@@ -445,8 +447,7 @@ if ($type == "load_pat_list") {
 										$cls = "btn btn-inverse btn-mini";
 									}
 									?>
-									<button id="dep_<?php echo $type_id; ?>" class="<?php echo $cls; ?>"
-										onclick="load_pat_dept_tests('<?php echo $i; ?>','<?php echo $type_id; ?>')" <?php echo $btnDisabled; ?>><?php echo $dept_info["name"]; ?></button>
+									<button id="btn_<?php echo $btn_id;?>" class="<?php echo $cls;?>" onclick="load_pat_dept_tests('<?php echo $i;?>','<?php echo $type_id;?>')" style="<?php echo $btnStyle;?>" <?php echo $btnDisabled;?>><?php echo $dept_info["name"];?></button>
 									<?php
 								}
 							}
