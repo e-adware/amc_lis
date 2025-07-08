@@ -37,3 +37,16 @@ ALTER TABLE `phlebo_sample` ADD `barcode_id` CHAR(100) NULL DEFAULT NULL AFTER `
 TRUNCATE TABLE `testresults_sample_stat`;
 ALTER TABLE `testresults_sample_stat` CHANGE `print_result` `print_result` TINYINT NOT NULL DEFAULT '0' COMMENT '0=yes,1=no'; 
 
+---------------------------------------------------------------------------------------------------------------------------------
+
+INSERT INTO `testmaster` (`testid`, `test_code`, `testname`, `rate`, `instruction`, `notes`, `turn_around_time_routine_str`, `turn_around_time_routine`, `turn_around_time_urgent_str`, `turn_around_time_urgent`, `report_delivery`, `sample_details`, `category_id`, `type_id`, `type_name`, `equipment`, `sex`, `lineno`, `vac_charge`, `out_sample`, `suffix`, `sequence`) VALUES ('2821', '', 'GLUCOSE RBS.', '0.00', '', '', '', '0', '', '0', '0', '', '1', '20', 'Biochemistry', '1', 'all', '1', '2', '0', '', '3'); 
+
+INSERT INTO `Parameter_old` (`ID`, `ResultType`, `Name`, `ResultOptionID`, `UnitsID`, `sample`, `vaccu`, `method`, `deci_val`, `sub_title`, `instrument`) VALUES ('667', '1', 'RANDOM BLOOD SUGAR.', '0', '172', '2', '2', '31', '2', '0', '1'); 
+
+INSERT INTO `parameter_normal_check` (`slno`, `parameter_id`, `dep_id`, `age_from`, `age_to`, `age_type`, `sex`, `value_from`, `value_to`, `normal_range`, `sign`, `status`, `instrument_id`) VALUES (NULL, '667', '7', '0', '0', 'Days', '0', '70', '140', '70 - 140', '0', '0', '0'); 
+
+INSERT INTO `Testparameter` (`slno`, `TestId`, `ParamaterId`, `sequence`, `sample`, `vaccu`, `status`) VALUES
+(NULL, 2821, 640, 1, 0, 0, 0),
+(NULL, 2821, 639, 2, 0, 0, 0),
+(NULL, 2821, 641, 3, 0, 0, 0),
+(NULL, 2821, 667, 5, 2, 2, 0);

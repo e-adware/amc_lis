@@ -121,7 +121,7 @@ if($exp)
 				?> <input type="hidden" id="bill_no" onkeyup="check_barcode_mon(event)" name="c_3" ondrop="drag_data()"/> <?php
 			}
 			?>
-			<select id="pat_type" name="c_0" onkeyup="select_enter(this.id,event)" autofocus><option>IPD</option><option>OPD</option></select>
+			<select id="pat_type" name="c_0" onkeyup="select_enter(this.id,event)" onchange="load_test('','')" autofocus><option>IPD</option><option>OPD</option></select>
 			</th>
 			<!--<th><input type="text" id="bill_no" onkeydown="check_barcode(event)" name="c_3" ondrop="drag_data()"/></th>
 			<th><input type="text" id="bill_no" onkeydown="check_barcode_mon(event)" name="c_3" ondrop="drag_data()"/></th>-->
@@ -753,8 +753,9 @@ function load_test(val,e)
 	{
 		$.post("pages/pat_reg_ajax.php",
 		{
+			pat_type:$("#pat_type").val(),
 			val:val,
-			type:1	
+			type:1
 		},
 		function(data,status)
 		{
@@ -1648,6 +1649,7 @@ function select_enter(id,e)
 			}
 		}
 	}
+	load_test("","");
 }
 
 function view_sample(val)

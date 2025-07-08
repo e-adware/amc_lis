@@ -88,11 +88,26 @@ $type = $_POST['type'];
 
 if ($type == 1) {
 	$val = trim(mysqli_real_escape_string($link, $_POST['val']));
-	if ($val != '') {
-		$test = mysqli_query($link, "select * from testmaster where type_id in(20,23,26,29,33) and testname like '%$val%' order by sequence,testname");
-	} else {
-		$test = mysqli_query($link, "select * from testmaster where type_id in (20,23,26,29,33) order by sequence,testname");
+	
+	$pat_type = $_POST['pat_type'];
+	
+	$str="select * from testmaster where type_id in (20,23,26,29,33)";
+	if ($val != '')
+	{
+		$str.="  and testname like '%$val%'";
 	}
+	
+	if($pat_type=="OPD")
+	{
+		$str.=" AND `testid`!='1327'";
+	}else
+	{
+		$str.=" AND `testid`!='2821'";
+	}
+	
+	$str.=" order by sequence,testname";
+	
+	$test = mysqli_query($link, $str);
 	?>
 	<div id='tst_list'>
 
