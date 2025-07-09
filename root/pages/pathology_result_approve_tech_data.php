@@ -2178,8 +2178,8 @@ if ($type == "load_pat_dept_tests") {
 			{
 				if($("#sampleStatus_sample_status").val()=="")
 				{
-					$("#sampleStatus_sample_status").focus();
-					return false;
+					//$("#sampleStatus_sample_status").focus();
+					//return false;
 				}
 				
 				$("#loader").show();

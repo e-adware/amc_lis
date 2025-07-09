@@ -1053,7 +1053,7 @@ if($flagEntry)
 											<?php
 										}
 										?>
-										<button class="btn btn-search btn-mini paramSampleStatus_btn" onclick="paramSampleStatus('<?php echo $testid; ?>','<?php echo $paramid; ?>')" <?php echo $paramSampleStatus_disable; ?>><i class="icon-info-sign"></i> <?php echo $paramSampleStatus_btn_name; ?></button>
+										<button class="btn btn-search btn-mini paramSampleStatus_btn" onclick="paramSampleStatus('<?php echo $testid; ?>','<?php echo $paramid; ?>')" <?php echo $paramSampleStatus_disable; ?>  <?php echo $doc_approve_disabled; ?>><i class="icon-info-sign"></i> <?php echo $paramSampleStatus_btn_name; ?></button>
 									</td>
 									<?php
 								}

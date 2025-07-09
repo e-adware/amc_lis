@@ -1369,7 +1369,7 @@ if ($type == "paramSampleStatus")
 				<th style="width:100px;">Select Status</th>
 				<td>
 					<select id="sampleStatus_sample_status">
-						<option value="">Select</option>
+						<option value="">None</option>
 				<?php
 					$qry=mysqli_query($link, "SELECT `status_name` FROM `sample_status` WHERE `status_name`!='' ORDER BY `status_name` ASC");
 					while($data=mysqli_fetch_assoc($qry))
@@ -1455,8 +1455,19 @@ if ($type == "paramSampleStatusSave")
 		}
 	}else
 	{
-		$return["error"] = 3;
-		$return["message"] = "Nothing to save";
+		if (mysqli_query($link, "DELETE FROM `testresults_sample_stat` WHERE `patient_id`='$patient_id' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `paramid`='$paramid'"))
+		{
+			mysqli_query($link, "UPDATE `testresults` SET `result_hide`='0' WHERE `patient_id`='$patient_id' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `paramid`='$paramid'");
+			
+			$return["error"] = 0;
+			$return["message"] = "Removed";
+		} else {
+			$return["error"] = 1;
+			$return["message"] = "Failed, try again later(1)";
+		}
+		
+		//$return["error"] = 3;
+		//$return["message"] = "Nothing to save";
 	}
 	
 	//$return["print_result"] = $print_result;
