@@ -742,7 +742,7 @@ function load_test(val,e)
 	{
 		$.post("pages/pat_reg_ajax.php",
 		{
-			pat_type:"OPD",
+			pat_type:"IPD",
 			val:val,
 			type:1
 		},
