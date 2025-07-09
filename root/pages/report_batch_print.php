@@ -365,10 +365,12 @@ $c_user = $_SESSION['emp_id'];
 	function select_all() {
 		var chkall = $("#chkall:checked").length;
 		if (chkall > 0) {
-			$(".checks").attr("checked", true);
+			//$(".checks").attr("checked", true);
+			$(".checks:visible").prop("checked", true);
 		}
 		else {
-			$(".checks").attr("checked", false);
+			//$(".checks").attr("checked", false);
+			$(".checks:visible").prop("checked", false);
 		}
 	}
 	function check_all_chks() {
