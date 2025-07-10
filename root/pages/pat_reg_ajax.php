@@ -88,25 +88,22 @@ $type = $_POST['type'];
 
 if ($type == 1) {
 	$val = trim(mysqli_real_escape_string($link, $_POST['val']));
-	
+
 	$pat_type = $_POST['pat_type'];
-	
-	$str="select * from testmaster where type_id in (20,23,26,29,33)";
-	if ($val != '')
-	{
-		$str.="  and testname like '%$val%'";
+
+	$str = "select * from testmaster where type_id in (20,23,26,29,33)";
+	if ($val != '') {
+		$str .= "  and testname like '%$val%'";
 	}
-	
-	if($pat_type=="OPD")
-	{
-		$str.=" AND `testid`!='1327'";
-	}else
-	{
-		$str.=" AND `testid`!='2821'";
+
+	if ($pat_type == "OPD") {
+		$str .= " AND `testid` NOT IN(1327,6)";
+	} else {
+		$str .= " AND `testid` NOT IN(2821,2822)";
 	}
-	
-	$str.=" order by sequence,testname";
-	
+
+	$str .= " order by sequence,testname";
+
 	$test = mysqli_query($link, $str);
 	?>
 	<div id='tst_list'>
@@ -117,7 +114,8 @@ if ($type == 1) {
 			?>
 			<div class="tst_span <?php echo strtolower($tst[testname]); ?> <?php echo $tst[type_id]; ?> dv<?php echo $tst[testid]; ?>"
 				id="div_<?php echo $i; ?>" onclick="select_check(<?php echo $i; ?>)"> <input type="checkbox"
-					value="<?php echo $tst[testid]; ?>" id="check_<?php echo $i; ?>" class="tst_check tst<?php echo $tst[testid]; ?>" />
+					value="<?php echo $tst[testid]; ?>" id="check_<?php echo $i; ?>"
+					class="tst_check tst<?php echo $tst[testid]; ?>" />
 				<label><span></span></label> <?php echo $tst[testname]; ?>
 			</div>
 			<?php
@@ -311,35 +309,35 @@ if ($type == 1) {
 		$chk_info = mysqli_num_rows(mysqli_query($link, "select * from patient_info where patient_id='$det[patient_id]'"));
 		if ($chk_info > 0) {
 			//if ($emp[levelid] == 1 || $emp[levelid] == 13) {
-				mysqli_query($link, "update patient_info set name='$name',sex='$sex',age='$age',age_type='$age_type',hosp_no='$hosp_no',phone='$phone',address='$address' where patient_id='$det[patient_id]'");
+			mysqli_query($link, "update patient_info set name='$name',sex='$sex',age='$age',age_type='$age_type',hosp_no='$hosp_no',phone='$phone',address='$address' where patient_id='$det[patient_id]'");
 			//}
 		} else {
 			mysqli_query($link, "INSERT INTO `patient_info`(`patient_id`, `hosp_no`, `name`, `sex`, `dob`, `age`, `age_type`, `phone`, `address`, `user`, `date`, `time`) VALUES ('$det[patient_id]','$hosp_no','$name','$sex','','$age','$age_type','$phone','$address','$user','$date','$time')");
 		}
 
 		//if ($emp[levelid] == 1 || $emp[levelid] == 13) {
-			mysqli_query($link, "update patient_info set name='$name',sex='$sex',age='$age',age_type='$age_type' where hosp_no='$hosp_no'");
+		mysqli_query($link, "update patient_info set name='$name',sex='$sex',age='$age',age_type='$age_type' where hosp_no='$hosp_no'");
 		//}
 
 		//if ($emp[levelid] == 1 || $emp[levelid] == 13) {
-			mysqli_query($link, "delete from patient_test_details where patient_id='$det[patient_id]' and opd_id='$opd_id'");
-			//mysqli_query($link,"delete from phlebo_sample where patient_id='$det[patient_id]' and opd_id='$opd_id'");
+		mysqli_query($link, "delete from patient_test_details where patient_id='$det[patient_id]' and opd_id='$opd_id'");
+		//mysqli_query($link,"delete from phlebo_sample where patient_id='$det[patient_id]' and opd_id='$opd_id'");
 
-			$date = $det[date];
-			$time = $det[time];
+		$date = $det[date];
+		$time = $det[time];
 
-			$test = explode("@koushik@", $tst);
-			foreach ($test as $test) {
-				if ($test) {
-					$smpl = mysqli_fetch_array(mysqli_query($link, " SELECT distinct `SampleId` FROM `TestSample` WHERE `TestId`='$test' "));
-					if (!$smpl['SampleId']) {
-						$smpl['SampleId'] = 0;
-					}
-					$tstRate = mysqli_fetch_array(mysqli_query($link, "SELECT `rate` FROM `testmaster` WHERE `testid`='$test'"));
-					$rate = $tstRate['rate'];
-
-					mysqli_query($link, "INSERT INTO `patient_test_details`(`patient_id`, `opd_id`, `ipd_id`, `batch_no`, `testid`, `sample_id`, `test_rate`, `test_discount`, `dept_serial`, `addon_testid`, `date`, `time`, `user`, `type`) VALUES ('$det[patient_id]','$opd_id','','1','$test','$smpl[SampleId]','$rate','0','','0','$date','$time','$user','2')");
+		$test = explode("@koushik@", $tst);
+		foreach ($test as $test) {
+			if ($test) {
+				$smpl = mysqli_fetch_array(mysqli_query($link, " SELECT distinct `SampleId` FROM `TestSample` WHERE `TestId`='$test' "));
+				if (!$smpl['SampleId']) {
+					$smpl['SampleId'] = 0;
 				}
+				$tstRate = mysqli_fetch_array(mysqli_query($link, "SELECT `rate` FROM `testmaster` WHERE `testid`='$test'"));
+				$rate = $tstRate['rate'];
+
+				mysqli_query($link, "INSERT INTO `patient_test_details`(`patient_id`, `opd_id`, `ipd_id`, `batch_no`, `testid`, `sample_id`, `test_rate`, `test_discount`, `dept_serial`, `addon_testid`, `date`, `time`, `user`, `type`) VALUES ('$det[patient_id]','$opd_id','','1','$test','$smpl[SampleId]','$rate','0','','0','$date','$time','$user','2')");
+			}
 			//}
 
 
@@ -410,7 +408,7 @@ if ($type == 1) {
 				?>
 						<tr onclick="load_pat_details('<?php echo $q[opd_id]; ?>')">
 							<th><?php echo $i; ?></th>
-							<th><?php echo $q['type_prefix'].$q['sample_serial']; ?></th>
+							<th><?php echo $q['type_prefix'] . $q['sample_serial']; ?></th>
 							<th><?php echo $q[hosp_no]; ?></th>
 							<th><?php echo $q[opd_id]; ?></th>
 							<th><?php echo $info[name]; ?></th>
@@ -438,31 +436,31 @@ if ($type == 1) {
 
 	$dis = $det['disease_id'];
 	$pat_info = $det[hosp_no] . "@k_details@" . $info[name] . "@k_details@" . $info[age] . "@k_details@" . $info[age_type] . "@k_details@" . $info[sex] . "@k_details@@k_details@" . $det[type] . "@k_details@@k_details@@k_details@" . $det[date_serial] . "@k_details@" . $ndate . "@k_details@@k_details@" . $det[ward] . "@k_details@" . $info[phone] . "@k_details@" . $info[address] . "@k_details@" . $dis[disease_id] . "@k_details@@k_details@" . $det[bill_no] . "@k_details@" . $det[pat_type] . "@k_details@" . $info[patient_id];
-	
-	$arr=array();
-	$arr['hosp_no']=$det['hosp_no'];
-	$arr['patient_id']=$info['patient_id'];
-	$arr['name']=$info['name'];
-	$arr['age']=$info['age'];
-	$arr['age_type']=$info['age_type'];
-	$arr['sex']=$info['sex'];
-	$arr['address']=$info['address'];
-	$arr['phone']=$info['phone'];
-	$arr['type']=$det['type'];
-	$arr['free_type']=$det['free'];
-	$arr['auth']=$det['auth'];
-	$arr['auth_disc']=$det['auth_disc'];
-	$arr['date_serial']=$det['date_serial'];
-	$arr['ndate']=$ndate;
-	$arr['ward']=$det['ward'];
-	$arr['dept']=$det['dept'];
-	$arr['disease_id']=$det['disease_id'];
-	$arr['bill_no']=$det['bill_no'];
-	$arr['pat_type']=$det['pat_type'];
-	$arr['sample_serial']=$det['sample_serial'];
-	$arr['emer_nr']=$det['emer_nr'];
-	$arr['nr_pat_type']=$det['nr_pat_type'];
-	$arr['nr_covid']=$det['nr_covid'];
+
+	$arr = array();
+	$arr['hosp_no'] = $det['hosp_no'];
+	$arr['patient_id'] = $info['patient_id'];
+	$arr['name'] = $info['name'];
+	$arr['age'] = $info['age'];
+	$arr['age_type'] = $info['age_type'];
+	$arr['sex'] = $info['sex'];
+	$arr['address'] = $info['address'];
+	$arr['phone'] = $info['phone'];
+	$arr['type'] = $det['type'];
+	$arr['free_type'] = $det['free'];
+	$arr['auth'] = $det['auth'];
+	$arr['auth_disc'] = $det['auth_disc'];
+	$arr['date_serial'] = $det['date_serial'];
+	$arr['ndate'] = $ndate;
+	$arr['ward'] = $det['ward'];
+	$arr['dept'] = $det['dept'];
+	$arr['disease_id'] = $det['disease_id'];
+	$arr['bill_no'] = $det['bill_no'];
+	$arr['pat_type'] = $det['pat_type'];
+	$arr['sample_serial'] = $det['sample_serial'];
+	$arr['emer_nr'] = $det['emer_nr'];
+	$arr['nr_pat_type'] = $det['nr_pat_type'];
+	$arr['nr_covid'] = $det['nr_covid'];
 
 	//$tst_det = mysqli_query($link, "select * from patient_test_details where patient_id='$det[patient_id]' and opd_id='$opd_id'");
 	//while ($tst_l = mysqli_fetch_array($tst_det))
@@ -479,9 +477,9 @@ if ($type == 1) {
 	$pat_info .= "@k_details@" . $s_det . "@k_details@" . $det['sample_serial'];
 
 	//echo $pat_info . "#test_det#" . $tst;
-	
+
 	echo json_encode($arr);
-	
+
 } else if ($type == 6) {
 	$entry_type = $_POST['entry_type'];
 	$val = $_POST['val'];
