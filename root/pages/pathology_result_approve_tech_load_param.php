@@ -43,6 +43,16 @@ if($flagEntry)
 		$flaggedStr.="<br/><i style='color:#C70000;'>[Remarks : ".$flagEntry["remarks"]."]</i>";
 	}
 }
+
+// Delta
+$delta_patient_ids=[];
+$delta_patient_ids_qry=mysqli_query($link, "SELECT `patient_id` FROM `patient_info` WHERE `hosp_no`='$pat_reg[hosp_no]'");
+while($delta_patient_ids_val=mysqli_fetch_assoc($delta_patient_ids_qry))
+{
+	$delta_patient_ids[]=$delta_patient_ids_val["patient_id"];
+}
+$delta_patient_ids=array_unique($delta_patient_ids);
+$delta_patient_ids=implode(",",$delta_patient_ids);
 ?>
 <center><?php echo $flaggedStr;?></center>
 <div id="pat_dept_test_params">
@@ -512,7 +522,7 @@ if($flagEntry)
 							$main_tech = 0;
 							$instrument_id = 0;
 							$result_hide = 0;
-							$test_result = mysqli_fetch_array(mysqli_query($link, "SELECT `result`,`range_status`,`range_id`,`tech_note`,`doc_note`,`instrument_id`,`result_hide`,`doc`,`tech`,`main_tech`,`for_doc` FROM `testresults` WHERE `patient_id`='$patient_id' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `paramid`='$paramid' AND `iso_no`='$iso_no'"));
+							$test_result = mysqli_fetch_array(mysqli_query($link, "SELECT `slno`,`result`,`range_status`,`range_id`,`tech_note`,`doc_note`,`instrument_id`,`result_hide`,`doc`,`tech`,`main_tech`,`for_doc` FROM `testresults` WHERE `patient_id`='$patient_id' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `paramid`='$paramid' AND `iso_no`='$iso_no'"));
 							if ($test_result) {
 								$result = $test_result["result"];
 								$instrument_id = $test_result["instrument_id"];
@@ -543,7 +553,8 @@ if($flagEntry)
 									$result_text_style = "color:red;";
 								}
 
-								$dlc_check_str = "SELECT `slno`,`opd_id`,`ipd_id`,`batch_no`,`result`,`range_status`,`range_id` FROM `testresults` WHERE `patient_id`='$patient_id' AND `paramid`='$paramid' AND `slno`<'$test_result[slno]' ORDER BY `slno` DESC";
+								//$delta_check_str = "SELECT `slno`,`opd_id`,`ipd_id`,`batch_no`,`result`,`range_status`,`range_id` FROM `testresults` WHERE `patient_id`='$patient_id' AND `paramid`='$paramid' AND `slno`<'$test_result[slno]' ORDER BY `slno` DESC";
+								$delta_check_str = "SELECT `slno`,`opd_id`,`ipd_id`,`batch_no`,`result`,`range_status`,`range_id` FROM `testresults` WHERE `patient_id` IN($delta_patient_ids) AND `paramid`='$paramid' AND `slno`<'$test_result[slno]' ORDER BY `slno` DESC";
 
 								$repeat_param_btn_display++;
 								
@@ -587,15 +598,16 @@ if($flagEntry)
 
 									$result = $param_fix_result["result"];
 								}
-								$dlc_check_str = "SELECT `slno`,`opd_id`,`ipd_id`,`batch_no`,`result`,`range_status`,`range_id` FROM `testresults` WHERE `patient_id`='$patient_id' AND `paramid`='$paramid' ORDER BY `slno` DESC";
+								//$delta_check_str = "SELECT `slno`,`opd_id`,`ipd_id`,`batch_no`,`result`,`range_status`,`range_id` FROM `testresults` WHERE `patient_id`='$patient_id' AND `paramid`='$paramid' ORDER BY `slno` DESC";
+								$delta_check_str = "SELECT `slno`,`opd_id`,`ipd_id`,`batch_no`,`result`,`range_status`,`range_id` FROM `testresults` WHERE `patient_id` IN($delta_patient_ids) AND `paramid`='$paramid' ORDER BY `slno` DESC";
 								
 								$paramSampleStatus_disable = "";
 							}
-
+							
 							//$result=htmlspecialchars($result);
 		
-							//$dlc_check_qry=mysqli_query($link, $dlc_check_str);
-							//$dlc_check_num=mysqli_num_rows($dlc_check_qry);
+							$delta_check_qry=mysqli_query($link, $delta_check_str);
+							$delta_check_num=mysqli_num_rows($delta_check_qry);
 		
 							$approve_cls = "approve_param";
 							$doc_approve_disabled = "";
@@ -730,7 +742,7 @@ if($flagEntry)
 											echo $repeat_param_btn_data;
 										}
 
-										if ($dlc_check_num > 0) {
+										if ($delta_check_num > 0) {
 											?>
 											<a class="btn btn-link btn-mini" style="font-size:10px;"
 												onclick="load_delta_check('<?php echo $patient_id; ?>','<?php echo $opd_id; ?>','<?php echo $ipd_id; ?>','<?php echo $batch_no; ?>','<?php echo $testid; ?>','<?php echo $paramid; ?>')">Delta
@@ -779,7 +791,7 @@ if($flagEntry)
 											echo $repeat_param_btn_data;
 										}
 
-										if ($dlc_check_num > 0) {
+										if ($delta_check_num > 0) {
 											?>
 											<a class="btn btn-link btn-mini" style="font-size:10px;"
 												onclick="load_delta_check('<?php echo $patient_id; ?>','<?php echo $opd_id; ?>','<?php echo $ipd_id; ?>','<?php echo $batch_no; ?>','<?php echo $testid; ?>','<?php echo $paramid; ?>')">Delta
@@ -820,7 +832,7 @@ if($flagEntry)
 											echo $repeat_param_btn_data;
 										}
 
-										if ($dlc_check_num > 0) {
+										if ($delta_check_num > 0) {
 											?>
 											<a class="btn btn-link btn-mini" style="font-size:10px;"
 												onclick="load_delta_check('<?php echo $patient_id; ?>','<?php echo $opd_id; ?>','<?php echo $ipd_id; ?>','<?php echo $batch_no; ?>','<?php echo $testid; ?>','<?php echo $paramid; ?>')">Delta
@@ -864,7 +876,7 @@ if($flagEntry)
 											echo $repeat_param_btn_data;
 										}
 
-										if ($dlc_check_num > 0) {
+										if ($delta_check_num > 0) {
 											?>
 											<a class="btn btn-link btn-mini" style="font-size:10px;"
 												onclick="load_delta_check('<?php echo $patient_id; ?>','<?php echo $opd_id; ?>','<?php echo $ipd_id; ?>','<?php echo $batch_no; ?>','<?php echo $testid; ?>','<?php echo $paramid; ?>')">Delta
@@ -902,7 +914,7 @@ if($flagEntry)
 											echo $repeat_param_btn_data;
 										}
 
-										if ($dlc_check_num > 0) {
+										if ($delta_check_num > 0) {
 											?>
 											<a class="btn btn-link btn-mini" style="font-size:10px;"
 												onclick="load_delta_check('<?php echo $patient_id; ?>','<?php echo $opd_id; ?>','<?php echo $ipd_id; ?>','<?php echo $batch_no; ?>','<?php echo $testid; ?>','<?php echo $paramid; ?>')">Delta
@@ -937,7 +949,7 @@ if($flagEntry)
 											echo $repeat_param_btn_data;
 										}
 
-										if ($dlc_check_num > 0) {
+										if ($delta_check_num > 0) {
 											?>
 											<a class="btn btn-link btn-mini" style="font-size:10px;"
 												onclick="load_delta_check('<?php echo $patient_id; ?>','<?php echo $opd_id; ?>','<?php echo $ipd_id; ?>','<?php echo $batch_no; ?>','<?php echo $testid; ?>','<?php echo $paramid; ?>')">Delta
