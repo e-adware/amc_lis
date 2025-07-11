@@ -20,6 +20,7 @@ if($exp)
 <!--header-->
 <div id="content-header">
     <div class="header_div"> <span class="header"> Phelbotomy Sample Receive (OPD) </span></div>
+     &nbsp; (<b style="color:#ff0000;">*</b> marks are compulsory)
 </div>
 <!--End-header-->
 <div class="container-fluid">
@@ -105,12 +106,12 @@ if($exp)
 			</th>
 		</tr>
 		<tr>
-			<th>Hosp No:</th>
+			<th>Hosp No <b style="color:#ff0000;">*</b> :</th>
 			<td colspan="3"><input type="text" id="hosp_no" name="c_4" placeholder="Enter Hosp. No" onkeyup="check_hosp_no(event)"  autofocus /></td>
 			<td colspan="2"><span id="date_serial"></span></td>
 		</tr>
 		<tr>
-			<th>Name</th>
+			<th>Name <b style="color:#ff0000;">*</b></th>
 			<td><input type="text" id="name"  name="c_5" onkeyup="change_up()" onblur="change_up()"/></td>
 			<th>Address</th>
 			<th><input type="text" id="add" name="c_6" class="no_imp"/></th>
@@ -120,11 +121,11 @@ if($exp)
 			<th><input type="text" id="bill_no" onkeydown="check_barcode_mon(event)" name="c_3" ondrop="drag_data()"/></th>-->
 		</tr>
 		<tr>
-			<th style="width:200px">Age :<input type="text" id="age"  style="width:50px"  name="c_8"/> <select id="age_type" name="c_9" style="width:50px"><option value="Years">Y</option><option value="Months">M</option><option value="Days">D</option></select></th>
-			<th>Sex :<select id="sex" name="c_10" style="width:50px"><option value="Male">M</option><option value="Female">F</option></select></th>
-			<th>Sample No</th>
+			<th style="width:200px">Age <b style="color:#ff0000;">*</b> :<input type="text" id="age"  style="width:50px"  name="c_8"/> <select id="age_type" name="c_9" style="width:50px"><option value="Years">Y</option><option value="Months">M</option><option value="Days">D</option></select></th>
+			<th>Sex <b style="color:#ff0000;">*</b> :<select id="sex" name="c_10" style="width:50px"><option value="Male">M</option><option value="Female">F</option></select></th>
+			<th>Sample No <b style="color:#ff0000;">*</b></th>
 			<td><input type="text" id="slno" name="c_11" onkeyup="chk_smp(1,event)" /></td>
-			<th>Ward</th>
+			<th>Ward <b style="color:#ff0000;">*</b></th>
 			<th>
 				<select id="dept" name="c_11" style="display:none">
 					<option value="0">--Select Department--</option>
@@ -799,14 +800,15 @@ function check_hosp_no(e)
 
 function save_data(val)
 {
-	$("#save").attr("disabled",true);
+	//$("#save").attr("disabled",true);
 	//chk_smp(2); //---Check Sample---//
 	
 	var hosp_no=$("#hosp_no").val().trim();
 	var name=$("#name").val().trim();
+	var sex=$("#sex").val().trim();
 	var age=$("#age").val().trim();
 	var age_type=$("#age_type").val().trim();
-	//var slno=$("#slno").val().trim();
+	var slno=$("#slno").val().trim();
 	
 	var bill_no=$("#bill_no").val();
 	
@@ -831,6 +833,55 @@ function save_data(val)
 			recp_samp+="@@"+$(tot_samp[i]).attr("id");
 		}
 	}
+	
+	if(hosp_no=="")
+	{
+		$("#hosp_no").focus();
+		console.log("hosp_no");
+		return false;
+	}
+	if(name=="")
+	{
+		$("#name").focus();
+		console.log("name");
+		return false;
+	}
+	if(age=="")
+	{
+		$("#age").focus();
+		console.log("age");
+		return false;
+	}
+	if(sex=="")
+	{
+		$("#sex").focus();
+		console.log("sex");
+		return false;
+	}
+	if(slno=="")
+	{
+		$("#slno").focus();
+		console.log("slno");
+		return false;
+	}
+	if($("#ward").val()=="0")
+	{
+		$("#ward").focus();
+		console.log("ward");
+		return false;
+	}
+	
+	if(tst=="")
+	{
+		bootbox.dialog({ message: "<h5>Please Select Test</h5>"});
+		setTimeout(function(){
+			bootbox.hideAll();
+		},2000);
+		console.log("test");
+		return false;
+	}
+	
+	$("#save").attr("disabled",true);
 	
 	if(hosp_no=="" || name=="" || age=="" || tst_l.length==0) 
 	{
