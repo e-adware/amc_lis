@@ -21,7 +21,7 @@ $summary_result_types=[7,27];
 $page_breaker="@@@@";
 
 $flaggedStr="";
-$flagEntry=mysqli_fetch_array(mysqli_query($link,"SELECT `time`,`date`,`cause_user` FROM `patient_flagged_records` WHERE `patient_id`='$patient_id' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `dept_id`='$dept_id' AND `flag`='1'"));
+$flagEntry=mysqli_fetch_array(mysqli_query($link,"SELECT `time`,`date`,`cause_user`,`cause`,`remarks` FROM `patient_flagged_records` WHERE `patient_id`='$patient_id' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `dept_id`='$dept_id' AND `flag`='1'"));
 if($flagEntry)
 {
 	$empName=mysqli_fetch_array(mysqli_query($link,"SELECT `name` FROM `employee` WHERE `emp_id`='$flagEntry[cause_user]'"));
@@ -33,6 +33,16 @@ if($flagEntry)
 	{
 		$empName=mysqli_fetch_array(mysqli_query($link,"SELECT `name` FROM `employee` WHERE `emp_id`='$flagExit[cause_user]'"));
 		$flaggedStr.=" &nbsp; &nbsp; <i style='color:#163D14;'>[Un-Flagged at : ".convert_date($flagExit['date'])." ".convert_time($flagExit['time'])." by ".$empName['name']."]</i>";
+	}
+	
+	if($flagEntry["cause"]!="")
+	{
+		$flaggedStr.="<br/><i style='color:#C70000;'>[Cause : ".$flagEntry["cause"]."]</i>";
+	}
+	
+	if($flagEntry["remarks"]!="")
+	{
+		$flaggedStr.="<br/><i style='color:#C70000;'>[Remarks : ".$flagEntry["remarks"]."]</i>";
 	}
 }
 
