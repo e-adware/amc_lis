@@ -17,18 +17,18 @@ if($_POST["type"] == "load_delta_check")
 	$pat_info = mysqli_fetch_array(mysqli_query($link, "SELECT `hosp_no` FROM `patient_info` WHERE `patient_id`='$uhid'"));
 	
 	// DLC
-	$dlc_patient_ids=[];
-	$dlc_patient_ids_qry=mysqli_query($link, "SELECT `patient_id` FROM `patient_info` WHERE `hosp_no`='$pat_info[hosp_no]'");
-	while($dlc_patient_ids_val=mysqli_fetch_assoc($dlc_patient_ids_qry))
+	$delta_patient_ids=[];
+	$delta_patient_ids_qry=mysqli_query($link, "SELECT `patient_id` FROM `patient_info` WHERE `hosp_no`='$pat_info[hosp_no]'");
+	while($delta_patient_ids_val=mysqli_fetch_assoc($delta_patient_ids_qry))
 	{
-		$dlc_patient_ids[]=$dlc_patient_ids_val["patient_id"];
+		$delta_patient_ids[]=$delta_patient_ids_val["patient_id"];
 	}
-	$dlc_patient_ids=array_unique($dlc_patient_ids);
-	$dlc_patient_ids=implode(",",$dlc_patient_ids);
+	$delta_patient_ids=array_unique($delta_patient_ids);
+	$delta_patient_ids=implode(",",$delta_patient_ids);
 	
 	$param_info=mysqli_fetch_array(mysqli_query($link, "SELECT `Name` FROM `Parameter_old` WHERE `ID`='$param_id'"));
 	
-	$str="SELECT * FROM `testresults` WHERE `patient_id` IN($dlc_patient_ids) AND `paramid`='$param_id' ORDER BY `date`,`time` ASC";
+	$str="SELECT * FROM `testresults` WHERE `patient_id` IN($delta_patient_ids) AND `paramid`='$param_id' ORDER BY `date`,`time` ASC";
 	
 	$qry=mysqli_query($link, $str);
 ?>
