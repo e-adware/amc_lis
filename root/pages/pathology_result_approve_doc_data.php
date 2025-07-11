@@ -3,6 +3,37 @@ session_start();
 include("../../includes/connection.php");
 include("../../includes/global.function.php");
 
+function calculateDOBS($age, $unit = 'Y', $fromDate = null) {
+    $date = $fromDate ? new DateTime($fromDate) : new DateTime();
+
+    $unit = strtoupper($unit);
+    if (!in_array($unit, ['Y', 'M', 'D'])) {
+        throw new InvalidArgumentException("Unit must be 'Y', 'M', or 'D'.");
+    }
+
+    $whole = floor($age);
+    $fraction = $age - $whole;
+
+    $intervalString = 'P';
+
+    if ($unit === 'Y') {
+        $months = round($fraction * 12); // 0.2 * 12 = 2.4 → 2 months
+        $intervalString .= "{$whole}Y";
+        if ($months > 0) $intervalString .= "{$months}M";
+    } elseif ($unit === 'M') {
+        $days = round($fraction * 30); // 0.2 * 30 = 6 days
+        $intervalString .= "{$whole}M";
+        if ($days > 0) $intervalString .= "{$days}D";
+    } elseif ($unit === 'D') {
+        $days = round($age); // whole days
+        $intervalString .= "{$days}D";
+    }
+
+    $date->sub(new DateInterval($intervalString));
+    return $date->format('Y-m-d');
+}
+
+
 if ($_SESSION["levelid"] != 13) // 13 = Pathology Doctor
 {
 	exit();
@@ -16,6 +47,100 @@ $time = date("H:i:s");
 $type = $_POST['type'];
 
 
+if ($type == "pat_info_load") {
+	$uhid = base64_decode($_POST['uhid']);
+	$pat=mysqli_fetch_array(mysqli_query($link, "SELECT `hosp_no`,`name`,`sex`,`age`,`age_type`,`phone`,`address` FROM `patient_info` WHERE `patient_id`='$uhid'"));
+	//print_r($pat);
+	?>
+	<b>Patient info update</b>
+	<table class="table table-condensed">
+		<tr>
+			<td colspan="2">
+				<b>Hosp No:</b><br/>
+				<input type="text" class="span3" id="upd_hosp" value="<?php echo $pat['hosp_no'];?>" />
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2">
+				<b>Name:</b><br/>
+				<input type="text" class="span3" id="upd_name" onkeyup="this.value=this.value.toUpperCase();" value="<?php echo $pat['name'];?>" />
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<b>Sex:</b><br/>
+				<select class="span2" id="upd_sex">
+					<option value="Male" <?php if($pat['sex']=="Male"){echo "selected";}?>>Male</option>
+					<option value="Female" <?php if($pat['sex']=="Female"){echo "selected";}?>>Female</option>
+				</select>
+			</td>
+			<td>
+				<b>Age:</b><br/>
+				<input type="text" class="span1" id="upd_age" onkeyup="this.value=this.value.replace(/[^0-9]/g, '');" value="<?php echo $pat['age'];?>" />
+				<select class="span1" id="upd_age_type">
+					<option value="Years" <?php if($pat['age_type']=="Years"){echo "selected";}?>>Years</option>
+					<option value="Months" <?php if($pat['age_type']=="Months"){echo "selected";}?>>Months</option>
+					<option value="Days" <?php if($pat['age_type']=="Days"){echo "selected";}?>>Days</option>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<b>Phone:</b><br/>
+				<input type="text" class="span2" id="upd_phone" maxlength="10" onkeyup="this.value=this.value.replace(/[^0-9]/g, '');" value="<?php echo $pat['phone'];?>" />
+			</td>
+			<td>
+				<b>Address:</b><br/>
+				<input type="text" class="span3" id="upd_addr" value="<?php echo $pat['address'];?>" />
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2" style="text-align:center;">
+				<button type="button" class="btn btn-info" id="sav" onclick="update_pat_info('<?php echo base64_encode($uhid);?>')">Update</button>
+				<button type="button" class="btn btn-danger" id="btnDissm" data-dismiss="modal">Close</button>
+			</td>
+		</tr>
+	</table>
+	<?php
+}
+
+if ($type == "update_pat_info") {
+	//print_r($_POST);
+	$uhid = base64_decode($_POST['uhid']);
+	$hosp = $_POST['hosp'];
+	$name = $_POST['name'];
+	$sex = $_POST['sex'];
+	$age = $_POST['age'];
+	$age_type = $_POST['age_type'];
+	$phone = $_POST['phone'];
+	$addr = mysqli_real_escape_string($link,$_POST['addr']);
+	
+	if($age_type=="Years")
+	{
+		$ageUnit="Y";
+	}
+	if($age_type=="Months")
+	{
+		$ageUnit="M";
+	}
+	if($age_type=="Days")
+	{
+		$ageUnit="D";
+	}
+	
+	$pat=mysqli_fetch_array(mysqli_query($link,"SELECT `date` FROM `patient_info` WHERE `patient_id`='$uhid'"));
+	
+	$dob=calculateDOBS($age, $ageUnit, $pat['date']);
+	
+	if(mysqli_query($link, "UPDATE `patient_info` SET `hosp_no`='$hosp', `name`='$name', `sex`='$sex', `dob`='$dob', `age`='$age', `age_type`='$age_type', `phone`='$phone', `address`='$addr' WHERE `patient_id`='$uhid'"))
+	{
+		echo 1;
+	}
+	else
+	{
+		echo 0;
+	}
+}
 if ($type == "load_dept_tests") {
 	$dept_id = $_POST['dept_id'];
 
@@ -616,6 +741,7 @@ if ($type == "load_pat_dept_tests") {
 					<td><?php echo $sample_receive_user; ?></td>
 					<td>
 						<?php //echo $ref_doc["ref_name"]; ?>
+						<button type="button" class="btn btn-success btn-mini" onclick="pat_info_load('<?php echo base64_encode($patient_id);?>')"><i class="icon-edit"></i></button>
 					</td>
 				</tr>
 			</table>

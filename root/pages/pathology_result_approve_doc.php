@@ -205,6 +205,17 @@ if ($glob_patient_type == 0) {
 	</div>
 </div>
 
+<!--modal-->
+<a href="#medplan" data-toggle="modal" id="mod_upd" class="btn" style="display:none;">A</a>
+<div id="medplan" class="modal modal-lg fade">
+	<div class="modal-body">
+		<div id="pat_info_load">
+
+		</div>
+	</div>
+</div>
+<!--modal end-->
+
 <div id="loader" style="margin-top:-10%;"></div>
 
 <script type="text/javascript" src="../ckeditor/ckeditor.js"></script>
@@ -318,6 +329,65 @@ if ($glob_patient_type == 0) {
 				$(".bootbox").modal("hide");
 				$(".modal").modal("hide");
 			}
+		}
+	}
+	function pat_info_load(uhid) {
+		$("#loader").show();
+		$.post("pages/pathology_result_approve_doc_data.php",
+			{
+				uhid: uhid,
+				type: "pat_info_load"
+			},
+			function (data, status) {
+				$("#loader").hide();
+				$("#pat_info_load").html(data);
+				$("#mod_upd").click();
+				//alert(data);
+				setTimeout(function(){
+					var input = $("#upd_name");
+					input.focus()[0].setSelectionRange(input.val().length, input.val().length);
+				},400);
+			});
+	}
+	function update_pat_info(uhid) {
+		if($("#upd_name").val().trim()=="")
+		{
+			$("#upd_name").focus();
+		}
+		else if($("#upd_phone").val().trim()!="" && ($("#upd_phone").val().trim()).length!=10)
+		{
+			$("#upd_phone").focus();
+		}
+		else
+		{
+			$("#sav").attr("disabled",true);
+			$("#loader").show();
+			$.post("pages/pathology_result_approve_doc_data.php",
+			{
+				uhid: uhid,
+				hosp: $("#upd_hosp").val().trim(),
+				name: $("#upd_name").val().trim(),
+				sex: $("#upd_sex").val().trim(),
+				age: $("#upd_age").val().trim(),
+				age_type: $("#upd_age_type").val().trim(),
+				phone: $("#upd_phone").val().trim(),
+				addr: $("#upd_addr").val().trim(),
+				type: "update_pat_info"
+			},
+			function (data, status) {
+				$("#loader").hide();
+				//alert(data);
+				$("#btnDissm").click();
+				if(data>0)
+				{
+					alertmsg("Updated", 1);
+					$(".nav.nav-tabs li.li_cls.active").click();
+				}
+				else
+				{
+					alertmsg("Error", 0);
+				}
+			});
 		}
 	}
 	function back_to_list() {
