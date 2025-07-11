@@ -62,16 +62,24 @@ if ($type == "load_pat_list") {
 	$zz = 0;
 
 	if ($flaggedPatient) {
-		$test_str = "SELECT `patient_id`, `opd_id`, `ipd_id`, `batch_no` FROM `patient_flagged_details` WHERE `date` BETWEEN '$fdate' AND '$tdate'";
+		$test_str = "SELECT a.`patient_id`, a.`opd_id`, a.`ipd_id`, a.`batch_no` FROM `patient_flagged_details` a, uhid_and_opdid c WHERE a.`date` BETWEEN '$fdate' AND '$tdate' AND a.`patient_id`=c.`patient_id`";
 
 		if ($uhid) {
-			$test_str = "SELECT `patient_id`, `opd_id`, `ipd_id`, `batch_no` FROM `patient_flagged_details` WHERE `patient_id`='$uhid'";
+			$test_str = "SELECT a.`patient_id`, a.`opd_id`, a.`ipd_id`, a.`batch_no` FROM `patient_flagged_details` a, uhid_and_opdid c WHERE `hosp_no`='$uhid' AND a.`patient_id`=c.`patient_id`";
 		}
 		if ($barcode_id) {
-			$test_str = "SELECT `patient_id`, `opd_id`, `ipd_id`, `batch_no` FROM `patient_flagged_details` WHERE `opd_id`='$barcode_id'";
+			$test_str = "SELECT a.`patient_id`, a.`opd_id`, a.`ipd_id`, a.`batch_no` FROM `patient_flagged_details` a, uhid_and_opdid c WHERE `opd_id`='$barcode_id' AND a.`patient_id`=c.`patient_id`";
 		}
 		if ($name) {
-			$test_str = "SELECT a.`patient_id`,a.`opd_id`,a.`ipd_id`,a.`batch_no` FROM `patient_flagged_details` a, `patient_info` b WHERE a.`patient_id`=b.`patient_id` AND b.`name` like '%$name%'";
+			$test_str = "SELECT a.`patient_id`,a.`opd_id`,a.`ipd_id`,a.`batch_no` FROM `patient_flagged_details` a, `patient_info` b, uhid_and_opdid c WHERE a.`patient_id`=b.`patient_id` AND b.`name` like '%$name%'";
+		}
+
+		if ($sample_type) {
+			$test_str .= " AND c.`type_prefix`='$sample_type'";
+
+			if ($sample_serial != "") {
+				$test_str .= " AND c.`sample_serial`='$sample_serial'";
+			}
 		}
 
 
@@ -743,29 +751,23 @@ if ($type == "load_pat_dept_tests") {
 	}
 	$sample_receive_user = implode(",", $sample_receive_users);
 	$sl = mysqli_fetch_array(mysqli_query($link, "SELECT `dept_serial` FROM `patient_test_details` WHERE `patient_id`='$patient_id' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `dept_serial`!='' LIMIT 0,1"));
-	
-	$barcode_array=array();
-	$barcode_qry=mysqli_query($link, "SELECT DISTINCT a.`barcode_id` FROM `phlebo_sample` a, `testmaster` b WHERE a.`testid`=b.`testid` AND a.`patient_id`='$patient_id' AND a.`opd_id`='$opd_id' AND a.`ipd_id`='$ipd_id' AND a.`batch_no`='$batch_no' AND b.`type_id`='$sel_dept_id'");
-	while($barcode_data=mysqli_fetch_array($barcode_qry))
-	{
-		$barcode_array[]=$barcode_data["barcode_id"];
+
+	$barcode_array = array();
+	$barcode_qry = mysqli_query($link, "SELECT DISTINCT a.`barcode_id` FROM `phlebo_sample` a, `testmaster` b WHERE a.`testid`=b.`testid` AND a.`patient_id`='$patient_id' AND a.`opd_id`='$opd_id' AND a.`ipd_id`='$ipd_id' AND a.`batch_no`='$batch_no' AND b.`type_id`='$sel_dept_id'");
+	while ($barcode_data = mysqli_fetch_array($barcode_qry)) {
+		$barcode_array[] = $barcode_data["barcode_id"];
 	}
 
-	$barcode_array=array_unique($barcode_array);
-	$barcode_ids=implode(", ",$barcode_array);
+	$barcode_array = array_unique($barcode_array);
+	$barcode_ids = implode(", ", $barcode_array);
 
-	if($barcode_ids=="")
-	{
-		$each_barcode_qry=mysqli_query($link,"SELECT DISTINCT a.`barcode_id` FROM `test_sample_result` a, `testmaster` c WHERE a.`testid`=c.`testid` AND a.`patient_id`='$patient_id' AND a.`opd_id`='$opd_id' AND a.`ipd_id`='$ipd_id' AND a.`batch_no`='$batch_no' AND c.`type_id`='$sel_dept_id'");
-		while($bCode=mysqli_fetch_array($each_barcode_qry))
-		{
-			if($barcode_ids)
-			{
-				$barcode_ids.=", ".$bCode['barcode_id'];
-			}
-			else
-			{
-				$barcode_ids=$bCode['barcode_id'];
+	if ($barcode_ids == "") {
+		$each_barcode_qry = mysqli_query($link, "SELECT DISTINCT a.`barcode_id` FROM `test_sample_result` a, `testmaster` c WHERE a.`testid`=c.`testid` AND a.`patient_id`='$patient_id' AND a.`opd_id`='$opd_id' AND a.`ipd_id`='$ipd_id' AND a.`batch_no`='$batch_no' AND c.`type_id`='$sel_dept_id'");
+		while ($bCode = mysqli_fetch_array($each_barcode_qry)) {
+			if ($barcode_ids) {
+				$barcode_ids .= ", " . $bCode['barcode_id'];
+			} else {
+				$barcode_ids = $bCode['barcode_id'];
 			}
 		}
 	}
@@ -798,7 +800,7 @@ if ($type == "load_pat_dept_tests") {
 				<tr>
 					<td><?php echo $pat_info['hosp_no']; ?></td>
 					<td>
-						<?php echo $pat_reg['type_prefix'].$pat_reg['sample_serial']; ?>
+						<?php echo $pat_reg['type_prefix'] . $pat_reg['sample_serial']; ?>
 						<span style="float:right;"><?php echo $urgent_patient_img; ?></span>
 					</td>
 					<td><?php echo $barcode_ids; ?></td>
@@ -2147,80 +2149,71 @@ if ($type == "load_pat_dept_tests") {
 						}, 1000);
 					})
 			}
-			
+
 			// Test Param Sample Status Start
-			function paramSampleStatus(testid,paramid)
-			{
+			function paramSampleStatus(testid, paramid) {
 				$("#loader").show();
 				$.post("pages/pathology_result_approve_tech_ajax.php",
-				{
-					type:"paramSampleStatus",
-					patient_id:$("#patient_id").val(),
-					opd_id:$("#opd_id").val(),
-					ipd_id:$("#ipd_id").val(),
-					batch_no:$("#batch_no").val(),
-					dept_id:$("#sel_dept_id").val(),
-					testid:testid,
-					paramid:paramid,
-				},
-				function(data,status)
-				{
-					$("#loader").hide();
-					$("#load_data_note").html(data);
-					$("#btn_modal_note").click();
-					
-					setTimeout(function(){
-						$("#test_note_val").focus();
-					},1000);
-				})
+					{
+						type: "paramSampleStatus",
+						patient_id: $("#patient_id").val(),
+						opd_id: $("#opd_id").val(),
+						ipd_id: $("#ipd_id").val(),
+						batch_no: $("#batch_no").val(),
+						dept_id: $("#sel_dept_id").val(),
+						testid: testid,
+						paramid: paramid,
+					},
+					function (data, status) {
+						$("#loader").hide();
+						$("#load_data_note").html(data);
+						$("#btn_modal_note").click();
+
+						setTimeout(function () {
+							$("#test_note_val").focus();
+						}, 1000);
+					})
 			}
-			function paramSampleStatusSave(testid,paramid)
-			{
-				if($("#sampleStatus_sample_status").val()=="")
-				{
+			function paramSampleStatusSave(testid, paramid) {
+				if ($("#sampleStatus_sample_status").val() == "") {
 					//$("#sampleStatus_sample_status").focus();
 					//return false;
 				}
-				
+
 				$("#loader").show();
 				$.post("pages/pathology_result_approve_tech_ajax.php",
-				{
-					type:"paramSampleStatusSave",
-					patient_id:$("#patient_id").val(),
-					opd_id:$("#opd_id").val(),
-					ipd_id:$("#ipd_id").val(),
-					batch_no:$("#batch_no").val(),
-					dept_id:$("#sel_dept_id").val(),
-					testid:testid,
-					paramid:paramid,
-					sample_status:$("#sampleStatus_sample_status").val(),
-					print_result:$("#sampleStatus_print_result").val(),
-					sample_note:$("#sampleStatus_sample_note").val(),
-				},
-				function(data,status)
-				{
-					$("#loader").hide();
-					var res=JSON.parse(data);
-					
-					if(res["error"]==3)
 					{
-						$("#sampleStatus_print_result").focus();
-					}else
-					{
-						$("#btn_modal_note").click();
-						if(res["error"]==0)
-						{
-							alertmsg(res["message"], 1);
-						}else
-						{
-							alertmsg(res["message"], 0);
-						}
-					}
-					setTimeout(function(){
+						type: "paramSampleStatusSave",
+						patient_id: $("#patient_id").val(),
+						opd_id: $("#opd_id").val(),
+						ipd_id: $("#ipd_id").val(),
+						batch_no: $("#batch_no").val(),
+						dept_id: $("#sel_dept_id").val(),
+						testid: testid,
+						paramid: paramid,
+						sample_status: $("#sampleStatus_sample_status").val(),
+						print_result: $("#sampleStatus_print_result").val(),
+						sample_note: $("#sampleStatus_sample_note").val(),
+					},
+					function (data, status) {
 						$("#loader").hide();
-						load_pat_dept_tests_refresh($("#sel_dept_id").val());
-					},1000);
-				})
+						var res = JSON.parse(data);
+
+						if (res["error"] == 3) {
+							$("#sampleStatus_print_result").focus();
+						} else {
+							$("#btn_modal_note").click();
+							if (res["error"] == 0) {
+								alertmsg(res["message"], 1);
+							} else {
+								alertmsg(res["message"], 0);
+							}
+						}
+						setTimeout(function () {
+							$("#loader").hide();
+							load_pat_dept_tests_refresh($("#sel_dept_id").val());
+						}, 1000);
+					})
 			}
 			// Test Param Sample Status End
 
