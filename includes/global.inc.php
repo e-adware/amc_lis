@@ -385,6 +385,10 @@ $page[850] = 'pages/gender_report.php';
 $page[851] = 'pages/ipd_package_split.php';
 $page[852] = 'pages/ipd_package_split_dashboard.php';
 
+$page[860]='pages/disease_master.php';
+$page[861]='pages/drug_master.php';
+
+
 $page[900] = 'pages/ceo_dashboard_graph.php';
 
 $page[901] = 'pages/lab_sample_rcv.php';
@@ -472,7 +476,6 @@ $page[1030] = 'pages/machine_utilization.php';
 
 $page[1031] = 'pages/free_cases.php';
 $page[1032] = 'pages/report_dep_wise.php';
-
 $page[1041] = 'pages/pat_reg_opd.php';
 $page[1042] = 'pages/pat_reg_indoor.php';
 $page[1043] = 'pages/pat_reg_emer.php';
