@@ -204,8 +204,9 @@
                 $.post("pages/qc_master_data.php", {
                     type: 'reload_test_master',
                     qc_id: qc_id
-                }, function () {
+                }, function (data, status) {
                     load_reagent_list(qc_id);
+                    console.log(data);
                     Swal.fire('Reloaded!', 'Test master has been reloaded.', 'success');
                 });
             }

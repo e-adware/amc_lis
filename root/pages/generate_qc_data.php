@@ -51,7 +51,7 @@ if ($type == 'get_data') {
     $check_map = mysqli_fetch_array(mysqli_query($link, "SELECT * FROM `qc_mapping` WHERE `qc_id` = '$qc'"));
 
     if ($check_map) {
-        $date = $db->setQuery("SELECT DISTINCT order_date FROM tpl_patient_orders WHERE sample_id = '$qc_name[sample_id]' AND equip_test IN ($indice_id) AND order_date BETWEEN '$fromDate $tTime' AND '$fromDate $fTime' AND result_type = 'CONTROL'")->fetch_all();
+        $date = $db->setQuery("SELECT DISTINCT order_date FROM tpl_patient_orders WHERE sample_id = '$qc_name[sample_id]' AND equip_test IN ($indice_id) AND order_date BETWEEN '$fromDate $tTime' AND '$fromDate $fTime' AND sample_id='$qc_name[sample_id]'")->fetch_all();
     } else {
         echo "<h4 style='text-align: center;'>Parameters Not Mapped For This QC</h4>";
         exit();
@@ -141,6 +141,7 @@ if ($type == 'date_data') {
         <?php
 
         if ($check) {
+            // echo "SELECT * FROM qc_results WHERE `order_date` = '$order_date'";
             ?>
 
             <tbody>
@@ -150,9 +151,9 @@ if ($type == 'date_data') {
                 while ($res = mysqli_fetch_array($qry)) {
                     ?>
                     <tr>
-                        <td><?php echo $n; ?></td>
+                        <td><?php echo $n++; ?></td>
                         <td><?= $res['indice_name']; ?></td>
-                        <td><input type="text" <?= $save_btn ?> value="<?= $res['result']; ?>" /></td>
+                        <td><input type="text" disabled value="<?= $res['result']; ?>" /></td>
                         <td><?= $res['unit']; ?></td>
                         <td><?= date('d-m-Y / h:i A', strtotime($res['order_date'])); ?></td>
 
@@ -165,7 +166,7 @@ if ($type == 'date_data') {
             <?php
 
         } else {
-            $r1 = $db->setQuery("SELECT * FROM tpl_patient_orders WHERE sample_id = '$qc_name[sample_id]' AND equip_test IN ($indice_id) AND order_date = '$order_date' AND result_type LIKE 'CONTROL'")->fetch_all();
+            $r1 = $db->setQuery("SELECT * FROM tpl_patient_orders WHERE sample_id = '$qc_name[sample_id]' AND equip_test IN ($indice_id) AND order_date = '$order_date'")->fetch_all();
 
 
             ?>
