@@ -46,6 +46,8 @@ $time = date("H:i:s");
 
 $type = $_POST['type'];
 
+// No Result
+mysqli_query($link, "UPDATE `test_sample_result` SET `result`='' WHERE `result`='No Result'");
 
 if ($type == "pat_info_load") {
 	$uhid = base64_decode($_POST['uhid']);

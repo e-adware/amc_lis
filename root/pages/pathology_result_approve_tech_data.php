@@ -11,6 +11,8 @@ $days_ago = date('Y-m-d', strtotime('-3 days', strtotime($date)));
 
 $type = $_POST['type'];
 
+// No Result
+mysqli_query($link, "UPDATE `test_sample_result` SET `result`='' WHERE `result`='No Result'");
 
 if ($type == "load_dept_tests") {
 	$dept_id = $_POST['dept_id'];
