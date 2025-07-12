@@ -365,8 +365,10 @@ $c_user = $_SESSION['emp_id'];
 	function select_all() {
 		var chkall = $("#chkall:checked").length;
 		if (chkall > 0) {
-			//$(".checks").attr("checked", true);
-			$(".checks:visible").prop("checked", true);
+			// Select only the first 10 visible checkboxes
+			$(".checks:visible").slice(0, 10).prop("checked", true);
+			// Optionally, uncheck the rest
+			$(".checks:visible").slice(10).prop("checked", false);
 		}
 		else {
 			//$(".checks").attr("checked", false);
