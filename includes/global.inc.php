@@ -468,7 +468,8 @@ $page[1023] = 'pages/test_turnaround_time_new.php';
 $page[1024] = 'pages/flagged_pat_list.php';
 $page[1025] = 'pages/all_hospital_reports.php';
 
-$page[1026] = 'pages/report_batch_print.php';
+//$page[1026] = 'pages/report_batch_print.php';
+$page[1026] = 'pages/ward_report_print.php';
 $page[1027] = 'pages/patient_test_history.php';
 $page[1028] = 'pages/report_print_log.php';
 $page[1029] = 'pages/flagged_patient_report.php';

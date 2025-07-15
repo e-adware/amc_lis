@@ -28,7 +28,7 @@ $c_user = $_SESSION['emp_id'];
 							<option value="ipd_id">IPD</option>
 						</select>
 
-						<select id="search_dept_id" name="search_dept_id" onchange="not_printedload_dep_test()" class="span2">
+						<select id="search_dept_id" name="search_dept_id" onchange="load_dep_test()" class="span2">
 							<option value="0">--All(DEP)--</option>
 							<?php
 							//$dep=mysqli_query($link,"select distinct type_id from testmaster where category_id='1' order by type_id");
@@ -49,9 +49,7 @@ $c_user = $_SESSION['emp_id'];
 								?>
 							</select>
 						</span>
-						<button id="search_btn" value="Search" class="btn btn-search"
-							onclick="$('#search_check').val('1');load_pat_ser(0);" style="margin-bottom: 10px;"><i
-								class="icon-search"></i> Search</button>
+						<button id="search_btn" value="Search" class="btn btn-search" onclick="$('#search_check').val('1');load_pat_ser(0);" style="margin-bottom: 10px;"><i class="icon-search"></i> Search</button>
 						<input type="hidden" id="search_check" value="0" />
 					</center>
 				</td>
