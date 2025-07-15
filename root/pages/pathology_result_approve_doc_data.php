@@ -709,6 +709,7 @@ if ($type == "load_pat_dept_tests") {
 					<th>Test Time</th>
 					<th>Sample Received By</th>
 					<th>Disease</th>
+					<th>Drug</th>
 					<th>
 						<!--Ref. Doctor-->
 						<button class="btn btn-back btn-mini" onclick="back_to_list()" style="float:right;"><i class="icon-backward"></i> Back To List (ESC)</button>
@@ -749,6 +750,20 @@ if ($type == "load_pat_dept_tests") {
 							while($data=mysqli_fetch_array($qry))
 							{
 								if($pat_dis["disease_id"]==$data["id"]) { $sel="selected";}else{ $sel="";}
+								echo "<option value='$data[id]' $sel>$data[name]</option>";
+							}
+							?>
+						</select>
+					</td>
+					<td>
+						<select id="drug_id" onchange="drug_change()">
+							<option value="0">None</option>
+							<?php
+							$pat_dis=mysqli_fetch_array(mysqli_query($link,"select * from patient_drug_details where patient_id='$patient_id' and opd_id='$pat_reg[opd_id]'"));
+							$qry=mysqli_query($link,"select * from drug_master order by name");
+							while($data=mysqli_fetch_array($qry))
+							{
+								if($pat_dis["drug_id"]==$data["id"]) { $sel="selected";}else{ $sel="";}
 								echo "<option value='$data[id]' $sel>$data[name]</option>";
 							}
 							?>
@@ -2050,6 +2065,34 @@ if ($type == "load_pat_dept_tests") {
 					batch_no:$("#batch_no").val(),
 					batch_no:$("#batch_no").val(),
 					disease_id:$("#disease_id").val(),
+				},
+				function(data,status)
+				{
+					$("#loader").hide();
+					var res=JSON.parse(data);
+					
+					if(res["error"]==0)
+					{
+						alertmsg(res["message"], 1);
+					}else
+					{
+						alertmsg(res["message"], 0);
+					}
+				})
+			}
+			// Drug
+			function drug_change()
+			{
+				$("#loader").show();
+				$.post("pages/pathology_result_approve_doc_ajax.php",
+				{
+					type:"drug_change",
+					patient_id:$("#patient_id").val(),
+					opd_id:$("#opd_id").val(),
+					ipd_id:$("#ipd_id").val(),
+					batch_no:$("#batch_no").val(),
+					batch_no:$("#batch_no").val(),
+					drug_id:$("#drug_id").val(),
 				},
 				function(data,status)
 				{

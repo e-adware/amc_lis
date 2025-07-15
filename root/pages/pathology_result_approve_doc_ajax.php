@@ -1077,5 +1077,50 @@ if ($type == "disease_change")
 	echo json_encode($return);
 }
 
+// Drug
+if ($type == "drug_change")
+{
+	$patient_id = $_POST["patient_id"];
+	$opd_id = $_POST["opd_id"];
+	$ipd_id = $_POST["ipd_id"];
+	$drug_id = $_POST["drug_id"];
+	
+	if($opd_id)
+	{
+		$bill_no=$opd_id;
+	}
+	if($ipd_id)
+	{
+		$bill_no=$ipd_id;
+	}
+	
+	$drug_details=mysqli_fetch_assoc(mysqli_query($link, "SELECT * FROM `patient_drug_details` WHERE `patient_id`='$patient_id' AND `opd_id`='$bill_no'"));
+	
+	if($drug_details)
+	{
+		if(mysqli_query($link, "UPDATE `patient_drug_details` SET `drug_id`='$drug_id' WHERE `patient_id`='$patient_id' AND `opd_id`='$bill_no'"))
+		{
+			$return["error"] = 0;
+			$return["message"] = "Updated";
+		}else
+		{
+			$return["error"] = 1;
+			$return["message"] = "Failed, try again later(2)";
+		}
+	}else
+	{
+		if(mysqli_query($link, "INSERT INTO `patient_drug_details`(`patient_id`, `opd_id`, `drug_id`, `user`, `date`, `time`) VALUES ('$patient_id','$bill_no','$drug_id','$c_user','$date','$time')"))
+		{
+			$return["error"] = 0;
+			$return["message"] = "Saved";
+		}else
+		{
+			$return["error"] = 1;
+			$return["message"] = "Failed, try again later(1)";
+		}
+	}
+	echo json_encode($return);
+}
+
 mysqli_close($link);
 ?>
