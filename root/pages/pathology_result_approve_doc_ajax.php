@@ -1032,5 +1032,50 @@ if ($type == "paramSampleStatusSave")
 }
 // Test Param Sample Status End
 
+// Disease
+if ($type == "disease_change")
+{
+	$patient_id = $_POST["patient_id"];
+	$opd_id = $_POST["opd_id"];
+	$ipd_id = $_POST["ipd_id"];
+	$disease_id = $_POST["disease_id"];
+	
+	if($opd_id)
+	{
+		$bill_no=$opd_id;
+	}
+	if($ipd_id)
+	{
+		$bill_no=$ipd_id;
+	}
+	
+	$disease_details=mysqli_fetch_assoc(mysqli_query($link, "SELECT * FROM `patient_disease_details` WHERE `patient_id`='$patient_id' AND `opd_id`='$bill_no'"));
+	
+	if($disease_details)
+	{
+		if(mysqli_query($link, "UPDATE `patient_disease_details` SET `disease_id`='$disease_id' WHERE `patient_id`='$patient_id' AND `opd_id`='$bill_no'"))
+		{
+			$return["error"] = 0;
+			$return["message"] = "Updated";
+		}else
+		{
+			$return["error"] = 1;
+			$return["message"] = "Failed, try again later(2)";
+		}
+	}else
+	{
+		if(mysqli_query($link, "INSERT INTO `patient_disease_details`(`patient_id`, `opd_id`, `disease_id`, `user`, `date`, `time`) VALUES ('$patient_id','$bill_no','$disease_id','$c_user','$date','$time')"))
+		{
+			$return["error"] = 0;
+			$return["message"] = "Saved";
+		}else
+		{
+			$return["error"] = 1;
+			$return["message"] = "Failed, try again later(1)";
+		}
+	}
+	echo json_encode($return);
+}
+
 mysqli_close($link);
 ?>

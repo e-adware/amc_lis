@@ -56,7 +56,7 @@ if ($type == "pat_info_load") {
 	?>
 	<b>Patient info update</b>
 	<table class="table table-condensed">
-		<tr>
+		<tr style="display:none;">
 			<td colspan="2">
 				<b>Hosp No:</b><br/>
 				<input type="text" class="span3" id="upd_hosp" value="<?php echo $pat['hosp_no'];?>" />
@@ -134,7 +134,7 @@ if ($type == "update_pat_info") {
 	
 	$dob=calculateDOBS($age, $ageUnit, $pat['date']);
 	
-	if(mysqli_query($link, "UPDATE `patient_info` SET `hosp_no`='$hosp', `name`='$name', `sex`='$sex', `dob`='$dob', `age`='$age', `age_type`='$age_type', `phone`='$phone', `address`='$addr' WHERE `patient_id`='$uhid'"))
+	if(mysqli_query($link, "UPDATE `patient_info` SET `name`='$name', `sex`='$sex', `dob`='$dob', `age`='$age', `age_type`='$age_type', `phone`='$phone', `address`='$addr' WHERE `patient_id`='$uhid'")) //`hosp_no`='$hosp', 
 	{
 		echo 1;
 	}
@@ -708,11 +708,10 @@ if ($type == "load_pat_dept_tests") {
 					<th>Age-Sex</th>
 					<th>Test Time</th>
 					<th>Sample Received By</th>
+					<th>Disease</th>
 					<th>
 						<!--Ref. Doctor-->
-
-						<button class="btn btn-back btn-mini" onclick="back_to_list()" style="float:right;"><i
-								class="icon-backward"></i> Back To List (ESC)</button>
+						<button class="btn btn-back btn-mini" onclick="back_to_list()" style="float:right;"><i class="icon-backward"></i> Back To List (ESC)</button>
 					</th>
 				</tr>
 				<tr>
@@ -742,6 +741,20 @@ if ($type == "load_pat_dept_tests") {
 					</td>
 					<td><?php echo $sample_receive_user; ?></td>
 					<td>
+						<select id="disease_id" onchange="disease_change()">
+							<option value="0">None</option>
+							<?php
+							$pat_dis=mysqli_fetch_array(mysqli_query($link,"select * from patient_disease_details where patient_id='$patient_id' and opd_id='$pat_reg[opd_id]'"));
+							$qry=mysqli_query($link,"select * from disease_master order by name");
+							while($data=mysqli_fetch_array($qry))
+							{
+								if($pat_dis["disease_id"]==$data["id"]) { $sel="selected";}else{ $sel="";}
+								echo "<option value='$data[id]' $sel>$data[name]</option>";
+							}
+							?>
+						</select>
+					</td>
+					<td style="text-align:right;">
 						<?php //echo $ref_doc["ref_name"]; ?>
 						<button type="button" class="btn btn-success btn-mini" onclick="pat_info_load('<?php echo base64_encode($patient_id);?>')"><i class="icon-edit"></i></button>
 					</td>
@@ -2023,6 +2036,35 @@ if ($type == "load_pat_dept_tests") {
 				})
 			}
 			// Test Param Sample Status End
+			
+			// Disease
+			function disease_change()
+			{
+				$("#loader").show();
+				$.post("pages/pathology_result_approve_doc_ajax.php",
+				{
+					type:"disease_change",
+					patient_id:$("#patient_id").val(),
+					opd_id:$("#opd_id").val(),
+					ipd_id:$("#ipd_id").val(),
+					batch_no:$("#batch_no").val(),
+					batch_no:$("#batch_no").val(),
+					disease_id:$("#disease_id").val(),
+				},
+				function(data,status)
+				{
+					$("#loader").hide();
+					var res=JSON.parse(data);
+					
+					if(res["error"]==0)
+					{
+						alertmsg(res["message"], 1);
+					}else
+					{
+						alertmsg(res["message"], 0);
+					}
+				})
+			}
 
 			function print_preview(view, dept_id, barcode_id) {
 				var uhid = $("#patient_id").val();
