@@ -2031,6 +2031,15 @@ if ($type == "load_pat_dept_tests") {
 				var batch_no = $("#batch_no").val();
 
 				var tst = "";
+				
+				var chk = $(".printTestCls:checked");
+				for (var i = 0; i < chk.length; i++)
+				{
+					var testid = chk[i].value;
+					
+					tst=tst+"@"+testid;
+				}
+				
 				var user = $("#user").text().trim();
 
 				var url = "pages/pathology_report_print.php?uhid=" + btoa(uhid) + "&opd_id=" + btoa(opd_id) + "&ipd_id=" + btoa(ipd_id) + "&batch_no=" + btoa(batch_no) + "&tests=" + btoa(tst) + "&hlt=" + btoa(tst) + "&user=" + btoa(user) + "&sel_doc=" + btoa(0) + "&view=" + btoa(1) + "&iso_no=" + btoa(0) + "&doc_view=" + btoa(view) + "&dept_id=" + btoa(dept_id);

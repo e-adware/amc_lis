@@ -423,12 +423,17 @@ while($test_info=mysqli_fetch_array($test_qry))
 			$test_param_qry=mysqli_query($link, "SELECT `ParamaterId`,`status` FROM `Testparameter` WHERE `TestId`='$testid' AND `ParamaterId` NOT IN(639,640,641) ORDER BY `sequence` ASC");
 			$test_param_num=mysqli_num_rows($test_param_qry);
 			
-			if($test_param_num>1)
+			if($test_param_num>0)
 			{
 				//echo "<tr><th colspan='4' style='font-size: 15px;'>$testname</th><th></th><th></th></tr>";
 ?>
 			<tr>
-				<th colspan="4"><?php echo $testname; ?></th>
+				<th colspan="4">
+					<label style="font-weight:bold;">
+						<input type="checkbox" class="printTestCls" class="printTestID<?php echo $testid; ?>" value="<?php echo $testid; ?>" checked>
+						<?php echo $testname; ?>
+					</label>
+				</th>
 				<td style="display:none;">
 					<label name="approve_test<?php echo $testid; ?>">
 						<input type="checkbox" id="approve_test<?php echo $testid; ?>">
@@ -441,6 +446,7 @@ while($test_info=mysqli_fetch_array($test_qry))
 					echo $repeat_param_btn_data="<label id='repeat_test_label".$testid."'> <input type='checkbox' id='repeat_test".$testid."' onclick=\"repeat_test_save('$patient_id','$opd_id','$ipd_id','$batch_no','$testid','0','$testname','$dept_id')\"> Repeat All</label>";
 				?>
 				</td>
+				<td></td>
 				<td style="text-align:center;">
 					<button class="btn btn-edit btn-mini test_note_btn" onclick="test_note('<?php echo $testid; ?>')" <?php echo $test_note_disable; ?>><i class="icon-comment-alt"></i> <?php echo $test_note_btn; ?></button>
 				</td>
