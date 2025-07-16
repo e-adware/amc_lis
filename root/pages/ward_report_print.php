@@ -41,7 +41,7 @@ $c_user = $_SESSION['emp_id'];
 							?>
 						</select>
 						<select id="search_ward" name="search_ward" class="span2" onchange="ward_change()">
-							<option value="0">--All(Ward)--</option>
+							<!--<option value="0">--All(Ward)--</option>-->
 							<?php
 							$test = mysqli_query($link, "SELECT `id`, `ward_name` FROM `ward_master` WHERE `ward_name`!='' ORDER BY `ward_name` ASC");
 							while ($tst = mysqli_fetch_array($test)) {
@@ -271,10 +271,16 @@ $c_user = $_SESSION['emp_id'];
 			  row.style.display = 'none';
 			}
 		});
+		
+		$("#chkall").prop("checked",false);
+		$(".checks").prop("checked",false);
 	}
 	
 	function hid_div(e) {
-		
+		if(e.which==27)
+		{
+			$('#myModal').modal('hide');
+		}
 	}
 	function select_all() {
 		var chkall = $("#chkall:checked").length;
@@ -401,7 +407,7 @@ $c_user = $_SESSION['emp_id'];
 		}
 	}
 	
-	function view_report(patient_id,opd_id,ipd_id,batch_no,testid)
+	function view_report(patient_id,opd_id,ipd_id,batch_no,testid,val)
 	{
 		$.post("pages/ward_report_print_data.php",
 		{
@@ -411,6 +417,7 @@ $c_user = $_SESSION['emp_id'];
 			ipd_id:ipd_id,
 			batch_no:batch_no,
 			testid:testid,
+			val:val,
 		},
 		function (data, status) {
 			$("#load_data_result").html(data);
@@ -422,7 +429,7 @@ $c_user = $_SESSION['emp_id'];
 </script>
 <style>
 	.ScrollStyleY {
-		max-height: 450px;
+		max-height: 600px;
 		overflow-y: scroll;
 	}
 

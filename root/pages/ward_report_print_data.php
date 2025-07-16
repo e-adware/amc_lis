@@ -206,6 +206,7 @@ if ($type == "load_pat_list")
 				$testid=$test_info["testid"];
 				
 				$provisional_print=0;
+				$view_report=0;
 				$result_status_color="color:red;";
 				$result_status="No Result";
 				
@@ -215,6 +216,9 @@ if ($type == "load_pat_list")
 				{
 					$result_status="Authenticated";
 					$result_status_color="color:green;";
+					
+					$view_report=1;
+					$provisional_print++;
 				}else
 				{
 					$result_chk=mysqli_fetch_assoc(mysqli_query($link, "SELECT `result` FROM `test_sample_result` WHERE `patient_id`='$patient_id' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `result`!=''"));
@@ -223,8 +227,10 @@ if ($type == "load_pat_list")
 						$result_status="Unverified";
 						$result_status_color="color:#f89406;";
 						
+						$view_report=2;
 						$provisional_print++;
 					}
+					
 					$zz--;
 				}
 ?>
@@ -248,7 +254,7 @@ if ($type == "load_pat_list")
 						<?php
 						if($provisional_print>0){
 						?>
-							<a class="btn btn-link" style="float:right;padding: 0;font-size: 12px;" onclick="view_report('<?php echo $patient_id; ?>','<?php echo $opd_id; ?>','<?php echo $ipd_id; ?>','<?php echo $batch_no; ?>','<?php echo $testid; ?>')">View Report</a>
+							<a class="btn btn-link" style="float:right;padding: 0;font-size: 12px;" onclick="view_report('<?php echo $patient_id; ?>','<?php echo $opd_id; ?>','<?php echo $ipd_id; ?>','<?php echo $batch_no; ?>','<?php echo $testid; ?>','<?php echo $view_report; ?>')">View Report</a>
 						<?php
 							}
 						?>
@@ -259,7 +265,7 @@ if ($type == "load_pat_list")
 						$chkID="chk".str_replace("/","",$pat_reg["opd_id"]);
 				?>
 						<td rowspan="<?php echo $testNum; ?>">
-							<label><input type="checkbox" class="checks" id="<?php echo $chkID; ?>" onchange="check_all_chks()" value="<?php echo $patient_id . "@" . $pat_reg['opd_id']; ?>" /> Select</label>
+							<label id="tdLabel<?php echo $chkID; ?>"><input type="checkbox" class="checks" id="<?php echo $chkID; ?>" onchange="check_all_chks()" value="<?php echo $patient_id . "@" . $pat_reg['opd_id']; ?>" /> Select</label>
 						</td>
 				<?php
 					}
@@ -268,6 +274,12 @@ if ($type == "load_pat_list")
 <?php
 				$n++;
 			}
+			
+			if($zz==0)
+			{
+				echo "<script>$('#tdLabel".$chkID."').remove();</script>";
+			}
+			
 			$i++;
 		}
 ?>
@@ -282,6 +294,7 @@ if ($type == "view_report")
 	$ipd_id		 = $_POST["ipd_id"];
 	$batch_no	 = $_POST["batch_no"];
 	$testid		 = $_POST["testid"];
+	$val		 = $_POST["val"]; // 1 = testresult, 2 = test_sample_result
 	
 	$test_info=mysqli_fetch_assoc(mysqli_query($link, "SELECT `testname` FROM `testmaster` WHERE `testid`='$testid'"));
 ?>
@@ -296,12 +309,29 @@ if ($type == "view_report")
 				<th>Normal Range</th>
 			</tr>
 	<?php
+		if($val==1)
+		{
+			$str="SELECT a.paramid,b.ResultType,b.Name,b.UnitsID,a.result,a.range_status,a.range_id,a.instrument_id,a.date,a.time FROM `testresults` a, `Parameter_old` b WHERE a.paramid=b.ID AND a.patient_id='$patient_id' AND a.opd_id='$opd_id' AND a.ipd_id='$ipd_id' AND a.batch_no='$batch_no' AND a.testid='$testid' AND a.paramid NOT IN(639,640,641)";
+		}
+		if($val==2)
+		{
+			$str="SELECT a.paramid,b.ResultType,b.Name,b.UnitsID,a.result,a.equip_name,a.update_timestamp FROM `test_sample_result` a, `Parameter_old` b WHERE a.paramid=b.ID AND a.patient_id='$patient_id' AND a.opd_id='$opd_id' AND a.ipd_id='$ipd_id' AND a.batch_no='$batch_no' AND a.testid='$testid' AND a.result!='' AND a.paramid NOT IN(639,640,641)";
+		}
+		
+		$qry=mysqli_query($link, $str);
+		
 		$n=1;
-		$qry=mysqli_query($link, "SELECT a.paramid,b.ResultType,b.Name,b.UnitsID,a.result,a.equip_name,a.update_timestamp FROM `test_sample_result` a, `Parameter_old` b WHERE a.paramid=b.ID AND a.patient_id='$patient_id' AND a.opd_id='$opd_id' AND a.ipd_id='$ipd_id' AND a.batch_no='$batch_no' AND a.testid='$testid' AND a.result!='' AND a.paramid NOT IN(639,640,641)");
 		while($data=mysqli_fetch_assoc($qry))
 		{
 			$unit_info=mysqli_fetch_assoc(mysqli_query($link, "SELECT `unit_name` FROM `Units` WHERE `ID`='$data[UnitsID]'"));
-			$range=mysqli_fetch_assoc(mysqli_query($link, "SELECT `normal_range` FROM `parameter_normal_check` WHERE `parameter_id`='$data[paramid]' ORDER BY `slno` DESC"));
+			
+			if($data["range_id"]>0)
+			{
+				$range=mysqli_fetch_assoc(mysqli_query($link, "SELECT `normal_range` FROM `parameter_normal_check` WHERE `slno`='$data[range_id]' ORDER BY `slno` DESC"));
+			}else
+			{
+				$range=mysqli_fetch_assoc(mysqli_query($link, "SELECT `normal_range` FROM `parameter_normal_check` WHERE `parameter_id`='$data[paramid]' ORDER BY `slno` DESC"));
+			}
 	?>
 			<tr>
 				<td><?php echo $n; ?></td>
