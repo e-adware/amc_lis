@@ -1,0 +1,10 @@
+//////For rate update
+<?php
+ $q1=mysqli_query($link,"SELECT DISTINCT testid FROM `patient_test_details`  ORDER by `testid`");
+ while($q2=mysqli_fetch_array($q1))
+ {
+	 $q3=mysqli_fetch_array(mysqli_query($link,"SELECT `rate` FROM `testmaster` WHERE `testid`='$q2[testid]'"));
+	 mysqli_query($link,"update `patient_test_details` set `test_rate`='$q3[rate]' where  `testid`='$q2[testid]'");
+ }
+ echo "done";
+?>
