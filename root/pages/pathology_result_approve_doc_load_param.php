@@ -1008,7 +1008,7 @@ while($test_info=mysqli_fetch_array($test_qry))
 					$paramSampleStatus_btn_cls="btn-search";
 					if($TestParamSampleStatus)
 					{
-						$paramSampleStatus_btn_cls="btn-inverse";
+						$paramSampleStatus_btn_cls="btn-close";
 					}
 				?>
 						<button class="btn <?php echo $paramSampleStatus_btn_cls; ?> btn-mini paramSampleStatus_btn" onclick="paramSampleStatus('<?php echo $testid; ?>','<?php echo $paramid; ?>')" <?php echo $paramSampleStatus_disable; ?>><i class="icon-info-sign"></i> <?php echo $paramSampleStatus_btn_name; ?></button>
