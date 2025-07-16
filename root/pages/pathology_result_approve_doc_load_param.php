@@ -998,14 +998,20 @@ while($test_info=mysqli_fetch_array($test_qry))
 					</td>
 					<td style="text-align:center;">
 				<?php
-					if($test_param_num==1)
+					if($test_param_num==1999999)
 					{
 				?>
 						<button class="btn btn-edit btn-mini test_note_btn" onclick="test_note('<?php echo $testid; ?>')" <?php echo $test_note_disable; ?> <?php echo $doc_approve_disabled; ?>><i class="icon-comment-alt"></i> <?php echo $test_note_btn; ?></button>
 				<?php
 					}
+					
+					$paramSampleStatus_btn_cls="btn-search";
+					if($TestParamSampleStatus)
+					{
+						$paramSampleStatus_btn_cls="btn-close";
+					}
 				?>
-						<button class="btn btn-search btn-mini paramSampleStatus_btn" onclick="paramSampleStatus('<?php echo $testid; ?>','<?php echo $paramid; ?>')" <?php echo $paramSampleStatus_disable; ?>><i class="icon-info-sign"></i> <?php echo $paramSampleStatus_btn_name; ?></button>
+						<button class="btn <?php echo $paramSampleStatus_btn_cls; ?> btn-mini paramSampleStatus_btn" onclick="paramSampleStatus('<?php echo $testid; ?>','<?php echo $paramid; ?>')" <?php echo $paramSampleStatus_disable; ?>><i class="icon-info-sign"></i> <?php echo $paramSampleStatus_btn_name; ?></button>
 					</td>
 			<?php
 				}

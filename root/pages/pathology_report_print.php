@@ -1353,12 +1353,20 @@ foreach ($doctors as $doctor) {
 												if ($report["status"] == 1) {
 													$test_result["result"] = " &nbsp;&nbsp;&nbsp;&nbsp; ";
 												}
-												?>
+												
+												// Sample Status
+												$sample_stat_str="";
+												$sample_stat=mysqli_fetch_array(mysqli_query($link, "SELECT `sample_status`,`sample_note` FROM `testresults_sample_stat` WHERE `patient_id`='$uhid' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `paramid`='$report[param_id]'"));
+												if($sample_stat["sample_status"]!="")
+												{
+													$sample_stat_str="<div style='font-style: italic;font-weight:bold;'>".$left_space."(".$sample_stat["sample_status"].")</div>";
+													
+													$test_result["result"] = $sample_stat["sample_note"];
+												}
+											?>
 												<tr>
-													<<?php echo $param_td_th; ?> class="test_name
-														no_top_border"><?php echo $left_space . $nabl_star . $param_info["Name"]; ?></<?php echo $param_td_th; ?>>
-													<<?php echo $result_td_th; ?> class="test_result no_top_border"
-														colspan="<?php echo $result_td_span; ?>" style="<?php echo $result_td_text_align; ?>"><?php echo $test_result["result"]; ?></<?php echo $result_td_th; ?>>
+													<<?php echo $param_td_th; ?> class="test_name no_top_border"><?php echo $left_space . $nabl_star . $param_info["Name"].$sample_stat_str; ?></<?php echo $param_td_th; ?>>
+													<<?php echo $result_td_th; ?> class="test_result no_top_border" colspan="<?php echo $result_td_span; ?>" style="<?php echo $result_td_text_align; ?>"><?php echo $test_result["result"]; ?></<?php echo $result_td_th; ?>>
 													<?php
 													if ($only_result_testid_num == 0) {
 														if ($result_td_span == 1) {
