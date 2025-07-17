@@ -393,7 +393,7 @@ if ($type == "approve_param_save") {
 	$approve_success = 0;
 	$widal_success = 0;
 	$summary_success = 0;
-
+	
 	$error_message = "";
 
 	$return = array();
@@ -487,6 +487,12 @@ if ($type == "approve_param_save") {
 	} else {
 		$approve_msg = "Validated";
 		$main_tech = $c_user;
+		
+		$doc=0;
+		if($_SESSION['levelid']==13)
+		{
+			$doc = $c_user;
+		}
 
 		if (sizeof($approve_data) > 0) {
 			include("pathology_normal_range_new.php");
@@ -554,15 +560,29 @@ if ($type == "approve_param_save") {
 
 						if ($result) {
 							// Update
-							if (mysqli_query($link, "UPDATE `testresults` SET `result`='$result',`range_status`='$range_status',`range_id`='$range_id',`doc`='0',`main_tech`='$c_user',`for_doc`='$for_doc',`result_hide`='$result_hide' WHERE `patient_id`='$patient_id' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `paramid`='$paramid' AND `iso_no`='$iso_no'")) {
+							if (mysqli_query($link, "UPDATE `testresults` SET `result`='$result',`range_status`='$range_status',`range_id`='$range_id',`doc`='$doc',`main_tech`='$main_tech',`for_doc`='$for_doc',`result_hide`='$result_hide' WHERE `patient_id`='$patient_id' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid' AND `paramid`='$paramid' AND `iso_no`='$iso_no'")) {
 								// Record
 								mysqli_query($link, "INSERT INTO `tech_approval_record`(`patient_id`, `opd_id`, `ipd_id`, `batch_no`, `testid`, `paramid`, `iso_no`, `user`, `date`, `time`, `type`) VALUES ('$patient_id','$opd_id','$ipd_id','$batch_no','$testid','$paramid','$iso_no','$c_user','$date','$time','$val')");
-
+								
 								$approve_details = mysqli_fetch_array(mysqli_query($link, "SELECT * FROM `approve_details` WHERE `patient_id`='$patient_id' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid'"));
 								if ($approve_details) {
 									mysqli_query($link, "UPDATE `approve_details` SET `t_time`='$time',`t_date`='$date' WHERE `patient_id`='$patient_id' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid'");
 								} else {
 									mysqli_query($link, "INSERT INTO `approve_details`(`patient_id`, `opd_id`, `ipd_id`, `batch_no`, `t_time`, `t_date`, `d_time`, `d_date`, `testid`) VALUES ('$patient_id','$opd_id','$ipd_id','$batch_no','$time','$date','00:00:00','0000-00-00','$testid')");
+								}
+								
+								if($_SESSION['levelid']==13)
+								{
+									mysqli_query($link, "INSERT INTO `doctor_approval_record`(`patient_id`, `opd_id`, `ipd_id`, `batch_no`, `testid`, `paramid`, `iso_no`, `user`, `date`, `time`, `type`) VALUES ('$patient_id','$opd_id','$ipd_id','$batch_no','$testid','$paramid','$iso_no','$c_user','$date','$time','$val')");
+									
+									$approve_details=mysqli_fetch_array(mysqli_query($link, "SELECT * FROM `approve_details` WHERE `patient_id`='$patient_id' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid'"));
+									if($approve_details)
+									{
+										mysqli_query($link, "UPDATE `approve_details` SET `d_time`='$time',`d_date`='$date' WHERE `patient_id`='$patient_id' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `testid`='$testid'");
+									}else
+									{
+										mysqli_query($link, "INSERT INTO `approve_details`(`patient_id`, `opd_id`, `ipd_id`, `batch_no`, `t_time`, `t_date`, `d_time`, `d_date`, `testid`) VALUES ('$patient_id','$opd_id','$ipd_id','$batch_no','00:00:00','0000-00-00','$time','$date','$testid')");
+									}
 								}
 
 								$return["error"] = 0;
@@ -634,7 +654,7 @@ if ($type == "approve_param_save") {
 
 						if ($result) {
 							// Insert
-							if (mysqli_query($link, "INSERT INTO `testresults`(`patient_id`, `opd_id`, `ipd_id`, `batch_no`, `testid`, `paramid`, `iso_no`, `sequence`, `result`, `range_status`, `range_id`, `status`, `tech_note`, `doc_note`, `instrument_id`, `result_hide`, `time`, `date`, `doc`, `tech`, `main_tech`, `for_doc`) VALUES ('$patient_id','$opd_id','$ipd_id','$batch_no','$testid','$paramid','$iso_no','$sequence','$result','$range_status','$range_id','$status','$tech_note','$doc_note','$instrument_id','$result_hide','$result_time','$result_date','0','$c_user','$c_user','0')")) {
+							if (mysqli_query($link, "INSERT INTO `testresults`(`patient_id`, `opd_id`, `ipd_id`, `batch_no`, `testid`, `paramid`, `iso_no`, `sequence`, `result`, `range_status`, `range_id`, `status`, `tech_note`, `doc_note`, `instrument_id`, `result_hide`, `time`, `date`, `doc`, `tech`, `main_tech`, `for_doc`) VALUES ('$patient_id','$opd_id','$ipd_id','$batch_no','$testid','$paramid','$iso_no','$sequence','$result','$range_status','$range_id','$status','$tech_note','$doc_note','$instrument_id','$result_hide','$result_time','$result_date','$doc','$c_user','$c_user','0')")) {
 								// Record
 								mysqli_query($link, "INSERT INTO `tech_approval_record`(`patient_id`, `opd_id`, `ipd_id`, `batch_no`, `testid`, `paramid`, `iso_no`, `user`, `date`, `time`, `type`) VALUES ('$patient_id','$opd_id','$ipd_id','$batch_no','$testid','$paramid','$iso_no','$c_user','$date','$time','$val')");
 
