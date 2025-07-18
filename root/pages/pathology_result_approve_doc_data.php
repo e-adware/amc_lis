@@ -235,7 +235,7 @@ if ($type == "load_pat_list") {
 	if (strlen($name) > 2) {
 		$test_str .= " AND d.`name` LIKE '%$name%'";
 
-		$zz++;
+		//~ $zz++;
 	}
 
 	if ($dept_serial_no) {
