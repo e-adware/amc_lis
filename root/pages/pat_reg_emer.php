@@ -171,7 +171,7 @@ if($exp)
 		</tr>
 		<tr>
 			<th>
-				<label style="display:inline-block;"><input type="checkbox" id="nr" onclick="check_pat_type()"> NR</label>
+				<label style="display:none;"><input type="checkbox" id="nr" onclick="check_pat_type()"> NR</label>
 				<select id="pat_type_nrhm" name="c_10" style="display: none;width:150px;">
 					<option value="0">Select Patient Type</option>
 					<option value="1">Pregnant Women</option>
