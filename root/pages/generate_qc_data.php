@@ -134,6 +134,7 @@ if ($type == 'date_data') {
                 <!-- <th>Indice ID</th> -->
                 <th>Indice Name</th>
                 <th>Result</th>
+                <th>Range</th>
                 <th>Unit</th>
                 <th>Date</th>
             </tr>
@@ -142,6 +143,7 @@ if ($type == 'date_data') {
 
         if ($check) {
             // echo "SELECT * FROM qc_results WHERE `order_date` = '$order_date'";
+            $lot = mysqli_fetch_array(mysqli_query($link, "SELECT `id` as `lot_id` FROM `qc_lot_master` WHERE `lot_no` = '$check[lot_no]' AND `qc_id` = '$qc'"));
             ?>
 
             <tbody>
@@ -149,11 +151,13 @@ if ($type == 'date_data') {
                 $n = 1;
 
                 while ($res = mysqli_fetch_array($qry)) {
+					$range = mysqli_fetch_array(mysqli_query($link, "SELECT lower, upper FROM qc_baseline WHERE lot_id = '$lot[lot_id]' AND indice_id = '$res[indice_id]'"));
                     ?>
                     <tr>
                         <td><?php echo $n++; ?></td>
                         <td><?= $res['indice_name']; ?></td>
                         <td><input type="text" disabled value="<?= $res['result']; ?>" /></td>
+                        <td><?= $range['lower'] . " - " . $range['upper'];?></td>
                         <td><?= $res['unit']; ?></td>
                         <td><?= date('d-m-Y / h:i A', strtotime($res['order_date'])); ?></td>
 
@@ -168,13 +172,17 @@ if ($type == 'date_data') {
         } else {
             $r1 = $db->setQuery("SELECT * FROM tpl_patient_orders WHERE sample_id = '$qc_name[sample_id]' AND equip_test IN ($indice_id) AND order_date = '$order_date'")->fetch_all();
 
-
+			$lot = mysqli_fetch_array(mysqli_query($link, "SELECT `id` AS `lot_id` FROM `qc_lot_master` WHERE `qc_id` = '$qc'"));
             ?>
             <tbody>
                 <?php
                 $n = 1;
                 foreach ($r1 as $row) {
-
+				$range = mysqli_fetch_array(mysqli_query($link, "SELECT lower, upper FROM qc_baseline WHERE `lot_id` = '$lot[lot_id]' AND indice_id = '$row[equip_test]'"));
+				$flag = "";
+				if($row['result_flag'] != '0') {
+					$flag = "<i style='color: red;' class='icon-flag'></i>";
+				}
                     ?>
                     <tr>
                         <td><?php echo $n; ?></td>
@@ -182,7 +190,9 @@ if ($type == 'date_data') {
                         <td><?php echo $row['test_name']; ?></td>
                         <td><input <?= $save_btn; ?> id="res_<?php echo $n; ?>" type="text" value="<?php echo $row['result']; ?>"
                                 data-id="<?php echo $row['equip_test']; ?>" data-name="<?php echo $row['test_name']; ?>"
-                                data-unit="<?php echo $row['unit']; ?>" /></td>
+                                data-unit="<?php echo $row['unit']; ?>" /><?= $flag;?></td>
+                        
+                        <td><?= $range['lower'] . " - " . $range['upper'];?></td>
                         <td><?php echo $row['unit']; ?></td>
                         <td><?php echo date('d-m-Y', strtotime($row['order_date'])) . " / " . date('h:i A', strtotime($row['order_date'])); ?>
                         </td>

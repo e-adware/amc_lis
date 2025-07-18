@@ -18,7 +18,14 @@ foreach($PoiU as $text)
 {
 	if($text)
 	{
-		$left_margin=80;
+		$left_margin = 40;
+		$ip = $_SERVER['REMOTE_ADDR'];
+		if($ip=='192.168.10.67'){
+			$left_margin=254;
+		}
+		else {
+			$left_margin = 40;
+		}
 		$top_margin=15;
 		
 		$text=explode("==", $text);
