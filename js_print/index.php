@@ -21,7 +21,7 @@ foreach($PoiU as $text)
 		$left_margin = 40;
 		$ip = $_SERVER['REMOTE_ADDR'];
 		if($ip=='192.168.10.67'){
-			$left_margin=254;
+			$left_margin=252;
 		}
 		else {
 			$left_margin = 40;
@@ -40,7 +40,7 @@ foreach($PoiU as $text)
 		//$age_sex_str=$memoDt;
 		$age_sex_str.=" (".$vaccu_name.")";
 		
-		$id_str="SNO: ".$hosp;
+		$id_str="SN: ".$hosp;
 		if($dept_serial)
 		{
 			//$id_str.=" (".$dept_serial.")";
