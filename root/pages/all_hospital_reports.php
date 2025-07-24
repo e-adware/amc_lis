@@ -16,11 +16,13 @@
         <ul class="nav nav-tabs">
             <li onclick="tab_data(1)" class="active" id="tabs1"><a data-toggle="tab" href="#tab1">Patient Demographics
                     Analysis</a></li>
-            <li onclick="tab_data(2)" id="tabs2"><a data-toggle="tab" href="#tab2">Compasionate Care Reports</a>
-            </li>
+            <!-- <li onclick="tab_data(2)" id="tabs2"><a data-toggle="tab" href="#tab2">Compasionate Care Reports</a>
+            </li> -->
             <!-- <li onclick="tab_data(3)" id="tabs3"><a data-toggle="tab" href="#tab3">Scheme Utilization Reports</a></li> -->
             <!-- <li onclick="tab_data(4)" id="tabs4"><a data-toggle="tab" href="#tab4">Investigation Reports</a></li> -->
             <!-- <li onclick="tab_data(5)" id="tabs5"><a data-toggle="tab" href="#tab5">Ward Occupancy Reports</a></li> -->
+            <li onclick="tab_data(6)" id="tabs6"><a data-toggle="tab" href="#tab5">Audit Reports</a></li>
+            <!-- <li onclick="tab_data(7)" id="tabs7"><a data-toggle="tab" href="#tab5">Total Registrations</a></li> -->
 
         </ul>
     </div>
@@ -105,57 +107,57 @@
             })
     }
 
-    function print_report(fdt, tdt, type) {
-        var url = "";
+    // function print_report(fdt, tdt, type) {
+    //     var url = "";
 
-        if (type == 1) {
-            url = "pages/overall_registration_summary_print_report.php?fdate=" + fdt + "&tdate=" + tdt + "&type=" + type;
-        } else if (type == 2) {
-            url = "pages/overall_registration_by_dept_print_report.php?fdate=" + fdt + "&tdate=" + tdt + "&type=" + type;
-        } else if (type == 3) {
-            url = "pages/overall_registration_by_age_group_print_report.php?fdate=" + fdt + "&tdate=" + tdt + "&type=" + type;
-        } else if (type == 4) {
-            url = "pages/overall_registration_by_doctor_print_report.php?fdate=" + fdt + "&tdate=" + tdt + "&type=" + type;
-        } else {
-            return;
-        }
+    //     if (type == 1) {
+    //         url = "pages/overall_registration_summary_print_report.php?fdate=" + fdt + "&tdate=" + tdt + "&type=" + type;
+    //     } else if (type == 2) {
+    //         url = "pages/overall_registration_by_dept_print_report.php?fdate=" + fdt + "&tdate=" + tdt + "&type=" + type;
+    //     } else if (type == 3) {
+    //         url = "pages/overall_registration_by_age_group_print_report.php?fdate=" + fdt + "&tdate=" + tdt + "&type=" + type;
+    //     } else if (type == 4) {
+    //         url = "pages/overall_registration_by_doctor_print_report.php?fdate=" + fdt + "&tdate=" + tdt + "&type=" + type;
+    //     } else {
+    //         return;
+    //     }
 
-        window.open(url, 'Window', 'scrollbars=1,menubar=1,toolbar=0,height=670,width=1000');
-    }
+    //     window.open(url, 'Window', 'scrollbars=1,menubar=1,toolbar=0,height=670,width=1000');
+    // }
 
-    function print_scheme_report(fdt, tdt, type, s_typ) {
-        var url = "";
+    // function print_scheme_report(fdt, tdt, type, s_typ) {
+    //     var url = "";
 
-        if (type == 1) {
-            url = "pages/scheme_utilization_print_report.php?fdate=" + fdt + "&tdate=" + tdt + "&type=" + type + "&free_pat=" + s_typ;
-        }
+    //     if (type == 1) {
+    //         url = "pages/scheme_utilization_print_report.php?fdate=" + fdt + "&tdate=" + tdt + "&type=" + type + "&free_pat=" + s_typ;
+    //     }
 
-        window.open(url, 'Window', 'scrollbars=1,menubar=1,toolbar=0,height=670,width=1000');
-    }
+    //     window.open(url, 'Window', 'scrollbars=1,menubar=1,toolbar=0,height=670,width=1000');
+    // }
 
-    function print_report_opd(fdt, tdt, type) {
-        var url = "";
+    // function print_report_opd(fdt, tdt, type) {
+    //     var url = "";
 
-        if (type == 1) {
-            url = "pages/total_reg_by_department_opd_print_report.php?fdate=" + fdt + "&tdate=" + tdt + "&type=" + type;
-        } else if (type == 2) {
-            url = "pages/total_reg_by_age_opd_report.php?fdate=" + fdt + "&tdate=" + tdt + "&type=" + type;
-        } else if (type == 3) {
-            url = "pages/total_reg_by_doctors_opd_report.php?fdate=" + fdt + "&tdate=" + tdt + "&type=" + type;
-        } else {
-            return;
-        }
+    //     if (type == 1) {
+    //         url = "pages/total_reg_by_department_opd_print_report.php?fdate=" + fdt + "&tdate=" + tdt + "&type=" + type;
+    //     } else if (type == 2) {
+    //         url = "pages/total_reg_by_age_opd_report.php?fdate=" + fdt + "&tdate=" + tdt + "&type=" + type;
+    //     } else if (type == 3) {
+    //         url = "pages/total_reg_by_doctors_opd_report.php?fdate=" + fdt + "&tdate=" + tdt + "&type=" + type;
+    //     } else {
+    //         return;
+    //     }
 
-        window.open(url, 'Window', 'scrollbars=1,menubar=1,toolbar=0,height=670,width=1000');
-    }
+    //     window.open(url, 'Window', 'scrollbars=1,menubar=1,toolbar=0,height=670,width=1000');
+    // }
 
     function print_inv_report(fdt, tdt, type) {
         var url = "";
 
         if (type == 1) {
-            url = "pages/total_dept_wise_print_report.php?fdate=" + fdt + "&tdate=" + tdt + "&type=" + type;
+            url = "pages/total_patient_audit_print.php?fdate=" + fdt + "&tdate=" + tdt + "&type=" + type;
         } else if (type == 2) {
-            url = "pages/total_test_wise_print_report.php?fdate=" + fdt + "&tdate=" + tdt + "&type=" + type;
+            url = "pages/total_parameter_wise_audit_print.php?fdate=" + fdt + "&tdate=" + tdt + "&type=" + type;
         } else {
             return;
         }
@@ -164,17 +166,31 @@
     }
 
 
-    function print_ward_report(fdt, tdt, type) {
+    function print_total_reg_report(fdt, tdt, type) {
         var url = "";
 
         if (type == 1) {
-            url = "pages/total_ward_occupancy_print_report.php?fdate=" + fdt + "&tdate=" + tdt + "&type=" + type;
+            url = "pages/total_registrations_print.php?fdate=" + fdt + "&tdate=" + tdt + "&type=" + type;
         } else {
             return;
         }
 
         window.open(url, 'Window', 'scrollbars=1,menubar=1,toolbar=0,height=670,width=1000');
     }
+
+
+
+    // function print_ward_report(fdt, tdt, type) {
+    //     var url = "";
+
+    //     if (type == 1) {
+    //         url = "pages/total_ward_occupancy_print_report.php?fdate=" + fdt + "&tdate=" + tdt + "&type=" + type;
+    //     } else {
+    //         return;
+    //     }
+
+    //     window.open(url, 'Window', 'scrollbars=1,menubar=1,toolbar=0,height=670,width=1000');
+    // }
 
 
     function view_all_scheme(typ) {
@@ -263,6 +279,46 @@
     //     var url = "pages/test_wise_collection_xls_report.php?from=" + from + "&to=" + to;
     //     newwindow = window.open(url, 'window', 'left=10,top=10,height=600,width=1000,menubar=1,resizeable=0,scrollbars=1');
     // }
+
+    function audit_reports(typ) {
+        $(".btn").removeClass("btn-inverse");
+        $(".btn").addClass("btn-success");
+        $("#btn" + typ).removeClass("btn-success");
+        $("#btn" + typ).addClass("btn-inverse");
+        $("#loader").show();
+        $.post("pages/audit_reports_ajax.php",
+            {
+                type: typ,
+                fdate: $("#fdate").val(),
+                tdate: $("#tdate").val(),
+
+            },
+            function (data, status) {
+                $("#loader").hide();
+                $("#load_data").show().html(data);
+            })
+    }
+
+    function total_reg_reports(typ) {
+        $(".btn").removeClass("btn-inverse");
+        $(".btn").addClass("btn-success");
+        $("#btn" + typ).removeClass("btn-success");
+        $("#btn" + typ).addClass("btn-inverse");
+        $("#loader").show();
+        $.post("pages/Total_registration_reports_ajax.php",
+            {
+                type: typ,
+                fdate: $("#fdate").val(),
+                tdate: $("#tdate").val(),
+
+            },
+            function (data, status) {
+                $("#loader").hide();
+                $("#load_data").show().html(data);
+            })
+    }
+
+
 
 
 

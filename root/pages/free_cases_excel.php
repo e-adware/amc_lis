@@ -13,30 +13,31 @@ $time_per = base64_decode($_GET['time_period']);
 $freetest = base64_decode($_GET['freetest']);
 
 $filename = "free_cases_" . $f_date . "_to_" . $t_date . ".xls";
-// header('Content-type: application/ms-excel');
-// header('Content-Disposition: attachment; filename=' . $filename);
+header('Content-type: application/ms-excel');
+header('Content-Disposition: attachment; filename=' . $filename);
 
 list($start, $end) = explode('@@', $time_per);
 $startTime = $start . ":00";
 $endTime = $end . ":59";
 $type_string = "";
 
-$ftest_qry = "SELECT DISTINCT(a.`name`) FROM `free_type_master` a, `uhid_and_opdid` b WHERE b.`date` BETWEEN '$f_date' AND '$t_date' AND `type` = 2 AND a.code = b.freeType";
+$ftest_qry = "SELECT DISTINCT(b.`free`), a.`free_name` FROM `pat_free_master` a, `uhid_and_opdid` b WHERE b.`date` BETWEEN '$f_date' AND '$t_date' AND a.id = b.`free` AND b.`free` != 0";
 if ($free_type) {
-    $ftest_qry .= " AND a.`code` = '$free_type'";
+    $ftest_qry .= " AND a.`id` = '$free_type'";
 
 }
 if ($time_per) {
     $ftest_qry .= " AND b.`time` BETWEEN '$startTime' AND '$endTime'";
 }
-$ftest_qry .= " ORDER BY a.`name`";
+$ftest_qry .= " ORDER BY a.`free_name`";
+
 
 $ward_names = [];
 $ward_sql = mysqli_query($link, $ftest_qry);
 while ($row = mysqli_fetch_array($ward_sql)) {
-    $ward_names[] = $row['name'];
+    $ward_names[] = $row['free_name'];
     if ($free_type) {
-        $type_string = $row['name'];
+        $type_string = $row['free_name'];
     } else {
         $type_string = "All Tests";
     }
@@ -66,17 +67,17 @@ while ($row = mysqli_fetch_array($test_sql)) {
 
 
 $count_query = "SELECT 
-        c.name AS free_type,
+        c.free_name AS free_type,
         d.testname, b.test_rate,
         COUNT(*) AS total
     FROM uhid_and_opdid a
-    JOIN free_type_master c ON a.freeType = c.code
+    JOIN pat_free_master c ON a.free = c.id
     JOIN patient_test_details b ON a.opd_id = b.opd_id
     JOIN testmaster d ON b.testid = d.testid
     WHERE a.date BETWEEN '$f_date' AND '$t_date'";
 
 if ($free_type) {
-    $count_query .= " AND c.code = '$free_type'";
+    $count_query .= " AND c.id = '$free_type'";
 }
 if ($time_per) {
     $count_query .= " AND a.time BETWEEN '$startTime' AND '$endTime'";
@@ -85,7 +86,7 @@ if ($sel_test) {
     $count_query .= " AND b.testid = '$sel_test'";
 }
 
-$count_query .= " GROUP BY c.name, d.testname ORDER BY c.name, d.testname";
+$count_query .= " GROUP BY c.free_name, d.testname ORDER BY c.free_name, d.testname";
 
 
 // Store counts in associative array

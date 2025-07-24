@@ -30,12 +30,12 @@ if ($type == 'load_data') {
     <div style="display: flex; justify-content: space-between; align-items: flex-start;">
         <div><b>Segment Definitions: </b>
             <ul>
-                <li><strong>Seg 1 (Reg):</strong> Patient Registration -> Barcode Generation</li>
-                <li><strong>Seg 2 (Analytical):</strong> Barcode Generation -> Result Entry from Instrument/data entry
+                <!-- <li><strong>Seg 1 (Reg):</strong> Patient Registration -> Barcode Generation</li> -->
+                <li><strong>Seg 1 (Analytical):</strong> Barcode Generation -> Result Entry from Instrument/data entry
                     by
                     operator
                 </li>
-                <li><strong>Seg 3 (Review):</strong> Result Available -> Technician/Doctor Approval</li>
+                <li><strong>Seg 2 (Review):</strong> Result Available -> Technician/Doctor Approval</li>
             </ul>
         </div>
         <div id="no_print" style="margin-left: auto; padding: 4px 10px;">
@@ -56,9 +56,9 @@ if ($type == 'load_data') {
             <tr>
                 <th>Test Name</th>
                 <th>No. Of Tests</th>
+                <!-- <th>Seg 1 (Avg / Med)</th> -->
                 <th>Seg 1 (Avg / Med)</th>
                 <th>Seg 2 (Avg / Med)</th>
-                <th>Seg 3 (Avg / Med)</th>
                 <th>Overall TAT (Avg / Med)</th>
             </tr>
         </thead>
@@ -155,8 +155,8 @@ if ($type == 'load_data') {
                 <tr>
                     <th><?php echo $testname['testname']; ?>
                     <td><?php echo $test_count['ctr']; ?></td>
-                    <td><?php echo $seg1_avg . " / " . $seg1_med; ?>
-                    </td>
+                    <!-- <td><?php echo $seg1_avg . " / " . $seg1_med; ?>
+                    </td> -->
                     <td><?php echo $seg2_avg . " / " . $seg2_med; ?>
                     </td>
                     <td><?php echo $seg3_avg . " / " . $seg3_med; ?>

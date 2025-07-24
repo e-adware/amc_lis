@@ -28,7 +28,7 @@ if ($type == 'load_data') {
         $sql .= " AND a.`testid` = '$sel_test'";
     }
     if ($ward) {
-        $sql .= "AND c.wardName = '$ward'";
+        $sql .= "AND c.ward = '$ward'";
     }
     if ($priority) {
         if ($priority == 1) {

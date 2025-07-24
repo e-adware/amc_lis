@@ -38,7 +38,7 @@
                         <?php
                         $free_type_qry = mysqli_query($link, "SELECT * FROM `free_type_master` ORDER BY `name`");
                         while ($free_type = mysqli_fetch_array($free_type_qry)) {
-                            echo "<option value='$free_type[code]'>$free_type[name]</option>";
+                            echo "<option value='$free_type[slno]'>$free_type[name]</option>";
                         }
                         ?>
                     </select>

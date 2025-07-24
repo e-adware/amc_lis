@@ -147,6 +147,49 @@ if ($type == 1) {
 
                         </div>
         <?php
+    } else if ($val == 6) {
+        ?>
+                            <div id="tab<?php echo $val; ?>" class="tab-pane active">
+                                <table class="table table-bordered table-condensed">
+                                    <tr>
+                                        <td>
+                                            <center>
+
+                                                <button class="btn btn-success" id="btn1" onClick="audit_reports(1)">Patient Wise</button>
+                                                <button class="btn btn-success" id="btn2" onClick="audit_reports(2)">Parameter Wise</button>
+                                                <!-- <button class="btn btn-success" id="btn3" onClick="view_all_opd_report(3)">Total Registration By
+                                                    Doctor (OPD)</button> -->
+
+
+                                            </center>
+                                        </td>
+                                    </tr>
+
+                                </table>
+                                <div id="load_data"></div>
+
+                            </div>
+        <?php
+    } else if ($val == 7) {
+        ?>
+                                <div id="tab<?php echo $val; ?>" class="tab-pane active">
+                                    <table class="table table-bordered table-condensed">
+                                        <tr>
+                                            <td>
+                                                <center>
+
+                                                    <button class="btn btn-success" id="btn1" onClick="total_reg_reports(1)">View</button>
+
+
+                                                </center>
+                                            </td>
+                                        </tr>
+
+                                    </table>
+                                    <div id="load_data"></div>
+
+                                </div>
+        <?php
     }
 }
 ?>

@@ -1,7 +1,7 @@
 <div id="content-header">
     <div class="header_div"> <span class="header"> <?php echo $menu_info["par_name"]; ?></span></div>
 </div>
-<div class="container-fluid">
+<div class="container">
     <table class="table table-condensed">
         <tr>
             <th class="head">
@@ -48,6 +48,7 @@
 
     .table .head {
         text-align: center;
+
     }
 
     #load_data {
@@ -64,6 +65,10 @@
         #no_print {
             display: none !important;
         }
+    }
+
+    .theader {
+        background-color: rgba(0, 0, 0, 0.1);
     }
 </style>
 
