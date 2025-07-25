@@ -27,6 +27,23 @@ if ($type == 'load_data') {
 
     $emer = mysqli_fetch_array(mysqli_query($link, "SELECT COUNT(`opd_id`) AS `tot` FROM `uhid_and_opdid` WHERE `date` BETWEEN '$f_date' AND '$t_date' AND (`type_prefix` = 'EC/' OR `pat_type` = 'EMER') AND `free` = '0'"));
 
+    $emer1free = mysqli_fetch_array(mysqli_query($link, "SELECT COUNT(`opd_id`) AS `tot` FROM `uhid_and_opdid` WHERE `date` BETWEEN '$f_date' AND '$t_date' AND `time` BETWEEN '17:00:01' AND '22:00:00' AND `free` NOT IN (0, 16,17,18) AND `pat_type` = 'EMER'"));
+
+    $emer1paid = mysqli_fetch_array(mysqli_query($link, "SELECT COUNT(`opd_id`) AS `tot` FROM `uhid_and_opdid` WHERE `date` BETWEEN '$f_date' AND '$t_date' AND `time` BETWEEN '17:00:01' AND '22:00:00' AND `free` = '0' AND `pat_type` = 'EMER'"));
+
+    $emer1nhm = mysqli_fetch_array(mysqli_query($link, "SELECT COUNT(`opd_id`) AS `tot` FROM `uhid_and_opdid` WHERE `date` BETWEEN '$f_date' AND '$t_date' AND `time` BETWEEN '17:00:01' AND '22:00:00' AND `type_prefix` = 'NRM_EMRG/'"));
+
+    $emer2free = mysqli_fetch_array(mysqli_query($link, "SELECT COUNT(`opd_id`) AS `tot` FROM `uhid_and_opdid` WHERE `date` BETWEEN '$f_date' AND '$t_date' AND `time` BETWEEN '22:00:01' AND '23:59:59' AND `free` NOT IN (0, 16,17,18) AND `pat_type` = 'EMER'"));
+
+    $emer2paid = mysqli_fetch_array(mysqli_query($link, "SELECT COUNT(`opd_id`) AS `tot` FROM `uhid_and_opdid` WHERE `date` BETWEEN '$f_date' AND '$t_date' AND `time` BETWEEN '22:00:01' AND '23:59:59' AND `free` = '0' AND `pat_type` = 'EMER'"));
+
+    $emer2nhm = mysqli_fetch_array(mysqli_query($link, "SELECT COUNT(`opd_id`) AS `tot` FROM `uhid_and_opdid` WHERE `date` BETWEEN '$f_date' AND '$t_date' AND `time` BETWEEN '22:00:01' AND '23:59:59' AND `type_prefix` = 'NRM_EMRG/'"));
+
+    $emer3free = mysqli_fetch_array(mysqli_query($link, "SELECT COUNT(`opd_id`) AS `tot` FROM `uhid_and_opdid` WHERE `date` BETWEEN '$f_date' AND '$t_date' AND `time` BETWEEN '00:00:00' AND '08:00:00' AND `free` NOT IN (0, 16,17,18) AND `pat_type` = 'EMER'"));
+
+    $emer3paid = mysqli_fetch_array(mysqli_query($link, "SELECT COUNT(`opd_id`) AS `tot` FROM `uhid_and_opdid` WHERE `date` BETWEEN '$f_date' AND '$t_date' AND `time` BETWEEN '00:00:00' AND '08:00:00' AND `free` = '0' AND `pat_type` = 'EMER'"));
+
+    $emer3nhm = mysqli_fetch_array(mysqli_query($link, "SELECT COUNT(`opd_id`) AS `tot` FROM `uhid_and_opdid` WHERE `date` BETWEEN '$f_date' AND '$t_date' AND `time` BETWEEN '00:00:00' AND '08:00:00' AND `type_prefix` = 'NRM_EMRG/'"));
 
     ?>
     <div style="display: flex; justify-content: space-between; align-items: flex-start;">
@@ -114,7 +131,7 @@ if ($type == 'load_data') {
             <table class="table table-condensed">
                 <tbody>
                     <tr class="theader">
-                        <th colspan="2">Total Emergency/Night Cases:
+                        <th colspan="2">Total Emergency Cases:
                             <?= $night_opd['tot'] + $night_ipd['tot'] + $emer['tot']; ?>
                         </th>
                     </tr>
@@ -133,7 +150,89 @@ if ($type == 'load_data') {
                 </tbody>
             </table>
         </div>
-        <!-- NRHM Cases END -->
+
+    </div>
+    <!-- NRHM Cases END -->
+    <!-- EMERGENCY 1 CASES -->
+    <div class="row" style="display: flex; justify-content: center;">
+
+        <div class="span4">
+            <table class="table table-condensed">
+                <tbody>
+                    <tr class="theader">
+                        <th colspan="2">Emergency(5PM to 10PM):
+                            <?= $emer1free['tot'] + $emer1paid['tot'] + $emer1nhm['tot'] ?>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th>Free: </th>
+                        <td><?= $emer1free['tot']; ?></td>
+                    </tr>
+                    <tr>
+                        <th>Paid: </th>
+                        <td><?= $emer1paid['tot'] ?></td>
+                    </tr>
+                    <tr>
+                        <th>NHM: </th>
+                        <td><?= $emer1nhm['tot'] ?></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <!-- EMERGENCY 1 CASES END-->
+        <!-- EMERGENCY 2 CASES-->
+
+        <div class="span4">
+            <table class="table table-condensed">
+                <tbody>
+                    <tr class="theader">
+                        <th colspan="2">Emergency(10PM to 12AM):
+                            <?= $emer2free['tot'] + $emer2paid['tot'] + $emer2nhm['tot'] ?>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th>Free: </th>
+                        <td><?= $emer2free['tot']; ?></td>
+                    </tr>
+                    <tr>
+                        <th>Paid: </th>
+                        <td><?= $emer2paid['tot'] ?></td>
+                    </tr>
+                    <tr>
+                        <th>NHM: </th>
+                        <td><?= $emer2nhm['tot'] ?></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <!-- EMERGENCY 2 CASES END-->
+
+        <!-- EMERGENCY 3 CASES-->
+
+        <div class="span4">
+            <table class="table table-condensed">
+                <tbody>
+                    <tr class="theader">
+                        <th colspan="2">Emergency(12AM to 8AM):
+                            <?= $emer3free['tot'] + $emer3paid['tot'] + $emer3nhm['tot'] ?>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th>Free: </th>
+                        <td><?= $emer3free['tot']; ?></td>
+                    </tr>
+                    <tr>
+                        <th>Paid: </th>
+                        <td><?= $emer3paid['tot'] ?></td>
+                    </tr>
+                    <tr>
+                        <th>NHM: </th>
+                        <td><?= $emer3nhm['tot'] ?></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <!-- EMERGENCY 3 CASES END-->
 
     </div>
     <?php

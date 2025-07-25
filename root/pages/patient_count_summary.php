@@ -70,6 +70,10 @@
     .theader {
         background-color: rgba(0, 0, 0, 0.1);
     }
+
+    .row {
+        margin-top: 5px;
+    }
 </style>
 
 <script>
@@ -114,7 +118,7 @@
             function (data, status) {
                 var printWindow = window.open('', '_blank', 'width=800,height=600');
                 printWindow.document.write('<html><head><title>Patient Count Data</title>');
-                printWindow.document.write('<style>@media print {#no_print {display: none !important;}} table {width: 100%; border-collapse: collapse;} th, td {border: 2px solid #ccc; padding: 8px;}</style>');
+                printWindow.document.write('<style>@media print {#no_print {display: none !important;}} .row {margin-top: 10px} .span4 { margin: 0px 4px; } table {width: 100%; border-collapse: collapse;} th, td {border: 2px solid #ccc; padding: 8px;}</style>');
                 printWindow.document.write('</head><body>');
                 printWindow.document.write(data);
                 printWindow.document.write('</body></html>');
