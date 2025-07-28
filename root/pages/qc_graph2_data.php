@@ -17,7 +17,7 @@ if ($type == 'load_indice') {
     $qc = $_POST['qc_sel'];
     $indice = $_POST['indice_sel'];
 
-    $qry = "SELECT * FROM `qc_results` WHERE `qc_id` = '$qc' AND `indice_id` = '$indice' AND `order_date` BETWEEN '$fromDate $tTime' AND '$toDate $fTime'";
+    $qry = "SELECT * FROM `qc_results` WHERE `qc_id` = '$qc' AND `indice_id` = '$indice' AND flag = '0' AND `order_date` BETWEEN '$fromDate $tTime' AND '$toDate $fTime'";
     $qq = mysqli_query($link, $qry);
     $res = [];
     $date_arr = [];
@@ -41,7 +41,7 @@ if ($type == 'get_details') {
     $cv = number_format($_POST['cv'], 2);
 
 
-    $indice_det = mysqli_fetch_array(mysqli_query($link, "SELECT * FROM `qc_results` WHERE `indice_id` = '$indice' AND `qc_id` = '$qc_sel'"));
+    $indice_det = mysqli_fetch_array(mysqli_query($link, "SELECT * FROM `qc_results` WHERE `indice_id` = '$indice' AND flag = '0' AND `qc_id` = '$qc_sel'"));
     $qc_det = mysqli_fetch_array(mysqli_query($link, "SELECT * FROM `qc_master` WHERE `qc_id` = '$indice_det[qc_id]'"));
     $fluid = mysqli_fetch_array(mysqli_query($link, "SELECT `name` FROM `qc_fluid` WHERE `id` = '$qc_det[fluid_id]'"));
     $instrument = mysqli_fetch_array(mysqli_query($link, "SELECT `name` FROM `lab_instrument_master` WHERE `id` = '$qc_det[instrument_id]'"));
@@ -72,11 +72,11 @@ if ($type == 'get_details') {
         </tr>
         <tr>
             <th>Mean: </th>
-            <td><?php echo $mean; ?></td>
-            <th>SD: </th>
-            <td><?php echo $st_dev; ?></td>
-            <th>CV: </th>
-            <td><?php echo $cv; ?> %</td>
+            <td colspan="5"><?php echo $mean; ?></td>
+            <th style="display: none;">SD: </th>
+            <td style="display: none;"><?php echo $st_dev; ?></td>
+            <th style="display: none;">CV: </th>
+            <td style="display: none;"><?php echo $cv; ?> %</td>
         </tr>
     </table>
 

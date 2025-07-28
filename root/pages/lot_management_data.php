@@ -93,7 +93,7 @@ if ($type == 'edit_baseline') {
         <button style="float:right; display: inline;" class="btn btn-mini btn-primary" onclick="load_lot_home()"><i
                 class="icon-reply"></i>
             Back To
-            List</button>
+            List (Esc)</button>
         <div style="text-align: center">
             <p>Enter <b>Lower</b> & <b>Upper</b> value and press <i>ENTER</i> to save.</p>
         </div>

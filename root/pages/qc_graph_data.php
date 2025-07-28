@@ -16,7 +16,7 @@ $user = trim($_SESSION['emp_id']);
 
 if ($type == 'load_indice') {
     $qc_id = $_POST['qc_id'];
-    $get_indice = mysqli_query($link, "SELECT a.`lot_no`, b.`indice_id`, b.`indice_name` FROM `qc_lot_master` a, `qc_results` b WHERE a.`qc_id` = '$qc_id' AND a.`lot_no` = b.`lot_no` AND b.`order_date` BETWEEN '$fromDate $tTime' AND '$toDate $fTime' AND a.`status` = '1' GROUP BY b.`indice_id` ORDER BY b.`indice_name`");
+    $get_indice = mysqli_query($link, "SELECT a.`lot_no`, b.`indice_id`, b.`indice_name` FROM `qc_lot_master` a, `qc_results` b WHERE a.`qc_id` = '$qc_id' AND b.flag = '0' AND a.`lot_no` = b.`lot_no` AND b.`order_date` BETWEEN '$fromDate $tTime' AND '$toDate $fTime' AND a.`status` = '1' GROUP BY b.`indice_id` ORDER BY b.`indice_name`");
 
     // echo "SELECT a.`lot_no`, b.`indice_id`, b.`indice_name` FROM `qc_lot_master` a, `qc_results` b WHERE a.`qc_id` = '$qc_id' AND a.`lot_no` = b.`lot_no` AND b.`order_date` BETWEEN '$fromDate $tTime' AND '$toDate $fTime' AND a.`status` = '1' GROUP BY b.`indice_id` ORDER BY b.`indice_name`";
 
@@ -32,7 +32,7 @@ if ($type == 'load_indice') {
 
 }
 if ($type == 'get_graph') {
-    $result_qry = "SELECT a.`indice_name`, a.`result`, a.`lot_no`, b.`id` AS `lot_id`, a.`date`, a.`time`, a.`order_date` FROM `qc_results` a, `qc_lot_master` b WHERE a.`indice_id`='$_POST[indice_sel]' AND a.`order_date` BETWEEN '$fromDate $tTime' AND '$toDate $fTime' AND a.`lot_no` = b.`lot_no` AND a.`qc_id` = '$_POST[qc_sel]'";
+    $result_qry = "SELECT a.`indice_name`, a.`result`, a.`lot_no`, b.`id` AS `lot_id`, a.`date`, a.`time`, a.`order_date` FROM `qc_results` a, `qc_lot_master` b WHERE a.`indice_id`='$_POST[indice_sel]' AND  a.flag = '0'  AND a.`order_date` BETWEEN '$fromDate $tTime' AND '$toDate $fTime' AND a.`lot_no` = b.`lot_no` AND a.`qc_id` = '$_POST[qc_sel]'";
 
     $rr = mysqli_fetch_array(mysqli_query($link, $result_qry));
 
@@ -61,7 +61,7 @@ if ($type == 'get_graph') {
 if ($type == 'get_details') {
     $indice = $_POST['indice_sel'];
     $qc_sel = $_POST['qc_sel'];
-    $indice_det = mysqli_fetch_array(mysqli_query($link, "SELECT * FROM `qc_results` WHERE `indice_id` = '$indice' AND `qc_id` = '$qc_sel'"));
+    $indice_det = mysqli_fetch_array(mysqli_query($link, "SELECT * FROM `qc_results` WHERE `indice_id` = '$indice' AND `qc_id` = '$qc_sel' AND flag = '0'"));
     $qc_det = mysqli_fetch_array(mysqli_query($link, "SELECT * FROM `qc_master` WHERE `qc_id` = '$indice_det[qc_id]'"));
     $fluid = mysqli_fetch_array(mysqli_query($link, "SELECT `name` FROM `qc_fluid` WHERE `id` = '$qc_det[fluid_id]'"));
     $instrument = mysqli_fetch_array(mysqli_query($link, "SELECT `name` FROM `lab_instrument_master` WHERE `id` = '$qc_det[instrument_id]'"));

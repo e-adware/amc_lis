@@ -116,6 +116,7 @@ if ($type == 'date_data') {
 
     ?>
     <div style="float: right;">
+        <button class="btn btn-info btn-mini" onclick="back_to_reports()"><i class="icon-reply"></i> Back (Esc)</button>
         <button class="btn btn-primary btn-mini" style="<?php echo $print_btn; ?>"
             onclick="print_report('<?php echo $order_date; ?>')"><i class="icon-edit"></i>
             Print</button>
@@ -133,7 +134,7 @@ if ($type == 'date_data') {
                 <th>#</th>
                 <!-- <th>Indice ID</th> -->
                 <th>Indice Name</th>
-                <th>Result</th>
+                <th style="width: 30%">Result <i style="float: right; margin-right: 20%;" class="icon-print"></i></th>
                 <th>Range</th>
                 <th>Unit</th>
                 <th>Date</th>
@@ -151,13 +152,25 @@ if ($type == 'date_data') {
                 $n = 1;
 
                 while ($res = mysqli_fetch_array($qry)) {
-					$range = mysqli_fetch_array(mysqli_query($link, "SELECT lower, upper FROM qc_baseline WHERE lot_id = '$lot[lot_id]' AND indice_id = '$res[indice_id]'"));
+                    $flag = "";
+                    $print_res = "checked";
+
+                    if ($res['flag'] != '0') {
+                        $flag = " <i style='color: red;' class='icon-flag'></i>";
+
+                    }
+                    if ($res['print'] == 0) {
+                        $print_res = "";
+
+                    }
+                    $range = mysqli_fetch_array(mysqli_query($link, "SELECT lower, upper FROM qc_baseline WHERE lot_id = '$lot[lot_id]' AND indice_id = '$res[indice_id]'"));
                     ?>
                     <tr>
                         <td><?php echo $n++; ?></td>
                         <td><?= $res['indice_name']; ?></td>
-                        <td><input type="text" disabled value="<?= $res['result']; ?>" /></td>
-                        <td><?= $range['lower'] . " - " . $range['upper'];?></td>
+                        <td><input type="text" disabled value="<?= $res['result']; ?>" /> <?= $flag ?><input disabled
+                                style="float: right; margin-right: 20%" type="checkbox" <?= $print_res ?> /></td>
+                        <td><?= $range['lower'] . " - " . $range['upper']; ?></td>
                         <td><?= $res['unit']; ?></td>
                         <td><?= date('d-m-Y / h:i A', strtotime($res['order_date'])); ?></td>
 
@@ -172,17 +185,21 @@ if ($type == 'date_data') {
         } else {
             $r1 = $db->setQuery("SELECT * FROM tpl_patient_orders WHERE sample_id = '$qc_name[sample_id]' AND equip_test IN ($indice_id) AND order_date = '$order_date'")->fetch_all();
 
-			$lot = mysqli_fetch_array(mysqli_query($link, "SELECT `id` AS `lot_id` FROM `qc_lot_master` WHERE `qc_id` = '$qc'"));
+            $lot = mysqli_fetch_array(mysqli_query($link, "SELECT `id` AS `lot_id` FROM `qc_lot_master` WHERE `qc_id` = '$qc'"));
             ?>
             <tbody>
                 <?php
                 $n = 1;
                 foreach ($r1 as $row) {
-				$range = mysqli_fetch_array(mysqli_query($link, "SELECT lower, upper FROM qc_baseline WHERE `lot_id` = '$lot[lot_id]' AND indice_id = '$row[equip_test]'"));
-				$flag = "";
-				if($row['result_flag'] != '0') {
-					$flag = "<i style='color: red;' class='icon-flag'></i>";
-				}
+                    $range = mysqli_fetch_array(mysqli_query($link, "SELECT lower, upper FROM qc_baseline WHERE `lot_id` = '$lot[lot_id]' AND indice_id = '$row[equip_test]'"));
+                    $flag = "";
+                    $resflag = 0;
+                    $print_res = "checked";
+                    if ($row['result_flag'] != '0') {
+                        $flag = " <i style='color: red;' class='icon-flag'></i>";
+                        $resflag = $row['result_flag'];
+                        $print_res = "";
+                    }
                     ?>
                     <tr>
                         <td><?php echo $n; ?></td>
@@ -190,9 +207,12 @@ if ($type == 'date_data') {
                         <td><?php echo $row['test_name']; ?></td>
                         <td><input <?= $save_btn; ?> id="res_<?php echo $n; ?>" type="text" value="<?php echo $row['result']; ?>"
                                 data-id="<?php echo $row['equip_test']; ?>" data-name="<?php echo $row['test_name']; ?>"
-                                data-unit="<?php echo $row['unit']; ?>" /><?= $flag;?></td>
-                        
-                        <td><?= $range['lower'] . " - " . $range['upper'];?></td>
+                                data-unit="<?php echo $row['unit']; ?>" /><?= $flag; ?>
+                            <input type="hidden" class="flag" value="<?= $resflag; ?>" />
+                            <input class="is_print" style="float: right; margin-right: 20%" value="1" type="checkbox" <?= $print_res; ?> />
+                        </td>
+
+                        <td><?= $range['lower'] . " - " . $range['upper']; ?></td>
                         <td><?php echo $row['unit']; ?></td>
                         <td><?php echo date('d-m-Y', strtotime($row['order_date'])) . " / " . date('h:i A', strtotime($row['order_date'])); ?>
                         </td>
@@ -231,11 +251,11 @@ if ($type == "save_qc") {
         $test_name = mysqli_real_escape_string($link, $row['test_name']);
         $result = mysqli_real_escape_string($link, $row['result']);
         $unit = mysqli_real_escape_string($link, $row['unit']);
+        $flag = mysqli_real_escape_string($link, $row['flag']);
+        $is_print = mysqli_real_escape_string($link, $row['is_print']);
 
-        mysqli_query($link, "INSERT INTO `qc_results`
-            (`qc_id`, `lot_no`, `order_date`, `indice_id`, `indice_name`, `result`, `unit`, `date`, `time`, `user`)
-            VALUES
-            ('$qc_id[qc_id]', '$lot_no[lot_no]', '$order_date', '$indice_id', '$test_name', '$result', '$unit', '$date', '$time', '$user')");
+        mysqli_query($link, "INSERT INTO `qc_results` (`qc_id`, `lot_no`, `order_date`, `indice_id`, `indice_name`, `result`, `flag`, `print`,`unit`, `date`, `time`, `user`) VALUES ('$qc_id[qc_id]', '$lot_no[lot_no]', '$order_date', '$indice_id', '$test_name', '$result', '$flag', '$is_print', '$unit', '$date', '$time', '$user')");
+
     }
 
     echo 1; // success

@@ -127,24 +127,33 @@
     }
 
     function load_data() {
-        $.post("pages/qc_graph2_data.php",
-            {
-                type: 'load_indice',
-                indice_sel: $("#indice_sel").val(),
-                qc_sel: $("#qc_sel").val(),
-                dateF: $("#date_from").val(),
-                dateT: $("#date_to").val(),
-            },
-            function (data, status) {
-                var response = data.split("@@");
-                var result = response[0];
-                var date = response[1];
-                var i_name = response[2];
-                var indice_id = response[3];
-                // alert(data);
-                calculate(result, date, i_name);
+        if ($("#qc_sel").val() == 0) {
+            alertmsg("SELECT QC", 0);
+        }
+        else if ($("#indice_sel").val() == 0) {
+            alertmsg("SELECT INDICE", 0);
 
-            });
+        }
+        else {
+            $.post("pages/qc_graph2_data.php",
+                {
+                    type: 'load_indice',
+                    indice_sel: $("#indice_sel").val(),
+                    qc_sel: $("#qc_sel").val(),
+                    dateF: $("#date_from").val(),
+                    dateT: $("#date_to").val(),
+                },
+                function (data, status) {
+                    var response = data.split("@@");
+                    var result = response[0];
+                    var date = response[1];
+                    var i_name = response[2];
+                    var indice_id = response[3];
+                    // alert(data);
+                    calculate(result, date, i_name);
+
+                });
+        }
     }
     function get_details(mean, st_dev, cv) {
         $.post("pages/qc_graph2_data.php",
@@ -297,7 +306,17 @@
     }
 
 
-
+    function alertmsg(msg, n) {
+        $.gritter.add({
+            //title:	'Normal notification',
+            text: '<h5 style="text-align:center;">' + msg + '</h5>',
+            time: 1000,
+            sticky: false
+        });
+        if (n > 0) {
+            $(".gritter-item").css("background", "#237438");
+        }
+    }
 
     function calc_mean(arr) {
         var sum = arr.reduce((acc, value) => acc + value, 0);

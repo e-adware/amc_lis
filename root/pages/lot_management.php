@@ -84,6 +84,21 @@
         load_lot();
     });
 
+    function show_selected_test() {
+
+    }
+
+    function hid_div(e) {
+
+    }
+
+
+    $(document).on('keydown', function (e) {
+        if (e.key === "Escape" || e.keyCode === 27) {
+            load_lot_home();
+        }
+    });
+
     function save_lot() {
         qc_id = $("#qc_id");
         lot_no = $("#lot_no");

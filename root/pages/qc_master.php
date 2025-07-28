@@ -7,13 +7,13 @@
             <table class="table table-striped table-bordered table-condensed">
                 <tr>
                     <th>Instrument Name:</th>
-                    <td><?php $ins_qry = mysqli_query($link, "SELECT DISTINCT `equip_name` FROM `test_sample_result` WHERE `equip_name` != 'NULL' ORDER BY `equip_name`");
+                    <td><?php $ins_qry = mysqli_query($link, "SELECT * FROM `lab_instrument_master`  WHERE (`name` != 'NULL' OR `name` != '') ORDER BY `name`");
                     ?>
                         <select id="instrument_name" class="form-control">
                             <?php
                             $n = 1;
                             while ($ins = mysqli_fetch_array($ins_qry)) {
-                                echo "<option value='" . $n++ . "'>" . $ins['equip_name'] . "</option>";
+                                echo "<option value='$ins[id]'>" . $ins['name'] . "</option>";
                             }
                             ?>
                         </select>
@@ -86,6 +86,21 @@
     $(document).ready(function () {
         load_qc();
 
+    });
+
+    function show_selected_test() {
+
+    }
+
+    function hid_div(e) {
+
+    }
+
+
+    $(document).on('keydown', function (e) {
+        if (e.key === "Escape" || e.keyCode === 27) {
+            load_qc_home();
+        }
     });
 
     function load_qc() {

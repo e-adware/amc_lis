@@ -74,6 +74,7 @@ header('Content-Disposition: attachment; filename=' . $filename);
                         <!-- <th>Indice ID</th> -->
                         <th>Indice Name</th>
                         <th>Result</th>
+                        <th>Flag</th>
                         <th>Range</th>
                         <th>Unit</th>
                         <th>Order Date</th>
@@ -81,16 +82,21 @@ header('Content-Disposition: attachment; filename=' . $filename);
                 </thead>
                 <tbody>
                     <?php
-                    $qc_res_qry = mysqli_query($link, "SELECT * FROM `qc_results` WHERE `order_date` = '$order_date'");
+                    $qc_res_qry = mysqli_query($link, "SELECT * FROM `qc_results` WHERE `order_date` = '$order_date' ");
                     $n = 1;
                     while ($qc_res = mysqli_fetch_assoc($qc_res_qry)) {
-						$range = mysqli_fetch_array(mysqli_query($link, "SELECT lower, upper FROM qc_baseline WHERE lot_id = '$lot[id]' AND indice_id = '$qc_res[indice_id]'"));
+                        $flag = "No";
+                        if ($qc_res['flag'] != '0') {
+                            $flag = "Yes";
+                        }
+                        $range = mysqli_fetch_array(mysqli_query($link, "SELECT lower, upper FROM qc_baseline WHERE lot_id = '$lot[id]' AND indice_id = '$qc_res[indice_id]'"));
                         ?>
                         <tr>
                             <td><?= $n++ ?></td>
                             <td><?= $qc_res['indice_name']; ?></td>
                             <td><?= $qc_res['result']; ?></td>
-                             <td><?= $range['lower'] . " - " . $range['upper'];?></td>
+                            <td><?= $flag ?></td>
+                            <td><?= $range['lower'] . " - " . $range['upper']; ?></td>
                             <td><?= $qc_res['unit']; ?></td>
                             <td><?= date('d-M-Y / h:i A', strtotime($qc_res['order_date'])); ?></td>
 

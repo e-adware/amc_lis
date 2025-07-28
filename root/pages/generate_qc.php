@@ -7,6 +7,7 @@
         <span class="side_name">Date</span>
         <input class="span2 datepicker dt" type="text" id="date" value="<?php echo date('Y-m-d'); ?>" readonly>
 
+
         <select class="span2" id="qc_name">
             <option value="0">Select QC</option>
             <?php $qc_list_qry = mysqli_query($link, "SELECT * FROM `qc_master`");
@@ -59,6 +60,20 @@
         });
     });
 
+
+    $(document).on('keydown', function (e) {
+        if (e.key === "Escape" || e.keyCode === 27) {
+            generate_report();
+        }
+    });
+
+    function show_selected_test() {
+
+    }
+
+    function hid_div(e) {
+
+    }
     function generate_report() {
         $("#loader").show();
         dateF = $("#date").val();
@@ -117,13 +132,20 @@
     function save_report(qc, o_date) {
         var results = [];
 
+
         $('input[id^="res_"]').each(function () {
             var $input = $(this);
+            var $row = $input.closest('tr');
+            var isPrint = $row.find('.is_print').is(':checked') ? 1 : 0;
+            var flag = $row.find('.flag').val();
+
             results.push({
                 indice_id: $input.data('id'),
                 test_name: $input.data('name'),
                 result: $input.val(),
-                unit: $input.data('unit')
+                unit: $input.data('unit'),
+                flag: flag,
+                is_print: isPrint
             });
         });
 
@@ -136,7 +158,6 @@
                 results: JSON.stringify(results),
             },
             function (data, status) {
-                // alert(data);
                 if (data > 0) {
                     alertmsg("Saved", 1);
 

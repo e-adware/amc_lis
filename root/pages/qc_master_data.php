@@ -79,7 +79,7 @@ if ($type == 'edit_qc_param') {
             <button style=" display: inline;" class="btn btn-mini btn-primary" onclick="load_qc_home()"><i
                     class="icon-reply"></i>
                 Back To
-                List </button>
+                List (Esc)</button>
             <button style="display: inline;" class="btn btn-mini btn-danger"
                 onclick="reload_test_master('<?= $qc_name['qc_id'] ?>')"><i class="icon-repeat"></i>
                 Reload Test Master</button>
