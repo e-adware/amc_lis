@@ -30,6 +30,8 @@
 <link rel="stylesheet" href="include/css/jquery-ui.css" />
 <script src="include/js/jquery-ui.js"></script>
 <script src="../jss/moment.js"></script>
+
+<script src="../js/sweetalert2.all.min.js"></script>
 <!-- Time -->
 <link rel="stylesheet" href="include/ui-1.10.0/ui-lightness/jquery-ui-1.10.0.custom.min.css" type="text/css" />
 <!-- Loader -->
@@ -130,42 +132,57 @@
         window.open(url, 'Window', 'scrollbars=1,menubar=1,toolbar=0,height=670,width=1000');
     }
     function save_report(qc, o_date) {
-        var results = [];
+
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "Are you sure want to save the results? This cannot be undone!!!",
+            icon: 'success',
+            showCancelButton: true,
+            confirmButtonText: 'Save',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                var results = [];
 
 
-        $('input[id^="res_"]').each(function () {
-            var $input = $(this);
-            var $row = $input.closest('tr');
-            var isPrint = $row.find('.is_print').is(':checked') ? 1 : 0;
-            var flag = $row.find('.flag').val();
+                $('input[id^="res_"]').each(function () {
+                    var $input = $(this);
+                    var $row = $input.closest('tr');
+                    var isPrint = $row.find('.is_print').is(':checked') ? 1 : 0;
+                    var flag = $row.find('.flag').val();
 
-            results.push({
-                indice_id: $input.data('id'),
-                test_name: $input.data('name'),
-                result: $input.val(),
-                unit: $input.data('unit'),
-                flag: flag,
-                is_print: isPrint
-            });
+                    results.push({
+                        indice_id: $input.data('id'),
+                        test_name: $input.data('name'),
+                        result: $input.val(),
+                        unit: $input.data('unit'),
+                        flag: flag,
+                        is_print: isPrint
+                    });
+                });
+
+
+                $.post("pages/generate_qc_data.php",
+                    {
+                        type: 'save_qc',
+                        order_date: o_date,
+                        qc_name: qc,
+                        results: JSON.stringify(results),
+                    },
+                    function (data, status) {
+                        if (data > 0) {
+                            alertmsg("Saved", 1);
+
+                        } else {
+                            alertmsg("Lot not available for this QC", 0);
+                        }
+                        load_date_data(o_date);
+                    });
+            }
         });
 
 
-        $.post("pages/generate_qc_data.php",
-            {
-                type: 'save_qc',
-                order_date: o_date,
-                qc_name: qc,
-                results: JSON.stringify(results),
-            },
-            function (data, status) {
-                if (data > 0) {
-                    alertmsg("Saved", 1);
 
-                } else {
-                    alertmsg("Lot not available for this QC", 0);
-                }
-                load_date_data(o_date);
-            });
     }
 
     function alertmsg(msg, n) {

@@ -5,7 +5,7 @@ class Db_LoaderMS extends PDO
 
     function __construct()
     {
-        parent::__construct("dblib:host=192.168.29.254;dbname=powerlink_lmch", "powerlink", "powerlink", []);
+        parent::__construct("dblib:host=192.168.29.254;dbname=powerlink_amch", "powerlink", "powerlink", []);
         $this->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     }
 
