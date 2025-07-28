@@ -7,7 +7,7 @@
             <table class="table table-striped table-bordered table-condensed">
                 <tr>
                     <th>Instrument Name:</th>
-                    <td><?php $ins_qry = mysqli_query($link, "SELECT * FROM `lab_instrument_master`  WHERE (`name` != 'NULL' OR `name` != '') ORDER BY `name`");
+                    <td><?php $ins_qry = mysqli_query($link, "SELECT * FROM `lab_instrument_master` WHERE (`name` != NULL OR `name` != '') ORDER BY `id`");
                     ?>
                         <select id="instrument_name" class="form-control">
                             <?php
