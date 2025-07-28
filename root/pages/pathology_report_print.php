@@ -1088,8 +1088,10 @@ foreach ($doctors as $doctor) {
 	$total_pages = mysqli_num_rows(mysqli_query($link, "SELECT DISTINCT `page_no` FROM `pathology_report_print` WHERE `patient_id`='$uhid' AND `opd_id`='$bill_id' AND `batch_no`='$batch_no' AND `testid` IN($testall) AND `user`='$c_user' AND `ip_addr`='$ip_addr' AND `status`=0"));
 	
 	// Paper Usage Record
-	mysqli_query($link, "INSERT INTO `report_printing_paper_usage_record`(`patient_id`, `opd_id`, `batch_no`, `user`, `date`, `time`, `paper_usage`, `category_id`, `type_id`) VALUES ('$uhid','$bill_id','$batch_no','$c_user','$date','$time','$total_pages','1','0')");
+	if ($total_pages > 0) {
+		mysqli_query($link, "INSERT INTO `report_printing_paper_usage_record`(`patient_id`, `opd_id`, `batch_no`, `user`, `date`, `time`, `paper_usage`, `category_id`, `type_id`) VALUES ('$uhid','$bill_id','$batch_no','$c_user','$date','$time','$total_pages','1','0')");
 
+	}
 	// Test Result and summary
 	
 	$result_table = "1,2";
