@@ -111,6 +111,7 @@
         $.post("pages/patient_count_summary_data.php",
             {
                 type: "load_data",
+                mode: "print",
                 to_date: $("#to_date").val(),
                 from_date: $("#from_date").val(),
 

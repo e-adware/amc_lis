@@ -183,6 +183,7 @@
         $.post("pages/ward_wise_patient_report_data.php",
             {
                 type: "load_data",
+                mode: 'print',
                 to_date: tdate,
                 from_date: fdate,
                 ward: ward,

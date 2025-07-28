@@ -169,15 +169,16 @@ if ($type == 'load_data') {
         <div style="display: flex; justify-content: space-between; align-items: center;">
             <div><strong>Report Generated On:</strong> <?= date('d-M-y') . " / " . date('h:i A'); ?></div>
             <div style="display: flex; gap: 10px;">
-                <button
-                    onclick="exportTableToExcel('<?= $f_date; ?>','<?= $t_date; ?>','<?= $sel_test; ?>','<?= $time_per ?>', '<?= $free_type; ?>')"
-                    class="btn btn-mini btn-warning">
-                    <i class="icon-file icon-large"></i> Excel
-                </button>
+
                 <button
                     onclick="printTable('<?= $f_date; ?>','<?= $t_date; ?>','<?= $sel_test; ?>','<?= $time_per ?>', '<?= $free_type; ?>')"
                     class="btn btn-mini btn-print">
                     <i class="icon-print icon-large"></i> Print
+                </button>
+                <button
+                    onclick="exportTableToExcel('<?= $f_date; ?>','<?= $t_date; ?>','<?= $sel_test; ?>','<?= $time_per ?>', '<?= $free_type; ?>')"
+                    class="btn btn-mini btn-warning">
+                    <i class="icon-file icon-large"></i> Excel
                 </button>
             </div>
         </div>
