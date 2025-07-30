@@ -408,7 +408,7 @@ if ($type == "test_wise_summary_view") {
                 $total_tat_minutes = $main_data['total_tat_minutes'];
                 $percentage_within_tat = ($total_tests > 0) ? ($within_tat / $total_tests) * 100 : 0;
                 $average_tat = $total_tat_minutes / $total_tests;
-                $average_tat = floor($average_tat / 100) . " Hours " . ($average_tat % 60) . " Minutes";
+                $average_tat = floor($average_tat / 60) . " Hours " . ($average_tat % 60) . " Minutes";
 
                 $total_count = mysqli_fetch_array(mysqli_query($link, "SELECT COUNT('opd_id') as total_tests FROM `phlebo_sample` WHERE `testid` = '$main_data[testid]' AND `date` BETWEEN '$date1' AND '$date2'"));
 
