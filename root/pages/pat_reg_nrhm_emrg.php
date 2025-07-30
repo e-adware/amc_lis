@@ -1424,7 +1424,10 @@ function load_pat_details(opdid)
 		load_search();
 		//load_selected_tests();
 		load_selected_test_list();
-		$("#cancel_pat").show();
+		if($("#lavel_id").val().trim()==1 || $("#lavel_id").val().trim()==13)
+		{
+			$("#cancel_pat").show();
+		}
 	})
 	
 }
