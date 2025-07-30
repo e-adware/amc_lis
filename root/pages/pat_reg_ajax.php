@@ -590,4 +590,60 @@ if ($type == 1) {
 	echo "update barcode_setting set fo_val='$bar_value' where ip_address='$ip'";
 	mysqli_query($link, "update barcode_setting set fo_val='$bar_value' where ip_address='$ip'");
 }
+else if($type==14)
+{
+	$opd=$_POST['opd'];
+	$user=$_POST['user'];
+	
+	$date=date("Y-m-d");
+	$time=date('H:i:s');
+	
+	$del_reason=mysqli_real_escape_string($link, $_POST["reason"]);
+	
+	$emp=mysqli_fetch_array(mysqli_query($link,"select * from employee where emp_id='$user'"));
+	if($emp["levelid"]==1 || $emp["levelid"]==13)
+	{
+		$chk_res=mysqli_fetch_array(mysqli_query($link,"select count(*) as tot from testresults where opd_id='$opd'"));
+		
+		$result_coount=$chk_res["tot"];
+		
+		if($result_coount==0)
+		{
+			$chk_summ=mysqli_fetch_array(mysqli_query($link,"select count(*) as tot from patient_test_summary where opd_id='$opd'"));
+			
+			$result_coount=$chk_summ["tot"];
+		}
+		
+		if($result_coount==0)
+		{
+			$chk_samp=mysqli_fetch_array(mysqli_query($link,"select count(*) as tot from test_sample_result where opd_id='$opd' and result!=''"));
+			
+			$result_coount=$chk_samp["tot"];
+		}
+		
+		if($result_coount==0)
+		{
+			// Record
+			mysqli_query($link, "INSERT INTO `uhid_and_opdid_delete`(`patient_id`, `opd_id`, `ward`, `disease_id`, `dept`, `hosp_no`, `bill_no`, `urgent`, `date`, `time`, `user`, `type`, `type_prefix`, `sample_serial`, `pat_type`, `free`, `auth`, `auth_disc`, `date_serial`, `emer_nr`, `nr_pat_type`, `nr_covid`, `del_user`, `del_date`, `del_time`, `del_reason`) SELECT `patient_id`, `opd_id`, `ward`, `disease_id`, `dept`, `hosp_no`, `bill_no`, `urgent`, `date`, `time`, `user`, `type`, `type_prefix`, `sample_serial`, `pat_type`, `free`, `auth`, `auth_disc`, `date_serial`, `emer_nr`, `nr_pat_type`, `nr_covid`,'$user','$date','$time','$del_reason' FROM `uhid_and_opdid` WHERE `opd_id`='$opd'");
+			
+			mysqli_query($link, "INSERT INTO `patient_test_details_delete`(`patient_id`, `opd_id`, `ipd_id`, `batch_no`, `testid`, `sample_id`, `test_rate`, `test_discount`, `dept_serial`, `addon_testid`, `date`, `time`, `user`, `type`) SELECT `patient_id`, `opd_id`, `ipd_id`, `batch_no`, `testid`, `sample_id`, `test_rate`, `test_discount`, `dept_serial`, `addon_testid`, `date`, `time`, `user`, `type` FROM `patient_test_details` WHERE `opd_id`='$opd'");
+			
+			mysqli_query($link,"delete from uhid_and_opdid  where opd_id='$opd'");
+			mysqli_query($link,"delete from patient_test_details where opd_id='$opd'");
+			mysqli_query($link,"delete from phlebo_sample  where opd_id='$opd'");
+			mysqli_query($link,"delete from patient_sample_details  where opd_id='$opd'");
+			mysqli_query($link,"delete from patient_disease_details  where opd_id='$opd'");
+			
+			echo "0";
+		}
+		else
+		{
+			echo "1";
+		}
+	}
+	else
+	{
+		echo "2";
+	}
+}
 ?>

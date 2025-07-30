@@ -283,6 +283,7 @@ if($exp)
 				<button id="save" class="btn btn-success" onclick="save_data(this.value)" value="save">Save</button>
 				<button id="print" class="btn btn-primary" onclick="print_barcode()">Print Barcode</button>
 				<button id="print" class="btn btn-primary" onclick="load_new()">New</button>
+				<button id="cancel_pat" class="btn btn-danger" onclick="load_canc_pat()" style="display:none">Delete This Patient</button>
 			</td>
 		</tr>
 		</table>
@@ -1417,6 +1418,7 @@ function load_pat_details(opdid)
 		load_search();
 		//load_selected_tests();
 		load_selected_test_list();
+		$("#cancel_pat").show();
 	})
 	
 }
@@ -1737,5 +1739,43 @@ function load_bar_set(ip)
 {
 	var ipp="'"+ip+"'";
 	$("#bar_setting").html('<button class="btn btn-info btn-success" onclick="load_bar_setting('+ipp+')"><i class="icon-wrench"></i></button>');	
+}
+
+function load_canc_pat()
+{
+	if(confirm("Do you really want to cancel this patient?")) {
+		var deleteReason = prompt("Please enter the reason for deleting this patient:");
+		if(deleteReason === null || deleteReason.trim() === "") {
+			alert("Deletion cancelled: reason is required.");
+			return; // stop if no reason provided
+		}
+
+		$.post("pages/pat_reg_ajax.php",
+		{
+			opd: $("#opd_id").val(),
+			user: $("#user").text(),
+			type: 14,
+			reason: deleteReason  // send reason here
+		},
+		function(data, status) {
+			if(data == 0) {
+				bootbox.dialog({ message: "<h5>Patient Deleted</h5>" });
+				setTimeout(function() {
+					bootbox.hideAll();
+					load_new();
+				}, 1000);
+			} else if(data == 2) {
+				bootbox.dialog({ message: "<h5>Not Authorised to Delete</h5>" });
+				setTimeout(function() {
+					bootbox.hideAll();
+				}, 1000);
+			} else {
+				bootbox.dialog({ message: "<h5>Cannot be Deleted. Few results are already received or done.</h5>" });
+				setTimeout(function() {
+					bootbox.hideAll();
+				}, 2000);
+			}
+		});
+	}
 }
 </script>
