@@ -1,2 +1,9 @@
 ﻿ALTER TABLE `qc_results` ADD `flag` VARCHAR(2) NOT NULL AFTER `result`, ADD `print` INT NOT NULL AFTER `flag`; 
 
+----------------------------------------------------------------------------------------------------------------------
+
+TRUNCATE TABLE `patient_cancel_details`;
+DROP TABLE `patient_test_details_delete`;
+
+
+
