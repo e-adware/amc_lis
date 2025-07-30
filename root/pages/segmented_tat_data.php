@@ -95,7 +95,7 @@ if ($type == 'load_data') {
                     $seg2_bar_dates[] = $row['bar_date'];
                 }
 
-                $seg3 = mysqli_query($link, "SELECT  a.`time` AS `res_time`, b.`t_time` AS `t_time`, b.`d_time` AS `d_time`, a.`date` AS `res_date`, b.`t_date` AS `t_date`, b.`d_date` AS `d_date` FROM `testresults` a, `approve_details` b, `uhid_and_opdid` c WHERE a.`opd_id` = b.`opd_id` AND a.`opd_id` = c.`opd_id` AND a.`testid` = b.`testid` AND b.testid = '$tests_head[testid]' AND b.`t_date` BETWEEN '$f_date' AND '$t_date' $p_qry GROUP BY a.`opd_id`");
+                $seg3 = mysqli_query($link, "SELECT  a.`time` AS `res_time`, b.`t_time` AS `t_time`, b.`d_time` AS `d_time`, a.`date` AS `res_date`, b.`t_date` AS `t_date`, b.`d_date` AS `d_date` FROM `testresults` a, `approve_details` b, `uhid_and_opdid` c WHERE a.`opd_id` = b.`opd_id` AND a.`opd_id` = c.`opd_id` AND a.`testid` = b.`testid` AND b.testid = '$tests_head[testid]' AND (b.`t_date` BETWEEN '$f_date' AND '$t_date' OR b.`d_date` BETWEEN '$f_date' AND '$t_date') $p_qry GROUP BY a.`opd_id`");
 
                 $seg3_res_times = [];
                 $seg3_t_times = [];
