@@ -36,9 +36,9 @@
                     <select id="free_type" class="span2">
                         <option value="0">Free Type</option>
                         <?php
-                        $free_type_qry = mysqli_query($link, "SELECT * FROM `pat_free_type` ORDER BY `name`");
+                        $free_type_qry = mysqli_query($link, "SELECT * FROM `pat_free_master` ORDER BY `name`");
                         while ($free_type = mysqli_fetch_array($free_type_qry)) {
-                            echo "<option value='$free_type[slno]'>$free_type[name]</option>";
+                            echo "<option value='$free_type[id]'>$free_type[free_name]</option>";
                         }
                         ?>
                     </select>
