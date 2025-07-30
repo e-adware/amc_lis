@@ -116,7 +116,7 @@ if ($type == 'date_data') {
 
     ?>
     <div style="float: right;">
-        <button class="btn btn-info btn-mini" onclick="back_to_reports()"><i class="icon-reply"></i> Back (Esc)</button>
+        <button class="btn btn-info btn-mini" onclick="generate_report()"><i class="icon-reply"></i> Back (Esc)</button>
         <button class="btn btn-primary btn-mini" style="<?php echo $print_btn; ?>"
             onclick="print_report('<?php echo $order_date; ?>')"><i class="icon-edit"></i>
             Print</button>
