@@ -109,6 +109,7 @@
         $.post("pages/segmented_tat_data.php",
             {
                 type: "load_data",
+                mode: "print",
                 to_date: $("#to_date").val(),
                 from_date: $("#from_date").val(),
                 sel_test: $("#sel_test").val(),

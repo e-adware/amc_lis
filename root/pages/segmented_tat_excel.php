@@ -23,19 +23,18 @@ if ($priority) {
         $p_qry .= " AND c.`urgent` = '1'";
     }
 }
-$qry .= $p_qry;
+$qry .= "$p_qry ORDER BY b.`testname`";
 
-$tests_head_qry = mysqli_query($link, $qry);
-?>
+$tests_head_qry = mysqli_query($link, $qry); ?>
 <div style="display: flex; justify-content: space-between; align-items: flex-start;">
     <div><b>Segment Definitions: </b>
         <ul>
-            <li><strong>Seg 1 (Reg):</strong> Patient Registration -> Barcode Generation</li>
-            <li><strong>Seg 2 (Analytical):</strong> Barcode Generation -> Result Entry from Instrument/data entry
+            <!-- <li><strong>Seg 1 (Reg):</strong> Patient Registration -> Barcode Generation</li> -->
+            <li><strong>Seg 1 (Analytical):</strong> Barcode Generation -> Result Entry from Instrument/data entry
                 by
                 operator
             </li>
-            <li><strong>Seg 3 (Review):</strong> Result Available -> Technician/Doctor Approval</li>
+            <li><strong>Seg 2 (Review):</strong> Result Available -> Technician/Doctor Approval</li>
         </ul>
     </div>
 
@@ -49,9 +48,9 @@ $tests_head_qry = mysqli_query($link, $qry);
         <tr>
             <th>Test Name</th>
             <th>No. Of Tests</th>
+            <!-- <th>Seg 1 (Avg / Med)</th> -->
             <th>Seg 1 (Avg / Med)</th>
             <th>Seg 2 (Avg / Med)</th>
-            <th>Seg 3 (Avg / Med)</th>
             <th>Overall TAT (Avg / Med)</th>
         </tr>
     </thead>
@@ -59,7 +58,7 @@ $tests_head_qry = mysqli_query($link, $qry);
         <?php
         while ($tests_head = mysqli_fetch_array($tests_head_qry)) {
             $testname = mysqli_fetch_array(mysqli_query($link, "SELECT `testname` FROM `testmaster` WHERE `testid` = '$tests_head[testid];'"));
-            $test_count_qry = "SELECT COUNT(a.testid) AS `ctr` FROM `phlebo_sample` a, `uhid_and_opdid` c WHERE a.testid = '$tests_head[testid]' AND a.`date` BETWEEN '$f_date' AND '$t_date' AND a.opd_id = c.opd_id $p_qry";
+            $test_count_qry = "SELECT COUNT(a.testid) AS `ctr` FROM `phlebo_sample` a, `uhid_and_opdid` c WHERE a.testid = '$tests_head[testid]' AND a.`date` BETWEEN '$f_date' AND '$t_date' AND a.opd_id = c.opd_id $p_qry ";
 
             $test_count = mysqli_fetch_array(mysqli_query($link, $test_count_qry));
 
@@ -88,7 +87,7 @@ $tests_head_qry = mysqli_query($link, $qry);
                 $seg2_bar_dates[] = $row['bar_date'];
             }
 
-            $seg3 = mysqli_query($link, "SELECT  a.`time` AS `res_time`, b.`t_time` AS `t_time`, b.`d_time` AS `d_time`, a.`date` AS `res_date`, b.`t_date` AS `t_date`, b.`d_date` AS `d_date` FROM `testresults` a, `approve_details` b, `uhid_and_opdid` c WHERE a.`opd_id` = b.`opd_id` AND a.`opd_id` = c.`opd_id` AND a.`testid` = b.`testid` AND b.testid = '$tests_head[testid]' AND b.`t_date` BETWEEN '$f_date' AND '$t_date' $p_qry GROUP BY a.`opd_id`");
+            $seg3 = mysqli_query($link, "SELECT  a.`time` AS `res_time`, b.`t_time` AS `t_time`, b.`d_time` AS `d_time`, a.`date` AS `res_date`, b.`t_date` AS `t_date`, b.`d_date` AS `d_date` FROM `testresults` a, `approve_details` b, `uhid_and_opdid` c WHERE a.`opd_id` = b.`opd_id` AND a.`opd_id` = c.`opd_id` AND a.`testid` = b.`testid` AND b.testid = '$tests_head[testid]' AND (b.`t_date` BETWEEN '$f_date' AND '$t_date' OR b.`d_date` BETWEEN '$f_date' AND '$t_date') $p_qry GROUP BY a.`opd_id`");
 
             $seg3_res_times = [];
             $seg3_t_times = [];
@@ -148,13 +147,14 @@ $tests_head_qry = mysqli_query($link, $qry);
             <tr>
                 <th><?php echo $testname['testname']; ?>
                 <td><?php echo $test_count['ctr']; ?></td>
-                <td><?php echo $seg1_avg . " / " . $seg1_med; ?>
-                </td>
+                <!-- <td><?php echo $seg1_avg . " / " . $seg1_med; ?>
+                    </td> -->
                 <td><?php echo $seg2_avg . " / " . $seg2_med; ?>
                 </td>
                 <td><?php echo $seg3_avg . " / " . $seg3_med; ?>
                 <td><?php
-                echo $total_avg . " / " . $total_median; ?>
+                echo $total_avg . " / " . $total_median;
+                ?>
                 </td>
             </tr>
         <?php } ?>
@@ -329,7 +329,7 @@ function calculateTotalAvgAndMedian($averages, $medians)
     ];
 }
 
-function compute_average_from_segments($timeArray)
+function compute_average_from_segments2($timeArray) //With 0
 {
     $total = array_sum($timeArray);
     $count = count($timeArray);
@@ -337,25 +337,98 @@ function compute_average_from_segments($timeArray)
     return format_minutes($avg);
 }
 
-function compute_median_from_segments($timeArray)
+function compute_average_from_segments(array $timeArray): string
 {
+    // Remove zero values
+    $filtered = array_filter($timeArray, function ($value) {
+        return $value != 0;
+    });
+
+    // Re-index array
+    $filtered = array_values($filtered);
+
+    $total = array_sum($filtered);
+    $count = count($filtered);
+
+    $avg = $count > 0 ? $total / $count : 0;
+
+    return format_minutes($avg);
+}
+
+
+function compute_median_from_segments(array $timeArray): string
+{
+    // Filter out 0 values
+    $timeArray = array_filter($timeArray, function ($value) {
+        return $value !== 0;
+    });
+
+    // Re-index array after filtering
+    $timeArray = array_values($timeArray);
+
+    // Sort the array
     sort($timeArray);
+
     $count = count($timeArray);
-    if ($count === 0)
-        return format_minutes(0);
+
+    // Handle case where array is empty after filtering
+    if ($count === 0) {
+        return format_minutes(0); // Or handle as needed
+    }
 
     if ($count % 2 === 1) {
+        // Odd number of elements, pick the middle one
         $median = $timeArray[floor($count / 2)];
     } else {
-        $mid = $count / 2;
+        // Even number of elements, average the two middle values
+        $mid = (int) ($count / 2);
         $median = ($timeArray[$mid - 1] + $timeArray[$mid]) / 2;
     }
+
     return format_minutes($median);
 }
+
+
+
+function compute_median_from_segments2(array $timeArray): string//With 0
+{
+    // Remove all zero values
+    $filtered = array_filter($timeArray, function ($value) {
+        return $value != 0;
+    });
+
+    // Re-index array
+    $filtered = array_values($filtered);
+    $count = count($filtered);
+
+    if ($count === 0) {
+        return format_minutes(0);
+    }
+
+    sort($filtered);
+
+    if ($count % 2 === 1) {
+        $median = $filtered[floor($count / 2)];
+    } else {
+        $mid = $count / 2;
+        $median = ($filtered[$mid - 1] + $filtered[$mid]) / 2;
+    }
+
+    return format_minutes($median);
+}
+
 
 function format_minutes($minutes)
 {
     $hours = floor($minutes / 60);
     $mins = round($minutes % 60);
-    return "{$hours} hours {$mins} mins";
+
+    if ($hours > 0 && $mins > 0) {
+        return "{$hours} hours {$mins} minutes";
+    } elseif ($hours > 0) {
+        return "{$hours} hours";
+    } else {
+        return "{$mins} minutes";
+    }
 }
+
