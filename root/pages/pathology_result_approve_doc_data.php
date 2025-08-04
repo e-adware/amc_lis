@@ -3,34 +3,37 @@ session_start();
 include("../../includes/connection.php");
 include("../../includes/global.function.php");
 
-function calculateDOBS($age, $unit = 'Y', $fromDate = null) {
-    $date = $fromDate ? new DateTime($fromDate) : new DateTime();
+function calculateDOBS($age, $unit = 'Y', $fromDate = null)
+{
+	$date = $fromDate ? new DateTime($fromDate) : new DateTime();
 
-    $unit = strtoupper($unit);
-    if (!in_array($unit, ['Y', 'M', 'D'])) {
-        throw new InvalidArgumentException("Unit must be 'Y', 'M', or 'D'.");
-    }
+	$unit = strtoupper($unit);
+	if (!in_array($unit, ['Y', 'M', 'D'])) {
+		throw new InvalidArgumentException("Unit must be 'Y', 'M', or 'D'.");
+	}
 
-    $whole = floor($age);
-    $fraction = $age - $whole;
+	$whole = floor($age);
+	$fraction = $age - $whole;
 
-    $intervalString = 'P';
+	$intervalString = 'P';
 
-    if ($unit === 'Y') {
-        $months = round($fraction * 12); // 0.2 * 12 = 2.4 → 2 months
-        $intervalString .= "{$whole}Y";
-        if ($months > 0) $intervalString .= "{$months}M";
-    } elseif ($unit === 'M') {
-        $days = round($fraction * 30); // 0.2 * 30 = 6 days
-        $intervalString .= "{$whole}M";
-        if ($days > 0) $intervalString .= "{$days}D";
-    } elseif ($unit === 'D') {
-        $days = round($age); // whole days
-        $intervalString .= "{$days}D";
-    }
+	if ($unit === 'Y') {
+		$months = round($fraction * 12); // 0.2 * 12 = 2.4 → 2 months
+		$intervalString .= "{$whole}Y";
+		if ($months > 0)
+			$intervalString .= "{$months}M";
+	} elseif ($unit === 'M') {
+		$days = round($fraction * 30); // 0.2 * 30 = 6 days
+		$intervalString .= "{$whole}M";
+		if ($days > 0)
+			$intervalString .= "{$days}D";
+	} elseif ($unit === 'D') {
+		$days = round($age); // whole days
+		$intervalString .= "{$days}D";
+	}
 
-    $date->sub(new DateInterval($intervalString));
-    return $date->format('Y-m-d');
+	$date->sub(new DateInterval($intervalString));
+	return $date->format('Y-m-d');
 }
 
 
@@ -51,54 +54,68 @@ mysqli_query($link, "UPDATE `test_sample_result` SET `result`='' WHERE `result`=
 
 if ($type == "pat_info_load") {
 	$uhid = base64_decode($_POST['uhid']);
-	$pat=mysqli_fetch_array(mysqli_query($link, "SELECT `hosp_no`,`name`,`sex`,`age`,`age_type`,`phone`,`address` FROM `patient_info` WHERE `patient_id`='$uhid'"));
+	$pat = mysqli_fetch_array(mysqli_query($link, "SELECT `hosp_no`,`name`,`sex`,`age`,`age_type`,`phone`,`address` FROM `patient_info` WHERE `patient_id`='$uhid'"));
 	//print_r($pat);
 	?>
 	<b>Patient info update</b>
 	<table class="table table-condensed">
 		<tr style="display:none;">
 			<td colspan="2">
-				<b>Hosp No:</b><br/>
-				<input type="text" class="span3" id="upd_hosp" value="<?php echo $pat['hosp_no'];?>" />
+				<b>Hosp No:</b><br />
+				<input type="text" class="span3" id="upd_hosp" value="<?php echo $pat['hosp_no']; ?>" />
 			</td>
 		</tr>
 		<tr>
 			<td colspan="2">
-				<b>Name:</b><br/>
-				<input type="text" class="span3" id="upd_name" onkeyup="this.value=this.value.toUpperCase();" value="<?php echo $pat['name'];?>" />
+				<b>Name:</b><br />
+				<input type="text" class="span3" id="upd_name" onkeyup="this.value=this.value.toUpperCase();"
+					value="<?php echo $pat['name']; ?>" />
 			</td>
 		</tr>
 		<tr>
 			<td>
-				<b>Sex:</b><br/>
+				<b>Sex:</b><br />
 				<select class="span2" id="upd_sex">
-					<option value="Male" <?php if($pat['sex']=="Male"){echo "selected";}?>>Male</option>
-					<option value="Female" <?php if($pat['sex']=="Female"){echo "selected";}?>>Female</option>
+					<option value="Male" <?php if ($pat['sex'] == "Male") {
+						echo "selected";
+					} ?>>Male</option>
+					<option value="Female" <?php if ($pat['sex'] == "Female") {
+						echo "selected";
+					} ?>>Female</option>
 				</select>
 			</td>
 			<td>
-				<b>Age:</b><br/>
-				<input type="text" class="span1" id="upd_age" onkeyup="this.value=this.value.replace(/[^0-9]/g, '');" value="<?php echo $pat['age'];?>" />
+				<b>Age:</b><br />
+				<input type="text" class="span1" id="upd_age" onkeyup="this.value=this.value.replace(/[^0-9]/g, '');"
+					value="<?php echo $pat['age']; ?>" />
 				<select class="span1" id="upd_age_type">
-					<option value="Years" <?php if($pat['age_type']=="Years"){echo "selected";}?>>Years</option>
-					<option value="Months" <?php if($pat['age_type']=="Months"){echo "selected";}?>>Months</option>
-					<option value="Days" <?php if($pat['age_type']=="Days"){echo "selected";}?>>Days</option>
+					<option value="Years" <?php if ($pat['age_type'] == "Years") {
+						echo "selected";
+					} ?>>Years</option>
+					<option value="Months" <?php if ($pat['age_type'] == "Months") {
+						echo "selected";
+					} ?>>Months</option>
+					<option value="Days" <?php if ($pat['age_type'] == "Days") {
+						echo "selected";
+					} ?>>Days</option>
 				</select>
 			</td>
 		</tr>
 		<tr>
 			<td>
-				<b>Phone:</b><br/>
-				<input type="text" class="span2" id="upd_phone" maxlength="10" onkeyup="this.value=this.value.replace(/[^0-9]/g, '');" value="<?php echo $pat['phone'];?>" />
+				<b>Phone:</b><br />
+				<input type="text" class="span2" id="upd_phone" maxlength="10"
+					onkeyup="this.value=this.value.replace(/[^0-9]/g, '');" value="<?php echo $pat['phone']; ?>" />
 			</td>
 			<td>
-				<b>Address:</b><br/>
-				<input type="text" class="span3" id="upd_addr" value="<?php echo $pat['address'];?>" />
+				<b>Address:</b><br />
+				<input type="text" class="span3" id="upd_addr" value="<?php echo $pat['address']; ?>" />
 			</td>
 		</tr>
 		<tr>
 			<td colspan="2" style="text-align:center;">
-				<button type="button" class="btn btn-info" id="sav" onclick="update_pat_info('<?php echo base64_encode($uhid);?>')">Update</button>
+				<button type="button" class="btn btn-info" id="sav"
+					onclick="update_pat_info('<?php echo base64_encode($uhid); ?>')">Update</button>
 				<button type="button" class="btn btn-danger" id="btnDissm" data-dismiss="modal">Close</button>
 			</td>
 		</tr>
@@ -115,31 +132,26 @@ if ($type == "update_pat_info") {
 	$age = $_POST['age'];
 	$age_type = $_POST['age_type'];
 	$phone = $_POST['phone'];
-	$addr = mysqli_real_escape_string($link,$_POST['addr']);
-	
-	if($age_type=="Years")
-	{
-		$ageUnit="Y";
+	$addr = mysqli_real_escape_string($link, $_POST['addr']);
+
+	if ($age_type == "Years") {
+		$ageUnit = "Y";
 	}
-	if($age_type=="Months")
-	{
-		$ageUnit="M";
+	if ($age_type == "Months") {
+		$ageUnit = "M";
 	}
-	if($age_type=="Days")
-	{
-		$ageUnit="D";
+	if ($age_type == "Days") {
+		$ageUnit = "D";
 	}
-	
-	$pat=mysqli_fetch_array(mysqli_query($link,"SELECT `date` FROM `patient_info` WHERE `patient_id`='$uhid'"));
-	
-	$dob=calculateDOBS($age, $ageUnit, $pat['date']);
-	
-	if(mysqli_query($link, "UPDATE `patient_info` SET `name`='$name', `sex`='$sex', `dob`='$dob', `age`='$age', `age_type`='$age_type', `phone`='$phone', `address`='$addr' WHERE `patient_id`='$uhid'")) //`hosp_no`='$hosp', 
+
+	$pat = mysqli_fetch_array(mysqli_query($link, "SELECT `date` FROM `patient_info` WHERE `patient_id`='$uhid'"));
+
+	$dob = calculateDOBS($age, $ageUnit, $pat['date']);
+
+	if (mysqli_query($link, "UPDATE `patient_info` SET `name`='$name', `sex`='$sex', `dob`='$dob', `age`='$age', `age_type`='$age_type', `phone`='$phone', `address`='$addr' WHERE `patient_id`='$uhid'")) //`hosp_no`='$hosp', 
 	{
 		echo 1;
-	}
-	else
-	{
+	} else {
 		echo 0;
 	}
 }
@@ -317,6 +329,23 @@ if ($type == "load_pat_list") {
 			$opd_id = $test_det["opd_id"];
 			$ipd_id = $test_det["ipd_id"];
 			$batch_no = $test_det["batch_no"];
+			$appr_lvl = "";
+			$approve_by = mysqli_fetch_array(mysqli_query($link, "SELECT `doc`, `main_tech` FROM `testresults` WHERE `patient_id` = '$patient_id' AND `opd_id` = '$opd_id' AND `ipd_id` = '$ipd_id' AND `batch_no` = '$batch_no' GROUP BY `testid`"));
+
+			$style_circle = 'display:inline-block; width:20px; height:20px; border:2px solid #e5ff00; border-radius:50%; color:#e5ff00; font-weight:700; text-align:center; font-family:sans-serif;';
+
+			if ($approve_by['doc'] == 0 && $approve_by['main_tech'] > 0) {
+				$appr_lvl = '<span style="' . $style_circle . '">T</span>';
+			} else if ($approve_by['doc'] == $approve_by['main_tech'] && ($approve_by['doc'] > 0)) {
+				$style_circle_d = str_replace('#e5ff00', '#ffffff', $style_circle); // change color for D
+				$appr_lvl = '<span style="' . $style_circle_d . '">D</span>';
+			} else if ($approve_by['doc'] > 0) {
+				$style_circle_d = str_replace('#e5ff00', '#ffffff', $style_circle);
+				$appr_lvl = '<span style="' . $style_circle_d . '">D</span>';
+			} else {
+				$appr_lvl = '';
+			}
+
 
 			$pat_display = 0;
 
@@ -336,6 +365,7 @@ if ($type == "load_pat_list") {
 					$pat_display = 1; // No Display
 				}
 			}
+
 
 			if ($pat_display == 0) {
 				$pat_reg = mysqli_fetch_array(mysqli_query($link, " SELECT * FROM `uhid_and_opdid` WHERE `patient_id`='$patient_id' AND (`opd_id`='$opd_id' OR `opd_id`='$ipd_id') "));
@@ -414,7 +444,6 @@ if ($type == "load_pat_list") {
 					</td>
 					<td><?php echo $pat_info['hosp_no']; ?></td>
 					<td><?= $pat_reg['type_prefix'] . $pat_reg['sample_serial'] ?></td>
-
 					<td style="display:none;">
 						<?php echo $opd_id; ?>
 						<input type="hidden" id="pid_<?php echo $i; ?>" value="<?php echo $patient_id; ?>" />
@@ -545,8 +574,8 @@ if ($type == "load_pat_list") {
 									if ($tot_non_approved_chk > 0 || $lis_result_not_in_testresults["tot"] > 0) {
 										$cls = "btn btn-warning btn-mini";
 									}
-									
-									$btn_id=$tr_id."_".$type_id;
+
+									$btn_id = $tr_id . "_" . $type_id;
 
 									//~ $chk_canc=mysqli_num_rows(mysqli_query($link,"SELECT ptd.* FROM `patient_test_details` ptd JOIN `testmaster` tm ON ptd.testid = tm.testid WHERE ptd.patient_id = '$patient_id' AND ptd.opd_id = '$opd_id' AND ptd.ipd_id = '$ipd_id' AND ptd.batch_no = '$batch_no' AND tm.type_id = '$type_id'"));
 									//~ if($chk_canc==0)
@@ -574,7 +603,9 @@ if ($type == "load_pat_list") {
 										$cls = "btn btn-inverse btn-mini";
 									}
 									?>
-									<button id="btn_<?php echo $btn_id;?>" class="<?php echo $cls;?>" onclick="load_pat_dept_tests('<?php echo $i;?>','<?php echo $type_id;?>')" style="<?php echo $btnStyle;?>" <?php echo $btnDisabled;?>><?php echo $dept_info["name"];?></button>
+									<button id="btn_<?php echo $btn_id; ?>" class="<?php echo $cls; ?>"
+										onclick="load_pat_dept_tests('<?php echo $i; ?>','<?php echo $type_id; ?>')"
+										style="<?php echo $btnStyle; ?>" <?php echo $btnDisabled; ?>><?php echo $dept_info["name"] . " " . $appr_lvl; ?></button>
 									<?php
 								}
 							}
@@ -663,29 +694,23 @@ if ($type == "load_pat_dept_tests") {
 	}
 	$sample_receive_user = implode(",", $sample_receive_users);
 	$sl = mysqli_fetch_array(mysqli_query($link, "SELECT `dept_serial` FROM `patient_test_details` WHERE `patient_id`='$patient_id' AND `opd_id`='$opd_id' AND `ipd_id`='$ipd_id' AND `batch_no`='$batch_no' AND `dept_serial`!='' LIMIT 0,1"));
-	
-	$barcode_array=array();
-	$barcode_qry=mysqli_query($link, "SELECT DISTINCT a.`barcode_id` FROM `phlebo_sample` a, `testmaster` b WHERE a.`testid`=b.`testid` AND a.`patient_id`='$patient_id' AND a.`opd_id`='$opd_id' AND a.`ipd_id`='$ipd_id' AND a.`batch_no`='$batch_no' AND b.`type_id`='$sel_dept_id'");
-	while($barcode_data=mysqli_fetch_array($barcode_qry))
-	{
-		$barcode_array[]=$barcode_data["barcode_id"];
+
+	$barcode_array = array();
+	$barcode_qry = mysqli_query($link, "SELECT DISTINCT a.`barcode_id` FROM `phlebo_sample` a, `testmaster` b WHERE a.`testid`=b.`testid` AND a.`patient_id`='$patient_id' AND a.`opd_id`='$opd_id' AND a.`ipd_id`='$ipd_id' AND a.`batch_no`='$batch_no' AND b.`type_id`='$sel_dept_id'");
+	while ($barcode_data = mysqli_fetch_array($barcode_qry)) {
+		$barcode_array[] = $barcode_data["barcode_id"];
 	}
 
-	$barcode_array=array_unique($barcode_array);
-	$barcode_ids=implode(", ",$barcode_array);
+	$barcode_array = array_unique($barcode_array);
+	$barcode_ids = implode(", ", $barcode_array);
 
-	if($barcode_ids=="")
-	{
-		$each_barcode_qry=mysqli_query($link,"SELECT DISTINCT a.`barcode_id` FROM `test_sample_result` a, `testmaster` c WHERE a.`testid`=c.`testid` AND a.`patient_id`='$patient_id' AND a.`opd_id`='$opd_id' AND a.`ipd_id`='$ipd_id' AND a.`batch_no`='$batch_no' AND c.`type_id`='$sel_dept_id'");
-		while($bCode=mysqli_fetch_array($each_barcode_qry))
-		{
-			if($barcode_ids)
-			{
-				$barcode_ids.=", ".$bCode['barcode_id'];
-			}
-			else
-			{
-				$barcode_ids=$bCode['barcode_id'];
+	if ($barcode_ids == "") {
+		$each_barcode_qry = mysqli_query($link, "SELECT DISTINCT a.`barcode_id` FROM `test_sample_result` a, `testmaster` c WHERE a.`testid`=c.`testid` AND a.`patient_id`='$patient_id' AND a.`opd_id`='$opd_id' AND a.`ipd_id`='$ipd_id' AND a.`batch_no`='$batch_no' AND c.`type_id`='$sel_dept_id'");
+		while ($bCode = mysqli_fetch_array($each_barcode_qry)) {
+			if ($barcode_ids) {
+				$barcode_ids .= ", " . $bCode['barcode_id'];
+			} else {
+				$barcode_ids = $bCode['barcode_id'];
 			}
 		}
 	}
@@ -712,13 +737,14 @@ if ($type == "load_pat_dept_tests") {
 					<th>Drug</th>
 					<th>
 						<!--Ref. Doctor-->
-						<button class="btn btn-back btn-mini" onclick="back_to_list()" style="float:right;"><i class="icon-backward"></i> Back To List (ESC)</button>
+						<button class="btn btn-back btn-mini" onclick="back_to_list()" style="float:right;"><i
+								class="icon-backward"></i> Back To List (ESC)</button>
 					</th>
 				</tr>
 				<tr>
 					<td><?php echo $pat_info['hosp_no']; ?></td>
 					<td>
-						<?php echo $pat_reg['type_prefix'].$pat_reg['sample_serial']; ?>
+						<?php echo $pat_reg['type_prefix'] . $pat_reg['sample_serial']; ?>
 						<span style="float:right;"><?php echo $urgent_patient_img; ?></span>
 					</td>
 					<td><?php echo $barcode_ids; ?></td>
@@ -745,11 +771,14 @@ if ($type == "load_pat_dept_tests") {
 						<select id="disease_id" onchange="disease_change()">
 							<option value="0">None</option>
 							<?php
-							$pat_dis=mysqli_fetch_array(mysqli_query($link,"select * from patient_disease_details where patient_id='$patient_id' and opd_id='$pat_reg[opd_id]'"));
-							$qry=mysqli_query($link,"select * from disease_master order by name");
-							while($data=mysqli_fetch_array($qry))
-							{
-								if($pat_dis["disease_id"]==$data["id"]) { $sel="selected";}else{ $sel="";}
+							$pat_dis = mysqli_fetch_array(mysqli_query($link, "select * from patient_disease_details where patient_id='$patient_id' and opd_id='$pat_reg[opd_id]'"));
+							$qry = mysqli_query($link, "select * from disease_master order by name");
+							while ($data = mysqli_fetch_array($qry)) {
+								if ($pat_dis["disease_id"] == $data["id"]) {
+									$sel = "selected";
+								} else {
+									$sel = "";
+								}
 								echo "<option value='$data[id]' $sel>$data[name]</option>";
 							}
 							?>
@@ -759,11 +788,14 @@ if ($type == "load_pat_dept_tests") {
 						<select id="drug_id" onchange="drug_change()">
 							<option value="0">None</option>
 							<?php
-							$pat_dis=mysqli_fetch_array(mysqli_query($link,"select * from patient_drug_details where patient_id='$patient_id' and opd_id='$pat_reg[opd_id]'"));
-							$qry=mysqli_query($link,"select * from drug_master order by name");
-							while($data=mysqli_fetch_array($qry))
-							{
-								if($pat_dis["drug_id"]==$data["id"]) { $sel="selected";}else{ $sel="";}
+							$pat_dis = mysqli_fetch_array(mysqli_query($link, "select * from patient_drug_details where patient_id='$patient_id' and opd_id='$pat_reg[opd_id]'"));
+							$qry = mysqli_query($link, "select * from drug_master order by name");
+							while ($data = mysqli_fetch_array($qry)) {
+								if ($pat_dis["drug_id"] == $data["id"]) {
+									$sel = "selected";
+								} else {
+									$sel = "";
+								}
 								echo "<option value='$data[id]' $sel>$data[name]</option>";
 							}
 							?>
@@ -771,7 +803,9 @@ if ($type == "load_pat_dept_tests") {
 					</td>
 					<td style="text-align:right;">
 						<?php //echo $ref_doc["ref_name"]; ?>
-						<button type="button" class="btn btn-success btn-mini" onclick="pat_info_load('<?php echo base64_encode($patient_id);?>')"><i class="icon-edit"></i></button>
+						<button type="button" class="btn btn-success btn-mini"
+							onclick="pat_info_load('<?php echo base64_encode($patient_id); ?>')"><i
+								class="icon-edit"></i></button>
 					</td>
 				</tr>
 			</table>
@@ -1975,138 +2009,121 @@ if ($type == "load_pat_dept_tests") {
 						}, 1000);
 					})
 			}
-			
+
 			// Test Param Sample Status Start
-			function paramSampleStatus(testid,paramid)
-			{
+			function paramSampleStatus(testid, paramid) {
 				$("#loader").show();
 				$.post("pages/pathology_result_approve_tech_ajax.php",
-				{
-					type:"paramSampleStatus",
-					patient_id:$("#patient_id").val(),
-					opd_id:$("#opd_id").val(),
-					ipd_id:$("#ipd_id").val(),
-					batch_no:$("#batch_no").val(),
-					dept_id:$("#sel_dept_id").val(),
-					testid:testid,
-					paramid:paramid,
-				},
-				function(data,status)
-				{
-					$("#loader").hide();
-					$("#load_data_note").html(data);
-					$("#btn_modal_note").click();
-					
-					setTimeout(function(){
-						$("#test_note_val").focus();
-					},1000);
-				})
+					{
+						type: "paramSampleStatus",
+						patient_id: $("#patient_id").val(),
+						opd_id: $("#opd_id").val(),
+						ipd_id: $("#ipd_id").val(),
+						batch_no: $("#batch_no").val(),
+						dept_id: $("#sel_dept_id").val(),
+						testid: testid,
+						paramid: paramid,
+					},
+					function (data, status) {
+						$("#loader").hide();
+						$("#load_data_note").html(data);
+						$("#btn_modal_note").click();
+
+						setTimeout(function () {
+							$("#test_note_val").focus();
+						}, 1000);
+					})
 			}
-			function paramSampleStatusSave(testid,paramid)
-			{
-				if($("#sampleStatus_sample_status").val()=="")
-				{
+			function paramSampleStatusSave(testid, paramid) {
+				if ($("#sampleStatus_sample_status").val() == "") {
 					//$("#sampleStatus_sample_status").focus();
 					//return false;
 				}
-				
+
 				$("#loader").show();
 				$.post("pages/pathology_result_approve_tech_ajax.php",
-				{
-					type:"paramSampleStatusSave",
-					patient_id:$("#patient_id").val(),
-					opd_id:$("#opd_id").val(),
-					ipd_id:$("#ipd_id").val(),
-					batch_no:$("#batch_no").val(),
-					dept_id:$("#sel_dept_id").val(),
-					testid:testid,
-					paramid:paramid,
-					sample_status:$("#sampleStatus_sample_status").val(),
-					print_result:$("#sampleStatus_print_result").val(),
-					sample_note:$("#sampleStatus_sample_note").val(),
-				},
-				function(data,status)
-				{
-					$("#loader").hide();
-					var res=JSON.parse(data);
-					
-					if(res["error"]==3)
 					{
-						$("#sampleStatus_print_result").focus();
-					}else
-					{
-						$("#btn_modal_note").click();
-						if(res["error"]==0)
-						{
-							alertmsg(res["message"], 1);
-						}else
-						{
-							alertmsg(res["message"], 0);
-						}
-					}
-					setTimeout(function(){
+						type: "paramSampleStatusSave",
+						patient_id: $("#patient_id").val(),
+						opd_id: $("#opd_id").val(),
+						ipd_id: $("#ipd_id").val(),
+						batch_no: $("#batch_no").val(),
+						dept_id: $("#sel_dept_id").val(),
+						testid: testid,
+						paramid: paramid,
+						sample_status: $("#sampleStatus_sample_status").val(),
+						print_result: $("#sampleStatus_print_result").val(),
+						sample_note: $("#sampleStatus_sample_note").val(),
+					},
+					function (data, status) {
 						$("#loader").hide();
-						load_pat_dept_tests_refresh($("#sel_dept_id").val());
-					},1000);
-				})
+						var res = JSON.parse(data);
+
+						if (res["error"] == 3) {
+							$("#sampleStatus_print_result").focus();
+						} else {
+							$("#btn_modal_note").click();
+							if (res["error"] == 0) {
+								alertmsg(res["message"], 1);
+							} else {
+								alertmsg(res["message"], 0);
+							}
+						}
+						setTimeout(function () {
+							$("#loader").hide();
+							load_pat_dept_tests_refresh($("#sel_dept_id").val());
+						}, 1000);
+					})
 			}
 			// Test Param Sample Status End
-			
+
 			// Disease
-			function disease_change()
-			{
+			function disease_change() {
 				$("#loader").show();
 				$.post("pages/pathology_result_approve_doc_ajax.php",
-				{
-					type:"disease_change",
-					patient_id:$("#patient_id").val(),
-					opd_id:$("#opd_id").val(),
-					ipd_id:$("#ipd_id").val(),
-					batch_no:$("#batch_no").val(),
-					batch_no:$("#batch_no").val(),
-					disease_id:$("#disease_id").val(),
-				},
-				function(data,status)
-				{
-					$("#loader").hide();
-					var res=JSON.parse(data);
-					
-					if(res["error"]==0)
 					{
-						alertmsg(res["message"], 1);
-					}else
-					{
-						alertmsg(res["message"], 0);
-					}
-				})
+						type: "disease_change",
+						patient_id: $("#patient_id").val(),
+						opd_id: $("#opd_id").val(),
+						ipd_id: $("#ipd_id").val(),
+						batch_no: $("#batch_no").val(),
+						batch_no: $("#batch_no").val(),
+						disease_id: $("#disease_id").val(),
+					},
+					function (data, status) {
+						$("#loader").hide();
+						var res = JSON.parse(data);
+
+						if (res["error"] == 0) {
+							alertmsg(res["message"], 1);
+						} else {
+							alertmsg(res["message"], 0);
+						}
+					})
 			}
 			// Drug
-			function drug_change()
-			{
+			function drug_change() {
 				$("#loader").show();
 				$.post("pages/pathology_result_approve_doc_ajax.php",
-				{
-					type:"drug_change",
-					patient_id:$("#patient_id").val(),
-					opd_id:$("#opd_id").val(),
-					ipd_id:$("#ipd_id").val(),
-					batch_no:$("#batch_no").val(),
-					batch_no:$("#batch_no").val(),
-					drug_id:$("#drug_id").val(),
-				},
-				function(data,status)
-				{
-					$("#loader").hide();
-					var res=JSON.parse(data);
-					
-					if(res["error"]==0)
 					{
-						alertmsg(res["message"], 1);
-					}else
-					{
-						alertmsg(res["message"], 0);
-					}
-				})
+						type: "drug_change",
+						patient_id: $("#patient_id").val(),
+						opd_id: $("#opd_id").val(),
+						ipd_id: $("#ipd_id").val(),
+						batch_no: $("#batch_no").val(),
+						batch_no: $("#batch_no").val(),
+						drug_id: $("#drug_id").val(),
+					},
+					function (data, status) {
+						$("#loader").hide();
+						var res = JSON.parse(data);
+
+						if (res["error"] == 0) {
+							alertmsg(res["message"], 1);
+						} else {
+							alertmsg(res["message"], 0);
+						}
+					})
 			}
 
 			function print_preview(view, dept_id, barcode_id) {
@@ -2116,15 +2133,14 @@ if ($type == "load_pat_dept_tests") {
 				var batch_no = $("#batch_no").val();
 
 				var tst = "";
-				
+
 				var chk = $(".printTestCls:checked");
-				for (var i = 0; i < chk.length; i++)
-				{
+				for (var i = 0; i < chk.length; i++) {
 					var testid = chk[i].value;
-					
-					tst=tst+"@"+testid;
+
+					tst = tst + "@" + testid;
 				}
-				
+
 				var user = $("#user").text().trim();
 
 				var url = "pages/pathology_report_print.php?uhid=" + btoa(uhid) + "&opd_id=" + btoa(opd_id) + "&ipd_id=" + btoa(ipd_id) + "&batch_no=" + btoa(batch_no) + "&tests=" + btoa(tst) + "&hlt=" + btoa(tst) + "&user=" + btoa(user) + "&sel_doc=" + btoa(0) + "&view=" + btoa(1) + "&iso_no=" + btoa(0) + "&doc_view=" + btoa(view) + "&dept_id=" + btoa(dept_id);

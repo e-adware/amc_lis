@@ -49,7 +49,8 @@ if ($glob_patient_type == 0) {
 							</select>
 							<select id="approve_status" name="approve_status" class="span2">
 								<option value="0">--Select(Validate)--</option>
-								<option value="1">Validated</option>
+								<option value="1">Doctor Validated</option>
+								<option value="3">Technician Validated</option>
 								<option value="2">Not Validated</option>
 							</select>
 						</span>
@@ -343,51 +344,46 @@ if ($glob_patient_type == 0) {
 				$("#pat_info_load").html(data);
 				$("#mod_upd").click();
 				//alert(data);
-				setTimeout(function(){
+				setTimeout(function () {
 					var input = $("#upd_name");
 					input.focus()[0].setSelectionRange(input.val().length, input.val().length);
-				},400);
+				}, 400);
 			});
 	}
 	function update_pat_info(uhid) {
-		if($("#upd_name").val().trim()=="")
-		{
+		if ($("#upd_name").val().trim() == "") {
 			$("#upd_name").focus();
 		}
-		else if($("#upd_phone").val().trim()!="" && ($("#upd_phone").val().trim()).length!=10)
-		{
+		else if ($("#upd_phone").val().trim() != "" && ($("#upd_phone").val().trim()).length != 10) {
 			$("#upd_phone").focus();
 		}
-		else
-		{
-			$("#sav").attr("disabled",true);
+		else {
+			$("#sav").attr("disabled", true);
 			$("#loader").show();
 			$.post("pages/pathology_result_approve_doc_data.php",
-			{
-				uhid: uhid,
-				hosp: $("#upd_hosp").val().trim(),
-				name: $("#upd_name").val().trim(),
-				sex: $("#upd_sex").val().trim(),
-				age: $("#upd_age").val().trim(),
-				age_type: $("#upd_age_type").val().trim(),
-				phone: $("#upd_phone").val().trim(),
-				addr: $("#upd_addr").val().trim(),
-				type: "update_pat_info"
-			},
-			function (data, status) {
-				$("#loader").hide();
-				//alert(data);
-				$("#btnDissm").click();
-				if(data>0)
 				{
-					alertmsg("Updated", 1);
-					$(".nav.nav-tabs li.li_cls.active").click();
-				}
-				else
-				{
-					alertmsg("Error", 0);
-				}
-			});
+					uhid: uhid,
+					hosp: $("#upd_hosp").val().trim(),
+					name: $("#upd_name").val().trim(),
+					sex: $("#upd_sex").val().trim(),
+					age: $("#upd_age").val().trim(),
+					age_type: $("#upd_age_type").val().trim(),
+					phone: $("#upd_phone").val().trim(),
+					addr: $("#upd_addr").val().trim(),
+					type: "update_pat_info"
+				},
+				function (data, status) {
+					$("#loader").hide();
+					//alert(data);
+					$("#btnDissm").click();
+					if (data > 0) {
+						alertmsg("Updated", 1);
+						$(".nav.nav-tabs li.li_cls.active").click();
+					}
+					else {
+						alertmsg("Error", 0);
+					}
+				});
 		}
 	}
 	function back_to_list() {
