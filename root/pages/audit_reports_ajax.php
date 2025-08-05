@@ -229,152 +229,183 @@ if ($_POST["type"] == 2) {
     <table class="table table-bordered text-center">
         <thead class="table_header_fix">
             <tr>
-                <th rowspan="2">Sl. No</th>
+                <th rowspan="2">#</th>
                 <th rowspan="2">Parameter</th>
-                <th colspan="3">OPD</th>
-                <th colspan="3">IPD</th>
-                <th colspan="3">Emergency</th>
+                <th colspan="4">OPD</th>
+                <th colspan="4">IPD</th>
+                <th colspan="4">Emergency</th>
                 <th colspan="4">Total</th>
             </tr>
             <tr>
-                <th>GEN</th>
+                <th>GEN(Paid)</th>
+                <th>GEN(Free)</th>
                 <th>NR</th>
                 <th>Total</th>
-                <th>GEN</th>
+                <th>GEN(Paid)</th>
+                <th>GEN(Free)</th>
                 <th>NR</th>
                 <th>Total</th>
-                <th>GEN</th>
+                <th>GEN(Paid)</th>
+                <th>GEN(Free)</th>
                 <th>NR</th>
                 <th>Total</th>
-                <th>GEN</th>
+                <th>GEN(Paid)</th>
+                <th>GEN(Free)</th>
                 <th>NR</th>
                 <th>Total</th>
             </tr>
         </thead>
-        <?php
-        function highlight($value)
-        {
-            return $value > 0 ? ' style="background-color: #d4edda;"' : '';
-        }
-        ?>
-
         <tbody>
             <?php
-            $no = 1;
-
-            $sum_opd_gen = 0;
-            $sum_opd_nr = 0;
-            $sum_ipd_gen = 0;
-            $sum_ipd_nr = 0;
-            $sum_emg_gen = 0;
-            $sum_emg_nr = 0;
-
-            $param_query = mysqli_query($link, "
-                SELECT DISTINCT tr.paramid, p.Name 
-                FROM testresults tr
-                JOIN Parameter_old p ON tr.paramid = p.ID
-                WHERE tr.date BETWEEN '$fdate' AND '$tdate'
-                ORDER BY p.Name ASC
-            ");
-
-            while ($param_row = mysqli_fetch_array($param_query)) {
-                $param_id = $param_row['paramid'];
-                $param_name = $param_row['Name'];
-
-                $count_query = "
-                    SELECT 
-                        SUM(CASE WHEN u.type='1' AND u.pat_type='OPD' THEN 1 ELSE 0 END) AS opd_gen,
-                        SUM(CASE WHEN u.type='3' AND u.pat_type='OPD' THEN 1 ELSE 0 END) AS opd_nr,
-                        SUM(CASE WHEN u.type='2' AND u.pat_type='IPD' THEN 1 ELSE 0 END) AS ipd_gen,
-                        SUM(CASE WHEN u.type='3' AND u.pat_type='IPD' THEN 1 ELSE 0 END) AS ipd_nr,
-                        SUM(CASE WHEN u.type='4' AND u.pat_type='EMER' THEN 1 ELSE 0 END) AS emg_gen,
-                        SUM(CASE WHEN u.type='5' THEN 1 ELSE 0 END) AS emg_nr
-                    FROM testresults tr
-                    JOIN uhid_and_opdid u ON tr.opd_id = u.opd_id
-                    WHERE tr.paramid = '$param_id' AND u.date BETWEEN '$fdate' AND '$tdate'
-                ";
-
-                $count_result = mysqli_fetch_array(mysqli_query($link, $count_query));
-
-                $opd_gen = $count_result['opd_gen'];
-                $opd_nr = $count_result['opd_nr'];
-                $ipd_gen = $count_result['ipd_gen'];
-                $ipd_nr = $count_result['ipd_nr'];
-                $emg_gen = $count_result['emg_gen'];
-                $emg_nr = $count_result['emg_nr'];
-
-                $opd_total = $opd_gen + $opd_nr;
-                $ipd_total = $ipd_gen + $ipd_nr;
-                $emg_total = $emg_gen + $emg_nr;
-                $grand_gen = $opd_gen + $ipd_gen + $emg_gen;
-                $grand_nr = $opd_nr + $ipd_nr + $emg_nr;
-                $grand_all = $grand_gen + $grand_nr;
-
-                $sum_opd_gen += $opd_gen;
-                $sum_opd_nr += $opd_nr;
-                $sum_ipd_gen += $ipd_gen;
-                $sum_ipd_nr += $ipd_nr;
-                $sum_emg_gen += $emg_gen;
-                $sum_emg_nr += $emg_nr;
-                ?>
-                <tr>
-                    <td><?php echo $no++; ?></td>
-                    <td><?php echo $param_name; ?></td>
-                    <td<?php echo highlight($opd_gen); ?>><?php echo $opd_gen; ?></td>
-                        <td<?php echo highlight($opd_nr); ?>><?php echo $opd_nr; ?></td>
-                            <td<?php echo highlight($opd_total); ?>><?php echo $opd_total; ?></td>
-                                <td<?php echo highlight($ipd_gen); ?>><?php echo $ipd_gen; ?></td>
-                                    <td<?php echo highlight($ipd_nr); ?>><?php echo $ipd_nr; ?></td>
-                                        <td<?php echo highlight($ipd_total); ?>><?php echo $ipd_total; ?></td>
-                                            <td<?php echo highlight($emg_gen); ?>><?php echo $emg_gen; ?></td>
-                                                <td<?php echo highlight($emg_nr); ?>><?php echo $emg_nr; ?></td>
-                                                    <td<?php echo highlight($emg_total); ?>><?php echo $emg_total; ?></td>
-                                                        <td<?php echo highlight($grand_gen); ?>><?php echo $grand_gen; ?></td>
-                                                            <td<?php echo highlight($grand_nr); ?>><?php echo $grand_nr; ?></td>
-                                                                <td style="background-color: bisque;">
-                                                                    <strong><?php echo $grand_all; ?></strong>
-                                                                </td>
-
-                </tr>
-                <?php
+            function highlight($value)
+            {
+                return $value > 0 ? ' style="background-color: #d4edda;"' : '';
             }
 
-            $final_opd_total = $sum_opd_gen + $sum_opd_nr;
-            $final_ipd_total = $sum_ipd_gen + $sum_ipd_nr;
-            $final_emg_total = $sum_emg_gen + $sum_emg_nr;
-            $final_grand_gen = $sum_opd_gen + $sum_ipd_gen + $sum_emg_gen;
-            $final_grand_nr = $sum_opd_nr + $sum_ipd_nr + $sum_emg_nr;
-            $final_grand_all = $final_grand_gen + $final_grand_nr;
-            ?>
-        </tbody>
+            function total_highlight($value)
+            {
+                return $value > 0 ? ' style="background-color: #fbffd9ff;"' : '';
+            }
 
+            function g_total_highlight($value)
+            {
+                return $value > 0 ? ' style="background-color: #d9e3ffff;"' : '';
+            }
 
-        <tfoot style="font-weight: bold; background: #f0f0f0;">
-            <tr>
-                <td colspan="2" align="right">Grand Total:</td>
-                <td><?php echo $sum_opd_gen; ?></td>
-                <td><?php echo $sum_opd_nr; ?></td>
-                <td style="background-color: bisque;"><?php echo $final_opd_total; ?></td>
-                <td><?php echo $sum_ipd_gen; ?></td>
-                <td><?php echo $sum_ipd_nr; ?></td>
-                <td style="background-color: bisque;"><?php echo $final_ipd_total; ?></td>
-                <td><?php echo $sum_emg_gen; ?></td>
-                <td><?php echo $sum_emg_nr; ?></td>
-                <td style="background-color: bisque;"><?php echo $final_emg_total; ?></td>
-                <td><?php echo $final_grand_gen; ?></td>
-                <td><?php echo $final_grand_nr; ?></td>
-                <td style="background-color: bisque;"><strong><?php echo $final_grand_all; ?></strong></td>
+            // Initialize grand totals
+            $gt = [
+                'gen_paid_opd' => 0,
+                'gen_free_opd' => 0,
+                'opd_nr' => 0,
+                'opd_tot' => 0,
+                'gen_paid_ipd' => 0,
+                'gen_free_ipd' => 0,
+                'ipd_nr' => 0,
+                'ipd_tot' => 0,
+                'gen_paid_emer' => 0,
+                'gen_free_emer' => 0,
+                'nr_emer' => 0,
+                'emer_tot' => 0,
+                'paid_total' => 0,
+                'free_total' => 0,
+                'nr_total' => 0,
+                'g_total' => 0
+            ];
+
+            $query = "
+            SELECT 
+                a.paramid,
+                b.Name AS param_name,
+                SUM(CASE WHEN ua.type = '1' AND ua.free IN (0,16,17,18) THEN 1 ELSE 0 END) AS gen_paid_opd,
+                SUM(CASE WHEN ua.type = '1' AND ua.free NOT IN (0,16,17,18) THEN 1 ELSE 0 END) AS gen_free_opd,
+                SUM(CASE WHEN ua.type = '3' AND ua.pat_type = 'OPD' THEN 1 ELSE 0 END) AS opd_nr,
+
+                SUM(CASE WHEN ua.type = '2' AND ua.free IN (0,16,17,18) THEN 1 ELSE 0 END) AS gen_paid_ipd,
+                SUM(CASE WHEN ua.type = '2' AND ua.free NOT IN (0,16,17,18) THEN 1 ELSE 0 END) AS gen_free_ipd,
+                SUM(CASE WHEN ua.type = '3' AND ua.pat_type = 'IPD' THEN 1 ELSE 0 END) AS ipd_nr,
+
+                SUM(CASE WHEN ua.type = '4' AND ua.free IN (0,16,17,18) THEN 1 ELSE 0 END) AS gen_paid_emer,
+                SUM(CASE WHEN ua.type = '4' AND ua.free NOT IN (0,16,17,18) THEN 1 ELSE 0 END) AS gen_free_emer,
+                SUM(CASE WHEN ua.type_prefix = 'NRM_EMRG/' THEN 1 ELSE 0 END) AS nr_emer
+            FROM 
+                testresults a
+                JOIN Parameter_old b ON a.paramid = b.ID
+                JOIN uhid_and_opdid ua ON a.opd_id = ua.opd_id
+            WHERE 
+                a.date BETWEEN '$fdate' AND '$tdate'
+            GROUP BY 
+                a.paramid
+            ORDER BY 
+                b.Name
+        ";
+
+            $res = mysqli_query($link, $query);
+            $no = 1;
+
+            while ($row = mysqli_fetch_assoc($res)) {
+                $opd_tot = $row['gen_paid_opd'] + $row['gen_free_opd'] + $row['opd_nr'];
+                $ipd_tot = $row['gen_paid_ipd'] + $row['gen_free_ipd'] + $row['ipd_nr'];
+                $emer_tot = $row['gen_paid_emer'] + $row['gen_free_emer'] + $row['nr_emer'];
+
+                $paid_total = $row['gen_paid_opd'] + $row['gen_paid_ipd'] + $row['gen_paid_emer'];
+                $free_total = $row['gen_free_opd'] + $row['gen_free_ipd'] + $row['gen_free_emer'];
+                $nr_total = $row['opd_nr'] + $row['ipd_nr'] + $row['nr_emer'];
+                $g_total = $paid_total + $free_total + $nr_total;
+
+                // Accumulate totals
+                $gt['gen_paid_opd'] += $row['gen_paid_opd'];
+                $gt['gen_free_opd'] += $row['gen_free_opd'];
+                $gt['opd_nr'] += $row['opd_nr'];
+                $gt['opd_tot'] += $opd_tot;
+
+                $gt['gen_paid_ipd'] += $row['gen_paid_ipd'];
+                $gt['gen_free_ipd'] += $row['gen_free_ipd'];
+                $gt['ipd_nr'] += $row['ipd_nr'];
+                $gt['ipd_tot'] += $ipd_tot;
+
+                $gt['gen_paid_emer'] += $row['gen_paid_emer'];
+                $gt['gen_free_emer'] += $row['gen_free_emer'];
+                $gt['nr_emer'] += $row['nr_emer'];
+                $gt['emer_tot'] += $emer_tot;
+
+                $gt['paid_total'] += $paid_total;
+                $gt['free_total'] += $free_total;
+                $gt['nr_total'] += $nr_total;
+                $gt['g_total'] += $g_total;
+                ?>
+                <tr>
+                    <td><?= $no++; ?></td>
+                    <td><?= htmlspecialchars($row['param_name']); ?></td>
+
+                    <td <?= highlight($row['gen_paid_opd']); ?>><?= $row['gen_paid_opd']; ?></td>
+                    <td <?= highlight($row['gen_free_opd']); ?>><?= $row['gen_free_opd']; ?></td>
+                    <td <?= highlight($row['opd_nr']); ?>><?= $row['opd_nr']; ?></td>
+                    <td <?= total_highlight($opd_tot); ?>><?= $opd_tot; ?></td>
+
+                    <td <?= highlight($row['gen_paid_ipd']); ?>><?= $row['gen_paid_ipd']; ?></td>
+                    <td <?= highlight($row['gen_free_ipd']); ?>><?= $row['gen_free_ipd']; ?></td>
+                    <td <?= highlight($row['ipd_nr']); ?>><?= $row['ipd_nr']; ?></td>
+                    <td <?= total_highlight($ipd_tot); ?>><?= $ipd_tot; ?></td>
+
+                    <td <?= highlight($row['gen_paid_emer']); ?>><?= $row['gen_paid_emer']; ?></td>
+                    <td <?= highlight($row['gen_free_emer']); ?>><?= $row['gen_free_emer']; ?></td>
+                    <td <?= highlight($row['nr_emer']); ?>><?= $row['nr_emer']; ?></td>
+                    <td <?= total_highlight($emer_tot); ?>><?= $emer_tot; ?></td>
+
+                    <td <?= highlight($paid_total); ?>><?= $paid_total; ?></td>
+                    <td <?= highlight($free_total); ?>><?= $free_total; ?></td>
+                    <td <?= highlight($nr_total); ?>><?= $nr_total; ?></td>
+                    <td <?= g_total_highlight($g_total); ?>><?= $g_total; ?></td>
+                </tr>
+            <?php } ?>
+
+            <!-- Grand total row -->
+            <tr style="font-weight: bold; background-color: #d9e3ffff;">
+                <td colspan="2" style="text-align: right;">Total: </td>
+
+                <td><?= $gt['gen_paid_opd']; ?></td>
+                <td><?= $gt['gen_free_opd']; ?></td>
+                <td><?= $gt['opd_nr']; ?></td>
+                <td><?= $gt['opd_tot']; ?></td>
+
+                <td><?= $gt['gen_paid_ipd']; ?></td>
+                <td><?= $gt['gen_free_ipd']; ?></td>
+                <td><?= $gt['ipd_nr']; ?></td>
+                <td><?= $gt['ipd_tot']; ?></td>
+
+                <td><?= $gt['gen_paid_emer']; ?></td>
+                <td><?= $gt['gen_free_emer']; ?></td>
+                <td><?= $gt['nr_emer']; ?></td>
+                <td><?= $gt['emer_tot']; ?></td>
+
+                <td><?= $gt['paid_total']; ?></td>
+                <td><?= $gt['free_total']; ?></td>
+                <td><?= $gt['nr_total']; ?></td>
+                <td><?= $gt['g_total']; ?></td>
             </tr>
-        </tfoot>
-
-
-
-
+        </tbody>
     </table>
-
 
     <?php
 }
-
-
-
+?>
