@@ -332,10 +332,22 @@ if ($type == "load_pat_list") {
 			$appr_lvl = "";
 			$approve_by = mysqli_fetch_array(mysqli_query($link, "SELECT `doc`, `main_tech` FROM `testresults` WHERE `patient_id` = '$patient_id' AND `opd_id` = '$opd_id' AND `ipd_id` = '$ipd_id' AND `batch_no` = '$batch_no' GROUP BY `testid`"));
 
+			$doc_check = mysqli_fetch_array(mysqli_query($link, "SELECT `emp_id`, `levelid` FROM `employee` WHERE `emp_id` = '$approve_by[main_tech]'"));
+
+
+
 			$style_circle = 'display:inline-block; width:20px; height:20px; border:2px solid #e5ff00; border-radius:50%; color:#e5ff00; font-weight:700; text-align:center; font-family:sans-serif;';
 
 			if ($approve_by['doc'] == 0 && $approve_by['main_tech'] > 0) {
-				$appr_lvl = '<span style="' . $style_circle . '">T</span>';
+				if ($doc_check['levelid'] == 13) {
+					$style_circle_d = str_replace('#e5ff00', '#ffffff', $style_circle); // change color for D
+	
+					$appr_lvl = '<span style="' . $style_circle_d . '">D</span>';
+
+				} else {
+					$appr_lvl = '<span style="' . $style_circle . '">T</span>';
+
+				}
 			} else if ($approve_by['doc'] == $approve_by['main_tech'] && ($approve_by['doc'] > 0)) {
 				$style_circle_d = str_replace('#e5ff00', '#ffffff', $style_circle); // change color for D
 				$appr_lvl = '<span style="' . $style_circle_d . '">D</span>';
