@@ -155,8 +155,9 @@ if ($type == 1) {
                                         <td>
                                             <center>
 
-                                                <button class="btn btn-success" id="btn1" onClick="audit_reports(1)">Patient Wise</button>
-                                                <button class="btn btn-success" id="btn2" onClick="audit_reports(2)">Parameter Wise</button>
+                                                <button class="btn btn-success" id="btn1" onclick="audit_reports(1)">Patient Wise</button>
+                                                <button class="btn btn-print" id="btn2" onclick="audit_reports(2)">Parameter Wise</button>
+                                                <button class="btn btn-primary" id="btn3" onclick="audit_reports(3)">Test Wise</button>
                                                 <!-- <button class="btn btn-success" id="btn3" onClick="view_all_opd_report(3)">Total Registration By
                                                     Doctor (OPD)</button> -->
 
